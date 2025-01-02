@@ -240,10 +240,10 @@ export const checkProposalField: CheckProposalField = ({
     case "protocol":
       return null;
     case "url": {
-      const lowerCaseValue = value.toLowerCase();
-      if (lowerCaseValue.length === 0) {
+      if (value === undefined || value === null || value === "") {
         return null;
       }
+      const lowerCaseValue = value.toLowerCase();
       if (
         lowerCaseValue.startsWith("https://") ||
         lowerCaseValue.startsWith("http://")
