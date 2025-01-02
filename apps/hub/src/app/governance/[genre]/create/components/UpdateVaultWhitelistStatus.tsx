@@ -97,7 +97,7 @@ export const UpdateVaultWhitelistStatus = ({
           variant="black"
           label="Name"
           value={gauge.metadata?.name}
-          error={null}
+          error={errors?.metadata?.name ?? null}
           maxLength={40}
           onChange={async (e) => {
             setAction((prev) => ({
@@ -159,7 +159,7 @@ export const UpdateVaultWhitelistStatus = ({
         <TextArea
           id="proposal-message"
           label="Description"
-          error={null}
+          error={errors?.metadata?.description ?? null}
           variant="black"
           placeholder="Tell us about this vault"
           value={gauge.metadata?.description}
