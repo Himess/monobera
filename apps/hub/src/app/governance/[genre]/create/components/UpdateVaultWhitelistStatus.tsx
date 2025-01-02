@@ -125,9 +125,9 @@ export const UpdateVaultWhitelistStatus = ({
         <Label>Protocol</Label>
         <Dropdown
           sortby={false}
-          className="!w-full !grow"
-          triggerClassName="!w-full grow justify-between"
-          contentClassname="!w-full !grow"
+          className="!w-full !grow bg-black rounded-md"
+          triggerClassName="!w-full grow justify-between bg-black"
+          contentClassname="!w-full !grow bg-black"
           selectionList={protocolArray.map((protocol) => ({
             value: protocol,
             label: protocol,
