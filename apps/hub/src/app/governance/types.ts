@@ -78,7 +78,6 @@ export enum ProposalErrorCodes {
    * Mainly used when it's not a reward vault
    */
   INVALID_CONTRACT = "This is not a valid contract",
-  MISSING_METADATA = "Missing metadata",
 }
 
 export type CustomProposal = {
