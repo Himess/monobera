@@ -2,13 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import { beraChefAddress } from "@bera/config";
 import { cn } from "@bera/ui";
 import { InputWithLabel } from "@bera/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@bera/ui/select";
+import { Dropdown } from "@bera/shared-ui";
 import { TextArea } from "@bera/ui/text-area";
 
 import { Address } from "viem";
@@ -20,6 +14,7 @@ import {
   ProposalTypeEnum,
 } from "~/app/governance/types";
 import { useGaugesMetadata } from "@bera/berajs";
+import { Label } from "@bera/ui/label";
 
 export const UpdateVaultWhitelistStatus = ({
   action: gauge,
@@ -44,7 +39,7 @@ export const UpdateVaultWhitelistStatus = ({
 }) => {
   const { data: rewardVaultMetadata } = useGaugesMetadata();
 
-  const protocolValues =
+  const protocolValues = ((rewardVaultMetadata &&
     Object.values(
       rewardVaultMetadata as Record<
         `0x${string}`,
@@ -52,7 +47,7 @@ export const UpdateVaultWhitelistStatus = ({
           product: string;
         }
       >,
-    ).map((v) => v.product) || [];
+    ).map((v) => v.product)) as string[]) || ["Loading..."];
 
   const protocolArray = [...new Set(protocolValues).values()];
 
@@ -98,117 +93,83 @@ export const UpdateVaultWhitelistStatus = ({
             });
           }}
         />
-        {isWhitelisted && (
-          <>
-            <InputWithLabel
-              variant="black"
-              label="Name"
-              value={gauge.metadata?.name}
-              error={
-                errors?.metadata?.name === ProposalErrorCodes.REQUIRED
-                  ? "Name must be filled"
-                  : errors?.metadata?.name
-              }
-              maxLength={40}
-              onChange={async (e) => {
-                setAction((prev) => ({
-                  ...prev,
-                  metadata: { ...prev.metadata, name: e.target.value },
-                }));
-              }}
-            />
-            <InputWithLabel
-              variant="black"
-              label="Logo URI"
-              value={gauge.metadata?.logoURI}
-              error={
-                errors?.metadata?.logoURI === ProposalErrorCodes.REQUIRED
-                  ? "Logo URI must be filled"
-                  : errors?.metadata?.logoURI ===
-                      ProposalErrorCodes.MUST_BE_URL_OR_IPFS
-                    ? "Must be a valid URL or IPFS CID"
-                    : errors?.metadata?.logoURI
-              }
-              onChange={async (e) => {
-                setAction((prev) => ({
-                  ...prev,
-                  metadata: { ...prev.metadata, logoURI: e.target.value },
-                }));
-              }}
-            />
-            {/* <InputWithLabel
-              variant="black"
-              label="Product"
-              value={gauge.metadata?.protocol}
-              error={
-                errors?.vault === ProposalErrorCodes.REQUIRED
-                  ? "A Vault Must Be Chosen"
-                  : errors?.vault === ProposalErrorCodes.INVALID_ADDRESS
-                    ? "Invalid Vault address."
-                    : errors?.vault
-              }
-              onChange={async (e) => {
-                setAction((prev) => ({
-                  ...prev,
-                  metadata: { ...prev.metadata, protocol: e.target.value },
-                }));
-              }}
-            /> */}
-            <Select
-              onValueChange={(value) =>
-                setAction((prev) => ({
-                  ...prev,
-                  metadata: { ...prev.metadata, protocol: value },
-                }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue>{gauge.metadata?.protocol}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {protocolArray.map((protocol) => (
-                  <SelectItem value={protocol}>{protocol}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <InputWithLabel
-              variant="black"
-              label="URL"
-              value={gauge.metadata?.url}
-              error={
-                errors?.metadata?.url === ProposalErrorCodes.REQUIRED
-                  ? "You must set a URL"
-                  : errors?.metadata?.url === ProposalErrorCodes.MUST_BE_URL
-                    ? "Must be a valid HTTPS or HTTP url"
-                    : errors?.metadata?.url
-              }
-              onChange={async (e) => {
-                setAction((prev) => ({
-                  ...prev,
-                  metadata: { ...prev.metadata, url: e.target.value },
-                }));
-              }}
-            />
-            <TextArea
-              id="proposal-message"
-              label="Description"
-              error={
-                errors?.metadata?.description === ProposalErrorCodes.REQUIRED
-                  ? "Description must be filled"
-                  : null
-              }
-              variant="black"
-              placeholder="Tell us about this vault"
-              value={gauge.metadata?.description}
-              onChange={(e) =>
-                setAction((prev) => ({
-                  ...prev,
-                  metadata: { ...prev.metadata, description: e.target.value },
-                }))
-              }
-            />
-          </>
-        )}
+        <InputWithLabel
+          variant="black"
+          label="Name"
+          value={gauge.metadata?.name}
+          error={null}
+          maxLength={40}
+          onChange={async (e) => {
+            setAction((prev) => ({
+              ...prev,
+              metadata: { ...prev.metadata, name: e.target.value },
+            }));
+          }}
+        />
+        <InputWithLabel
+          variant="black"
+          label="Logo URI"
+          value={gauge.metadata?.logoURI}
+          error={
+            errors?.metadata?.logoURI === ProposalErrorCodes.MUST_BE_URL_OR_IPFS
+              ? "Must be a valid URL or IPFS CID"
+              : errors?.metadata?.logoURI
+          }
+          onChange={async (e) => {
+            setAction((prev) => ({
+              ...prev,
+              metadata: { ...prev.metadata, logoURI: e.target.value },
+            }));
+          }}
+        />
+        <Label>Protocol</Label>
+        <Dropdown
+          sortby={false}
+          className="!w-full !grow"
+          triggerClassName="!w-full grow justify-between"
+          contentClassname="!w-full !grow"
+          selectionList={protocolArray.map((protocol) => ({
+            value: protocol,
+            label: protocol,
+          }))}
+          selected={gauge.metadata?.protocol || protocolArray[0]}
+          onSelect={(value) =>
+            setAction((prev) => ({
+              ...prev,
+              metadata: { ...prev.metadata, protocol: value },
+            }))
+          }
+        />
+        <InputWithLabel
+          variant="black"
+          label="URL"
+          value={gauge.metadata?.url}
+          error={
+            errors?.metadata?.url === ProposalErrorCodes.MUST_BE_URL
+              ? "Must be a valid HTTPS or HTTP url"
+              : errors?.metadata?.url
+          }
+          onChange={async (e) => {
+            setAction((prev) => ({
+              ...prev,
+              metadata: { ...prev.metadata, url: e.target.value },
+            }));
+          }}
+        />
+        <TextArea
+          id="proposal-message"
+          label="Description"
+          error={null}
+          variant="black"
+          placeholder="Tell us about this vault"
+          value={gauge.metadata?.description}
+          onChange={(e) =>
+            setAction((prev) => ({
+              ...prev,
+              metadata: { ...prev.metadata, description: e.target.value },
+            }))
+          }
+        />
       </div>
     </>
   );

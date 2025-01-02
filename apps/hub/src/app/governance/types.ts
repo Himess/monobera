@@ -100,18 +100,9 @@ export type SafeProposalAction = {
       calldata: string[];
     }
   | {
-      type: ProposalTypeEnum.WHITELIST_REWARD_VAULT;
-      vault: Address;
-      metadata: Partial<{
-        name: string;
-        logoURI: string;
-        protocol: string;
-        url: string;
-        description: string;
-      }>;
-    }
-  | {
-      type: ProposalTypeEnum.BLACKLIST_REWARD_VAULT;
+      type:
+        | ProposalTypeEnum.WHITELIST_REWARD_VAULT
+        | ProposalTypeEnum.BLACKLIST_REWARD_VAULT;
       vault: Address;
       metadata: Partial<{
         name: string;

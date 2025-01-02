@@ -200,7 +200,6 @@ export const checkProposalField: CheckProposalField = ({
         return errors;
       }
 
-      console.warn("tuple default", value, components);
       return null;
 
     case "tuple[]":
@@ -220,39 +219,36 @@ export const checkProposalField: CheckProposalField = ({
         return errors;
       }
 
-      console.warn("tuple[] default", value, components);
       return null;
 
     case "name":
-      if (value.length === 0) {
-        return ProposalErrorCodes.REQUIRED;
+    case "logoURI": {
+      const lowerCaseValue = value.toLowerCase();
+      if (
+        (lowerCaseValue.length > 0 && lowerCaseValue.startsWith("https://")) ||
+        lowerCaseValue.startsWith("http://") ||
+        lowerCaseValue.startsWith("ipfs://")
+      ) {
+        return null;
       }
+      return ProposalErrorCodes.MUST_BE_URL_OR_IPFS;
+    }
+
+    case "protocol":
       return null;
-    case "logoURI":
-      if (value.length === 0) {
-        return ProposalErrorCodes.REQUIRED;
+    case "url": {
+      const lowerCaseValue = value.toLowerCase();
+      if (lowerCaseValue.length === 0) {
+        return null;
       }
       if (
-        !value.startsWith("https://") ||
-        !value.startsWith("http://") ||
-        !value.startsWith("ipfs://")
+        lowerCaseValue.startsWith("https://") ||
+        lowerCaseValue.startsWith("http://")
       ) {
-        return ProposalErrorCodes.MUST_BE_URL_OR_IPFS;
+        return null;
       }
-      return null;
-    case "protocol":
-      if (value.length === 0) {
-        return ProposalErrorCodes.REQUIRED;
-      }
-      return null;
-    case "url":
-      if (value.length === 0) {
-        return ProposalErrorCodes.REQUIRED;
-      }
-      if (!value.startsWith("https://") || !value.startsWith("http://")) {
-        return ProposalErrorCodes.MUST_BE_URL;
-      }
-      return null;
+      return ProposalErrorCodes.MUST_BE_URL;
+    }
     default:
       console.error(`Invalid field or type: ${fieldOrType}`);
 
@@ -402,28 +398,33 @@ export const useCreateProposal = ({
           errors.metadata = {};
 
           errors.metadata.description = checkProposalField({
-            fieldOrType: "description",
+            fieldOrType: "string",
             value: action.metadata?.description,
+            required: false,
           });
 
           errors.metadata.name = checkProposalField({
-            fieldOrType: "name",
+            fieldOrType: "string",
             value: action.metadata?.name,
+            required: false,
           });
 
           errors.metadata.logoURI = checkProposalField({
             fieldOrType: "logoURI",
             value: action.metadata?.logoURI,
+            required: false,
           });
 
           errors.metadata.protocol = checkProposalField({
-            fieldOrType: "protocol",
+            fieldOrType: "string",
             value: action.metadata?.protocol,
+            required: false,
           });
 
           errors.metadata.url = checkProposalField({
             fieldOrType: "url",
             value: action.metadata?.url,
+            required: false,
           });
 
           const hasMetadataErrors = Object.values(errors.metadata).some(
