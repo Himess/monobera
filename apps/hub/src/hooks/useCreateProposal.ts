@@ -223,9 +223,12 @@ export const checkProposalField: CheckProposalField = ({
 
     case "name":
     case "logoURI": {
+      if (value === undefined || value === null || value === "") {
+        return null;
+      }
       const lowerCaseValue = value.toLowerCase();
       if (
-        (lowerCaseValue.length > 0 && lowerCaseValue.startsWith("https://")) ||
+        lowerCaseValue.startsWith("https://") ||
         lowerCaseValue.startsWith("http://") ||
         lowerCaseValue.startsWith("ipfs://")
       ) {
