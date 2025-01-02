@@ -69,6 +69,7 @@ export const usePoolTable = ({
     useIsWhitelistedVault(vaultAddresses);
 
   // Pull full Dynamic data etc from the vault via bex subgraph
+  // FIXME: we will pull vault data from BE alongside pools to avoid these extra calls
   const { data: rewardVaultMetadata } = useRewardVaults(
     // TODO (BFE-444): this should use pagination / an index since this will become a performance issue when we have many pools.
     // {
