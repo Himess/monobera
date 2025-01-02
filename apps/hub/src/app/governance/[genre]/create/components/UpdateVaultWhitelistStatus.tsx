@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { beraChefAddress } from "@bera/config";
 import { cn } from "@bera/ui";
 import { InputWithLabel } from "@bera/ui/input";
@@ -10,8 +10,7 @@ import {
   SelectValue,
 } from "@bera/ui/select";
 import { TextArea } from "@bera/ui/text-area";
-import { set } from "date-fns";
-import matter from "gray-matter";
+
 import { Address } from "viem";
 
 import {
@@ -20,8 +19,7 @@ import {
   ProposalErrorCodes,
   ProposalTypeEnum,
 } from "~/app/governance/types";
-
-const products = ["Product 1", "Product 2"];
+import { useGaugesMetadata } from "@bera/berajs";
 
 export const UpdateVaultWhitelistStatus = ({
   action: gauge,
@@ -33,43 +31,30 @@ export const UpdateVaultWhitelistStatus = ({
       | ProposalTypeEnum.BLACKLIST_REWARD_VAULT
       | ProposalTypeEnum.WHITELIST_REWARD_VAULT;
   };
-  setAction: Dispatch<SetStateAction<ProposalAction>>;
+  setAction: Dispatch<
+    SetStateAction<
+      ProposalAction & {
+        type:
+          | ProposalTypeEnum.BLACKLIST_REWARD_VAULT
+          | ProposalTypeEnum.WHITELIST_REWARD_VAULT;
+      }
+    >
+  >;
   errors: CustomProposalActionErrors;
 }) => {
-  const [metadata, setMetadata] = useState<{
-    name?: string;
-    logoURI?: string;
-    product?: string;
-    url?: string;
-    description?: string;
-  }>();
+  const { data: rewardVaultMetadata } = useGaugesMetadata();
 
-  const nameLengthError =
-    metadata?.name && metadata?.name?.length > 40
-      ? "Name must be less than 40 characters"
-      : null;
+  const protocolValues =
+    Object.values(
+      rewardVaultMetadata as Record<
+        `0x${string}`,
+        {
+          product: string;
+        }
+      >,
+    ).map((v) => v.product) || [];
 
-  // The logoURI is either a https or http or ipfs cid. It is checked with a regex
-  const logoURIError =
-    metadata?.logoURI &&
-    !/(http|https|ipfs):\/\/[^ "]+$/.test(metadata?.logoURI)
-      ? "Invalid URI"
-      : null;
-
-  const descriptionToolLongError = metadata?.description
-    ? metadata?.description.length > 1000
-      ? `Description must be less than 1000 characters. Current length: ${metadata?.description.length}`
-      : null
-    : null;
-
-  useEffect(() => {
-    if (!metadata?.description) return;
-    const string = matter.stringify(metadata.description, metadata);
-    setAction((prev) => ({
-      ...prev,
-      metadata: string,
-    }));
-  }, [metadata]);
+  const protocolArray = [...new Set(protocolValues).values()];
 
   const isWhitelisted = gauge.type === ProposalTypeEnum.WHITELIST_REWARD_VAULT;
   return (
@@ -118,33 +103,43 @@ export const UpdateVaultWhitelistStatus = ({
             <InputWithLabel
               variant="black"
               label="Name"
-              value={metadata?.name}
-              error={nameLengthError}
+              value={gauge.metadata?.name}
+              error={
+                errors?.metadata?.name === ProposalErrorCodes.REQUIRED
+                  ? "Name must be filled"
+                  : errors?.metadata?.name
+              }
               maxLength={40}
               onChange={async (e) => {
-                setMetadata({
-                  ...metadata,
-                  name: e.target.value,
-                });
+                setAction((prev) => ({
+                  ...prev,
+                  metadata: { ...prev.metadata, name: e.target.value },
+                }));
               }}
             />
-            {metadata?.name}
             <InputWithLabel
               variant="black"
               label="Logo URI"
-              value={metadata?.logoURI}
-              error={logoURIError}
+              value={gauge.metadata?.logoURI}
+              error={
+                errors?.metadata?.logoURI === ProposalErrorCodes.REQUIRED
+                  ? "Logo URI must be filled"
+                  : errors?.metadata?.logoURI ===
+                      ProposalErrorCodes.MUST_BE_URL_OR_IPFS
+                    ? "Must be a valid URL or IPFS CID"
+                    : errors?.metadata?.logoURI
+              }
               onChange={async (e) => {
-                setMetadata({
-                  ...metadata,
-                  logoURI: e.target.value,
-                });
+                setAction((prev) => ({
+                  ...prev,
+                  metadata: { ...prev.metadata, logoURI: e.target.value },
+                }));
               }}
             />
-            <InputWithLabel
+            {/* <InputWithLabel
               variant="black"
               label="Product"
-              value={metadata?.product}
+              value={gauge.metadata?.protocol}
               error={
                 errors?.vault === ProposalErrorCodes.REQUIRED
                   ? "A Vault Must Be Chosen"
@@ -153,63 +148,65 @@ export const UpdateVaultWhitelistStatus = ({
                     : errors?.vault
               }
               onChange={async (e) => {
-                setMetadata({
-                  ...metadata,
-                  product: e.target.value,
-                });
+                setAction((prev) => ({
+                  ...prev,
+                  metadata: { ...prev.metadata, protocol: e.target.value },
+                }));
               }}
-            />
+            /> */}
             <Select
               onValueChange={(value) =>
-                setMetadata({ ...metadata, product: value })
+                setAction((prev) => ({
+                  ...prev,
+                  metadata: { ...prev.metadata, protocol: value },
+                }))
               }
             >
               <SelectTrigger>
-                <SelectValue>{metadata?.product}</SelectValue>
+                <SelectValue>{gauge.metadata?.protocol}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {products.map((product) => (
-                  <SelectItem value={product}>{product}</SelectItem>
+                {protocolArray.map((protocol) => (
+                  <SelectItem value={protocol}>{protocol}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <InputWithLabel
               variant="black"
               label="URL"
-              value={metadata?.url}
+              value={gauge.metadata?.url}
               error={
-                errors?.vault === ProposalErrorCodes.REQUIRED
-                  ? "A Vault Must Be Chosen"
-                  : errors?.vault === ProposalErrorCodes.INVALID_ADDRESS
-                    ? "Invalid Vault address."
-                    : errors?.vault
+                errors?.metadata?.url === ProposalErrorCodes.REQUIRED
+                  ? "You must set a URL"
+                  : errors?.metadata?.url === ProposalErrorCodes.MUST_BE_URL
+                    ? "Must be a valid HTTPS or HTTP url"
+                    : errors?.metadata?.url
               }
               onChange={async (e) => {
-                setMetadata({
-                  ...metadata,
-                  url: e.target.value,
-                });
+                setAction((prev) => ({
+                  ...prev,
+                  metadata: { ...prev.metadata, url: e.target.value },
+                }));
               }}
             />
             <TextArea
               id="proposal-message"
               label="Description"
-              // error={
-              //   errors.description === ProposalErrorCodes.REQUIRED
-              //     ? "Description must be filled"
-              //     : errors.description
-              // }
+              error={
+                errors?.metadata?.description === ProposalErrorCodes.REQUIRED
+                  ? "Description must be filled"
+                  : null
+              }
               variant="black"
-              error={descriptionToolLongError}
               placeholder="Tell us about this vault"
-              value={metadata?.description}
+              value={gauge.metadata?.description}
               onChange={(e) =>
-                setMetadata((prev: any) => ({
+                setAction((prev) => ({
                   ...prev,
-                  description: e.target.value,
+                  metadata: { ...prev.metadata, description: e.target.value },
                 }))
               }
-            />{" "}
+            />
           </>
         )}
       </div>

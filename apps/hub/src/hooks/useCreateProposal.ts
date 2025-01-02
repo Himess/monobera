@@ -61,7 +61,11 @@ interface CheckProposalField {
       | "action"
       | "title"
       | "forumLink"
-      | "description";
+      | "description"
+      | "name"
+      | "logoURI"
+      | "url"
+      | "protocol";
     value: any;
     required?: boolean;
     baseUrl?: string;
@@ -219,6 +223,36 @@ export const checkProposalField: CheckProposalField = ({
       console.warn("tuple[] default", value, components);
       return null;
 
+    case "name":
+      if (value.length === 0) {
+        return ProposalErrorCodes.REQUIRED;
+      }
+      return null;
+    case "logoURI":
+      if (value.length === 0) {
+        return ProposalErrorCodes.REQUIRED;
+      }
+      if (
+        !value.startsWith("https://") ||
+        !value.startsWith("http://") ||
+        !value.startsWith("ipfs://")
+      ) {
+        return ProposalErrorCodes.MUST_BE_URL_OR_IPFS;
+      }
+      return null;
+    case "protocol":
+      if (value.length === 0) {
+        return ProposalErrorCodes.REQUIRED;
+      }
+      return null;
+    case "url":
+      if (value.length === 0) {
+        return ProposalErrorCodes.REQUIRED;
+      }
+      if (!value.startsWith("https://") || !value.startsWith("http://")) {
+        return ProposalErrorCodes.MUST_BE_URL;
+      }
+      return null;
     default:
       console.error(`Invalid field or type: ${fieldOrType}`);
 
@@ -365,20 +399,56 @@ export const useCreateProposal = ({
           action.type === ProposalTypeEnum.WHITELIST_REWARD_VAULT ||
           action.type === ProposalTypeEnum.BLACKLIST_REWARD_VAULT
         ) {
+          errors.metadata = {};
+
+          errors.metadata.description = checkProposalField({
+            fieldOrType: "description",
+            value: action.metadata?.description,
+          });
+
+          errors.metadata.name = checkProposalField({
+            fieldOrType: "name",
+            value: action.metadata?.name,
+          });
+
+          errors.metadata.logoURI = checkProposalField({
+            fieldOrType: "logoURI",
+            value: action.metadata?.logoURI,
+          });
+
+          errors.metadata.protocol = checkProposalField({
+            fieldOrType: "protocol",
+            value: action.metadata?.protocol,
+          });
+
+          errors.metadata.url = checkProposalField({
+            fieldOrType: "url",
+            value: action.metadata?.url,
+          });
+
+          const hasMetadataErrors = Object.values(errors.metadata).some(
+            (v) => !!v,
+          );
+
           errors.vault = checkProposalField({
             fieldOrType: "address",
             value: action.vault,
           });
-          errors.isFriend = null; //checkProposalField("bool", action.isFriend);
-          const whiteList =
-            action.type === ProposalTypeEnum.WHITELIST_REWARD_VAULT
-              ? true
-              : false;
-          if (!errors.vault) {
+
+          if (!hasMetadataErrors && !errors.vault) {
+            const actionMetadata = action.metadata?.description
+              ? matter.stringify(action.metadata.description, action.metadata)
+              : null;
+
+            const whiteList =
+              action.type === ProposalTypeEnum.WHITELIST_REWARD_VAULT
+                ? true
+                : false;
+
             actions[idx] = encodeFunctionData({
               abi: BERA_CHEF_ABI,
               functionName: "setVaultWhitelistedStatus",
-              args: [action.vault!, whiteList, action.metadata ?? ""], // TODO: A third param was added for metadata. It is optional but we should include it in our action
+              args: [action.vault!, whiteList, actionMetadata ?? ""],
             });
           }
         } else if (action.type === ProposalTypeEnum.ERC20_TRANSFER) {
