@@ -78,6 +78,22 @@ interface CheckProposalField {
   }): CheckProposalFieldResult;
 }
 
+function hasAnyTruthyValues<T extends Record<string, any>>(obj: T): boolean {
+  return Object.values(obj).some((value) => {
+    if (Array.isArray(value)) {
+      return value.some((item) =>
+        typeof item === "object" && item !== null
+          ? hasAnyTruthyValues(item)
+          : !!item,
+      );
+    }
+    if (typeof value === "object" && value !== null) {
+      return hasAnyTruthyValues(value);
+    }
+    return !!value;
+  });
+}
+
 // @ts-expect-error TODO: this is not typed, will throw if not valid
 export const checkProposalField: CheckProposalField = ({
   fieldOrType,
@@ -423,19 +439,26 @@ export const useCreateProposal = ({
             value: action.vault,
           });
 
-          const encodingParams = {
-            "content-type": "text/plain",
-            "content-encoding": "utf-8",
-            version: "1.0.0",
-          };
+          if (!errors.vault && !hasMetadataErrors) {
+            const encodingParams = {
+              "content-type": "text/plain",
+              "content-encoding": "utf-8",
+              version: "1.0.0",
+            };
 
-          if (!hasMetadataErrors && !errors.vault) {
-            const actionMetadata = action.metadata?.description
-              ? matter.stringify(action.metadata.description, {
-                  ...action.metadata,
-                  ...encodingParams,
-                })
-              : null;
+            let metaDataWithoutBlankProtocol = action.metadata;
+            if (action.metadata?.protocol === "none") {
+              const { protocol, ...rest } = action.metadata;
+              metaDataWithoutBlankProtocol = rest;
+            }
+
+            const actionMetadata = matter.stringify(
+              action.metadata?.description ?? "",
+              {
+                ...metaDataWithoutBlankProtocol,
+                ...encodingParams,
+              },
+            );
 
             const whiteList =
               action.type === ProposalTypeEnum.WHITELIST_REWARD_VAULT
@@ -466,17 +489,12 @@ export const useCreateProposal = ({
           }
         }
 
-        const hasErrors = Object.values(e).some((v) => {
-          if (Array.isArray(v)) {
-            return v.filter((v) => v).length > 0;
-          }
-
-          return !!v;
-        });
+        const hasErrors = hasAnyTruthyValues(errors);
 
         if (!hasErrors) {
           return null;
         }
+
         return errors;
       });
 
