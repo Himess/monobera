@@ -23,7 +23,7 @@ function AbiInput({
 }) {
   if (typeof value === "object") {
     return (
-      <div className="m-4">
+      <div className="my-4">
         {input.name}:
         <pre>
           {JSON.stringify(
@@ -62,8 +62,8 @@ function AbiInput({
     return (
       <div>
         {filteredValues.map(([key, value]) => (
-          <div className="m-4">
-            {key} :{" "}
+          <div className="my-4">
+            {key}:{" "}
             {value.includes("http://") || value.includes("https://") ? (
               <a className="font-bold underline" href={value}>
                 {value}
@@ -78,7 +78,7 @@ function AbiInput({
   }
 
   return (
-    <div className="m-4">
+    <div className="my-4">
       {input.name}: {value?.toString()}
     </div>
   );
