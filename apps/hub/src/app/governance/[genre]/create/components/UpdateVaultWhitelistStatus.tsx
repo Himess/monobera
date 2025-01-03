@@ -75,6 +75,7 @@ export const UpdateVaultWhitelistStatus = ({
       </div>
       <div className="grid grid-cols-1 gap-6">
         <InputWithLabel
+          id="vault-address"
           variant="black"
           label="Reward Vault Address"
           value={gauge?.vault}
@@ -155,7 +156,7 @@ export const UpdateVaultWhitelistStatus = ({
           }}
         />
         <TextArea
-          id="proposal-message"
+          id="vault-description"
           label="Description"
           error={errors?.metadata?.description}
           variant="black"
