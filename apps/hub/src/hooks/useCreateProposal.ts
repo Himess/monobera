@@ -439,9 +439,18 @@ export const useCreateProposal = ({
             value: action.vault,
           });
 
+          const encodingParams = {
+            "content-type": "text/plain",
+            "content-encoding": "utf-8",
+            version: "1.0.0",
+          };
+
           if (!hasMetadataErrors && !errors.vault) {
             const actionMetadata = action.metadata?.description
-              ? matter.stringify(action.metadata.description, action.metadata)
+              ? matter.stringify(action.metadata.description, {
+                  ...action.metadata,
+                  ...encodingParams,
+                })
               : null;
 
             const whiteList =
