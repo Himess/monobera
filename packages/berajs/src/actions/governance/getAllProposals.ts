@@ -76,6 +76,6 @@ export const getAllProposals = async ({
     }));
   } catch (e) {
     console.error("getAllProposals:", e);
-    return undefined;
+    throw e;
   }
 };

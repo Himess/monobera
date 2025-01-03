@@ -1,6 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useGetBlocksTimeStampQuery, blocksClient } from "@bera/graphql";
+import {
+  blocksClient,
+  GetBlocksTimeStamp,
+  GetBlocksTimeStampQueryVariables,
+  GetBlocksTimeStampQuery,
+} from "@bera/graphql";
 import { FALLBACK_BLOCK_TIME } from "@bera/config";
+import useSWRImmutable from "swr/immutable";
 
 /**
  * Average berachain block time in seconds
@@ -18,12 +24,20 @@ export const BlockTimeProvider = ({
   const SKIP = 40_000;
 
   const [blockTime, setBlockTime] = useState<number>(defaultBlockTime);
+
   // This could be cached server side
-  const { data } = useGetBlocksTimeStampQuery({
-    variables: {
-      skip: SKIP,
-    },
-    client: blocksClient,
+  const { data } = useSWRImmutable(["useGetBlocksTimeStamp"], async () => {
+    const res = await blocksClient.query<
+      GetBlocksTimeStampQuery,
+      GetBlocksTimeStampQueryVariables
+    >({
+      query: GetBlocksTimeStamp,
+      variables: {
+        skip: SKIP,
+      },
+    });
+
+    return res.data;
   });
 
   useEffect(() => {

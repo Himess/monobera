@@ -55,16 +55,6 @@ export const BeraJsProvider: React.FC<
 
   useEffect(() => setIsMounted(true), []);
 
-  const { data: defaultRewardAllocation } = useReadContract({
-    abi: BERA_CHEF_ABI,
-    address: beraChefAddress,
-    functionName: "getDefaultRewardAllocation",
-  });
-
-  useEffect(() => {
-    console.log({ defaultRewardAllocation });
-  }, [defaultRewardAllocation]);
-
   const isWrongNetwork = useMemo(() => {
     return !chains.some((c) => c.id === chain?.id);
   }, [chains, chain?.id]);
