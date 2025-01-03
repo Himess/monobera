@@ -71,7 +71,7 @@ export enum ProposalErrorCodes {
   INVALID_ACTION = "Invalid action",
   INVALID_ABI = "Invalid ABI",
   MUST_BE_HTTPS = "Must be HTTPS",
-  MUST_BE_HTTPS_OR_IPFS = "Must HTTPS or IPFS",
+  MUST_BE_HTTPS_OR_IPFS = "Must be HTTPS or IPFS",
   INVALID_BASEPATH = "Must be a berachain forum link",
   /**
    * Mainly used when it's not a reward vault
