@@ -64,7 +64,8 @@ function AbiInput({
         {filteredValues.map(([key, value]) => (
           <div className="my-4">
             {key}:{" "}
-            {value.includes("http://") || value.includes("https://") ? (
+            {(key === "url" && URL.canParse(value)) ||
+            (key === "logoURI" && URL.canParse(value)) ? (
               <a className="font-bold underline" href={value}>
                 {value}
               </a>

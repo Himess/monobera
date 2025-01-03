@@ -62,10 +62,8 @@ interface CheckProposalField {
       | "title"
       | "forumLink"
       | "description"
-      | "name"
       | "logoURI"
-      | "url"
-      | "protocol";
+      | "url";
     value: any;
     required?: boolean;
     baseUrl?: string;
@@ -220,37 +218,17 @@ export const checkProposalField: CheckProposalField = ({
       }
 
       return null;
-
-    case "name":
     case "logoURI": {
-      if (value === undefined || value === null || value === "") {
+      if (URL.canParse(value) && new URL(value).protocol === "https:") {
         return null;
       }
-      const lowerCaseValue = value.toLowerCase();
-      if (
-        lowerCaseValue.startsWith("https://") ||
-        lowerCaseValue.startsWith("http://") ||
-        lowerCaseValue.startsWith("ipfs://")
-      ) {
-        return null;
-      }
-      return ProposalErrorCodes.MUST_BE_URL_OR_IPFS;
+      return ProposalErrorCodes.MUST_BE_HTTPS_OR_IPFS;
     }
-
-    case "protocol":
-      return null;
     case "url": {
-      if (value === undefined || value === null || value === "") {
+      if (URL.canParse(value) && new URL(value).protocol === "https:") {
         return null;
       }
-      const lowerCaseValue = value.toLowerCase();
-      if (
-        lowerCaseValue.startsWith("https://") ||
-        lowerCaseValue.startsWith("http://")
-      ) {
-        return null;
-      }
-      return ProposalErrorCodes.MUST_BE_URL;
+      return ProposalErrorCodes.MUST_BE_HTTPS;
     }
     default:
       console.error(`Invalid field or type: ${fieldOrType}`);

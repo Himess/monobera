@@ -73,7 +73,7 @@ export const UpdateVaultWhitelistStatus = ({
           eligible to receive emissions.
         </div>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-1 gap-6">
         <InputWithLabel
           variant="black"
           label="Reward Vault Address"
@@ -111,7 +111,8 @@ export const UpdateVaultWhitelistStatus = ({
           label="Logo URI"
           value={gauge.metadata?.logoURI}
           error={
-            errors?.metadata?.logoURI === ProposalErrorCodes.MUST_BE_URL_OR_IPFS
+            errors?.metadata?.logoURI ===
+            ProposalErrorCodes.MUST_BE_HTTPS_OR_IPFS
               ? "Must be a valid URL or IPFS CID"
               : errors?.metadata?.logoURI
           }
@@ -122,31 +123,33 @@ export const UpdateVaultWhitelistStatus = ({
             }));
           }}
         />
-        <Label>Protocol</Label>
-        <Dropdown
-          sortby={false}
-          className="!w-full !grow bg-black rounded-md"
-          triggerClassName="!w-full grow justify-between bg-black"
-          contentClassname="!w-full !grow bg-black"
-          selectionList={protocolArray.map((protocol) => ({
-            value: protocol,
-            label: protocol,
-          }))}
-          selected={gauge.metadata?.protocol || protocolArray[0]}
-          onSelect={(value) =>
-            setAction((prev) => ({
-              ...prev,
-              metadata: { ...prev.metadata, protocol: value },
-            }))
-          }
-        />
+        <div className="-mt-1">
+          <Label>Protocol</Label>
+          <Dropdown
+            sortby={false}
+            className="!w-full !grow bg-black rounded-md mt-1"
+            triggerClassName="!w-full grow justify-between bg-black"
+            contentClassname="!w-full !grow bg-black"
+            selectionList={protocolArray.map((protocol) => ({
+              value: protocol,
+              label: protocol,
+            }))}
+            selected={gauge.metadata?.protocol || protocolArray[0]}
+            onSelect={(value) =>
+              setAction((prev) => ({
+                ...prev,
+                metadata: { ...prev.metadata, protocol: value },
+              }))
+            }
+          />
+        </div>
         <InputWithLabel
           variant="black"
           label="URL"
           value={gauge.metadata?.url}
           error={
-            errors?.metadata?.url === ProposalErrorCodes.MUST_BE_URL
-              ? "Must be a valid HTTPS or HTTP url"
+            errors?.metadata?.url === ProposalErrorCodes.MUST_BE_HTTPS
+              ? "Must be a valid HTTPS url"
               : errors?.metadata?.url
           }
           onChange={async (e) => {
