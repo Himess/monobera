@@ -5,6 +5,7 @@ import {
   NativeDapps,
   Others,
 } from "../governance-genre-helper";
+import { cn } from "@bera/ui";
 
 const GovernanceSection = ({
   title,
@@ -21,17 +22,27 @@ const GovernanceSection = ({
       <div className="grid gap-4 sm:gap-6 grid-cols-2 sm:grid-cols-4">
         {dapps.map((dapp: GovernanceTopic) => (
           <Link
-            className="w-full cursor-pointer overflow-hidden rounded-lg border border-border transition-all hover:scale-105"
+            className={cn(
+              "w-full cursor-pointer overflow-hidden rounded-lg border border-border",
+              dapp.forumLink !== "#"
+                ? "transition-all hover:scale-105"
+                : "opacity-50 pointer-events-none select-none",
+            )}
             key={dapp.name}
             href={`/governance/${dapp.slug}`}
           >
             <div
-              className="flex justify-center border-b border-border p-1"
+              className="flex justify-center border-b border-border p-1 items-center min-h-24"
               style={{ background: dapp.iconBackground ?? dapp.color }}
             >
               {dapp.icon}
             </div>
-            <h3 className="p-4 text-xl font-semibold">{dapp.name}</h3>
+            <div className="m-4">
+              <h3 className="my-2 text-xl font-semibold">{dapp.name}</h3>
+              <h4 className="my-2 text-muted-foreground text-sm">
+                {dapp.description}
+              </h4>
+            </div>
           </Link>
         ))}
       </div>
@@ -51,8 +62,12 @@ export const HomePage = () => {
         </h2>
       </div>
 
-      <GovernanceSection title="NATIVE dAPPS" dapps={NativeDapps} />
-      <GovernanceSection title="OTHER" dapps={Others} />
+      <GovernanceSection
+        title=""
+        dapps={[...NativeDapps, ...Others].filter(
+          (dapp) => dapp.forumLink !== "#",
+        )}
+      />
     </div>
   );
 };
