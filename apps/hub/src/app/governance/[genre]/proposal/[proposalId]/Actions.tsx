@@ -12,6 +12,7 @@ import {
   decodeFunctionData,
   erc20Abi,
 } from "viem";
+import matter from "gray-matter";
 
 function AbiInput({
   input,
@@ -49,6 +50,33 @@ function AbiInput({
     //   ));
     // }
   }
+
+  if (input.name === "metadata") {
+    const parsedMetadata = matter(value);
+    const values = Object.entries(parsedMetadata.data);
+
+    const hiddenKeys = ["content-type", "content-encoding", "version"];
+
+    const filteredValues = values.filter(([key]) => !hiddenKeys.includes(key));
+
+    return (
+      <div>
+        {filteredValues.map(([key, value]) => (
+          <div className="m-4">
+            {key} :{" "}
+            {value.includes("http://") || value.includes("https://") ? (
+              <a className="font-bold underline" href={value}>
+                {value}
+              </a>
+            ) : (
+              value
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="m-4">
       {input.name}: {value?.toString()}
