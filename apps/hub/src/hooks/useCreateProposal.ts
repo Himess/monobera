@@ -219,12 +219,18 @@ export const checkProposalField: CheckProposalField = ({
 
       return null;
     case "logoURI": {
+      if (value === undefined || value === "") {
+        return null;
+      }
       if (URL.canParse(value) && new URL(value).protocol === "https:") {
         return null;
       }
       return ProposalErrorCodes.MUST_BE_HTTPS_OR_IPFS;
     }
     case "url": {
+      if (value === undefined || value === "") {
+        return null;
+      }
       if (URL.canParse(value) && new URL(value).protocol === "https:") {
         return null;
       }
