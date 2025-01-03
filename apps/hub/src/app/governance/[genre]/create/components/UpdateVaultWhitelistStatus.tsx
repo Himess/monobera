@@ -113,7 +113,7 @@ export const UpdateVaultWhitelistStatus = ({
           error={
             errors?.metadata?.logoURI ===
             ProposalErrorCodes.MUST_BE_HTTPS_OR_IPFS
-              ? "Must be a valid URL or IPFS CID"
+              ? ProposalErrorCodes.MUST_BE_HTTPS_OR_IPFS
               : errors?.metadata?.logoURI
           }
           onChange={async (e) => {
@@ -149,7 +149,7 @@ export const UpdateVaultWhitelistStatus = ({
           value={gauge.metadata?.url}
           error={
             errors?.metadata?.url === ProposalErrorCodes.MUST_BE_HTTPS
-              ? "Must be a valid HTTPS url"
+              ? ProposalErrorCodes.MUST_BE_HTTPS
               : errors?.metadata?.url
           }
           onChange={async (e) => {
