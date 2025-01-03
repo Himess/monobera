@@ -77,6 +77,7 @@ export const UpdateVaultWhitelistStatus = ({
         <InputWithLabel
           id="vault-address"
           variant="black"
+          placeholder="0x..."
           label="Reward Vault Address"
           value={gauge?.vault}
           error={
@@ -98,6 +99,7 @@ export const UpdateVaultWhitelistStatus = ({
           variant="black"
           id="vault-name"
           label="Name"
+          placeholder="Name of the vault"
           value={gauge.metadata?.name}
           error={errors?.metadata?.name}
           maxLength={40}
@@ -112,6 +114,7 @@ export const UpdateVaultWhitelistStatus = ({
           variant="black"
           id="vault-logo-uri"
           label="Logo URI"
+          placeholder="https:// or ipfs://"
           value={gauge.metadata?.logoURI}
           error={errors?.metadata?.logoURI}
           onChange={async (e) => {
@@ -146,6 +149,7 @@ export const UpdateVaultWhitelistStatus = ({
           variant="black"
           id="vault-url"
           label="URL"
+          placeholder="https://"
           value={gauge.metadata?.url}
           error={errors?.metadata?.url}
           onChange={async (e) => {
