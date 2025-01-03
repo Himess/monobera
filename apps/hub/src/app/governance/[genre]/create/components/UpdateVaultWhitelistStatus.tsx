@@ -49,7 +49,7 @@ export const UpdateVaultWhitelistStatus = ({
       >,
     ).map((v) => v.product)) as string[]) || ["Loading..."];
 
-  const protocolArray = [...new Set(protocolValues).values()];
+  const protocolArray = ["none", ...new Set(protocolValues).values()];
 
   const isWhitelisted = gauge.type === ProposalTypeEnum.WHITELIST_REWARD_VAULT;
   return (
@@ -95,9 +95,10 @@ export const UpdateVaultWhitelistStatus = ({
         />
         <InputWithLabel
           variant="black"
+          id="vault-name"
           label="Name"
           value={gauge.metadata?.name}
-          error={errors?.metadata?.name ?? null}
+          error={errors?.metadata?.name}
           maxLength={40}
           onChange={async (e) => {
             setAction((prev) => ({
@@ -108,14 +109,10 @@ export const UpdateVaultWhitelistStatus = ({
         />
         <InputWithLabel
           variant="black"
+          id="vault-logo-uri"
           label="Logo URI"
           value={gauge.metadata?.logoURI}
-          error={
-            errors?.metadata?.logoURI ===
-            ProposalErrorCodes.MUST_BE_HTTPS_OR_IPFS
-              ? ProposalErrorCodes.MUST_BE_HTTPS_OR_IPFS
-              : errors?.metadata?.logoURI
-          }
+          error={errors?.metadata?.logoURI}
           onChange={async (e) => {
             setAction((prev) => ({
               ...prev,
@@ -134,7 +131,8 @@ export const UpdateVaultWhitelistStatus = ({
               value: protocol,
               label: protocol,
             }))}
-            selected={gauge.metadata?.protocol || protocolArray[0]}
+            placeholder="No protocol"
+            selected={gauge.metadata?.protocol || ""}
             onSelect={(value) =>
               setAction((prev) => ({
                 ...prev,
@@ -145,13 +143,10 @@ export const UpdateVaultWhitelistStatus = ({
         </div>
         <InputWithLabel
           variant="black"
+          id="vault-url"
           label="URL"
           value={gauge.metadata?.url}
-          error={
-            errors?.metadata?.url === ProposalErrorCodes.MUST_BE_HTTPS
-              ? ProposalErrorCodes.MUST_BE_HTTPS
-              : errors?.metadata?.url
-          }
+          error={errors?.metadata?.url}
           onChange={async (e) => {
             setAction((prev) => ({
               ...prev,
@@ -162,7 +157,7 @@ export const UpdateVaultWhitelistStatus = ({
         <TextArea
           id="proposal-message"
           label="Description"
-          error={errors?.metadata?.description ?? null}
+          error={errors?.metadata?.description}
           variant="black"
           placeholder="Tell us about this vault"
           value={gauge.metadata?.description}
