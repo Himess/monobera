@@ -9,10 +9,18 @@ import { MinimalPoolInListFragment } from "@bera/graphql/dex/api";
 import {
   DataTableColumnHeader,
   FormattedNumber,
+  TokenIconList,
   useAsyncTable,
 } from "@bera/shared-ui";
+import { cn } from "@bera/ui";
+import { Badge } from "@bera/ui/badge";
+import { Icons } from "@bera/ui/icons";
+import { ColumnDef } from "@tanstack/react-table";
 
-import { PoolSummary } from "../../components/pools-table-columns";
+import {
+  PoolSummary,
+  poolTypeLabels,
+} from "../../components/pools-table-columns";
 import { usePools } from "./usePools";
 
 export const usePoolTable = ({
@@ -60,25 +68,8 @@ export const usePoolTable = ({
 
   const { data: whitelistedVaults } = useIsWhitelistedVault(vaultAddresses);
 
-  // Map vault whitelist status
-  const whitelistStatusMap = useMemo(() => {
-    return new Map(
-      whitelistedVaults?.map((vault) => [vault.address, vault.isWhitelisted]) ||
-        [],
-    );
-  }, [whitelistedVaults]);
-
-  const table = useAsyncTable<MinimalPoolInListFragment>({
-    data: pools ?? [],
-    fetchData: async () => {},
-    additionalTableProps: {
-      initialState: { sorting, pagination: { pageSize: 10, pageIndex: 0 } },
-      manualPagination: false,
-      manualSorting: false,
-    },
-    enablePagination: true,
-    enableRowSelection: false,
-    columns: [
+  const tableColumns: ColumnDef<MinimalPoolInListFragment>[] = useMemo(() => {
+    return [
       {
         accessorKey: "address",
         header: ({ column }) => (
@@ -99,13 +90,71 @@ export const usePoolTable = ({
               ) ?? false
             : false;
 
+          // console.log(
+          //   "row.original.userBalance.walletBalance",
+          //   row.original.userBalance && row.original.userBalance.walletBalance,
+          // );
+          // const providedLiquidity =
+          //   row.original.userBalance &&
+          //   row.original.userBalance.walletBalance !== "0";
+          // const pool = row.original;
           return (
-            <div className="flex items-center gap-2">
-              <PoolSummary
-                pool={row.original}
-                isWhitelistedVault={isWhitelistedVault}
-              />
-            </div>
+            // <div className="flex items-center gap-2">
+            //   <div className="flex flex-row items-start gap-2">
+            //     <TokenIconList
+            //       tokenList={pool?.tokens.filter(
+            //         (t) => t.address !== pool.address,
+            //       )}
+            //       size="xl"
+            //       className="self-center"
+            //     />
+            //     <div className="flex flex-col items-start justify-start gap-1">
+            //       <div className="flex flex-row items-center justify-start gap-1">
+            //         <span className="flex w-fit max-w-[180px] flex-row gap-1 truncate text-left text-sm font-semibold">
+            //           {pool?.name}
+            //           {isWhitelistedVault && (
+            //             <div
+            //               title="This rewards vault is whitelisted"
+            //               className="pt-1"
+            //             >
+            //               <Icons.bgt className="h-4 w-4" />
+            //             </div>
+            //           )}
+            //         </span>
+            //       </div>
+            //       <div className="flex items-center gap-3">
+            //         <span className=" text-xs text-muted-foreground">
+            //           {pool.type in poolTypeLabels
+            //             ? poolTypeLabels[pool.type]
+            //             : pool.type}
+            //         </span>
+            //         <Badge
+            //           variant={"secondary"}
+            //           className="border-none px-2 py-1 text-[10px] leading-[10px] text-foreground"
+            //         >
+            //           <span>
+            //             {(Number(pool?.dynamicData?.swapFee) * 100).toFixed(2)}%
+            //           </span>
+            //         </Badge>
+            //         <Badge
+            //           variant="success"
+            //           className={cn(
+            //             "border-none bg-success px-2 py-1 text-[10px] leading-[10px]",
+            //             providedLiquidity
+            //               ? "opacity-100"
+            //               : "pointer-events-none opacity-0",
+            //           )}
+            //         >
+            //           <span>Provided Liquidity</span>
+            //         </Badge>
+            //       </div>
+            //     </div>
+            //   </div>
+            // </div>
+            <PoolSummary
+              pool={row.original}
+              isWhitelistedVault={isWhitelistedVault}
+            />
           );
         },
         enableSorting: false,
@@ -241,7 +290,20 @@ export const usePoolTable = ({
           );
         },
       },
-    ],
+    ];
+  }, [pools, rewardVaults, whitelistedVaults]);
+
+  const table = useAsyncTable<MinimalPoolInListFragment>({
+    data: pools ?? [],
+    fetchData: async () => {},
+    additionalTableProps: {
+      initialState: { sorting, pagination: { pageSize: 10, pageIndex: 0 } },
+      manualPagination: false,
+      manualSorting: false,
+    },
+    enablePagination: true,
+    enableRowSelection: false,
+    columns: tableColumns,
   });
 
   return {
