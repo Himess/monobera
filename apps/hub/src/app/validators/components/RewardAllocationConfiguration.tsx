@@ -100,7 +100,7 @@ export const RewardAllocationConfiguration = ({
 
   const vaultsData = useMemo(() => {
     return rewardVaults?.vaults?.map((vault) => ({
-      vaultAddress: vault.vaultAddress.toLowerCase(),
+      vaultAddress: vault.address.toLowerCase(),
       stakingTokenAddress: vault.stakingToken?.address?.toLowerCase(),
       symbol: vault.stakingToken.symbol,
       name: vault.stakingToken.name,

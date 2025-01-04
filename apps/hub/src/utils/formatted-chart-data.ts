@@ -168,7 +168,7 @@ export const formatValidatorTokenRewardsUsage = (
   const groupedData = {} as GroupedTokenRewardsUsageData;
   const groupedTokens = {} as GroupedTokenRewardsData;
 
-  data.validatorIncentivesReceiveds.forEach((item) => {
+  data.incentiveDistributionByValidators.forEach((item) => {
     const timestamp = item.timestamp;
     const dateKey = new Date(parseInt(timestamp) / 1000)
       .toISOString()
