@@ -56,7 +56,8 @@ export const UnboostContent = ({
   });
 
   const bgtDelegated = userBoosts
-    ? Number(userBoosts?.activeBoosts) - Number(userBoosts.queuedUnboosts)
+    ? Number(userBoosts?.activeBoostAmount) -
+      Number(userBoosts.queuedDropBoostAmount)
     : 0;
 
   return (

@@ -6,11 +6,11 @@ import { type BeraConfig } from "~/types";
 
 export type UserBoostsOnValidator = {
   pubkey: Address;
-  activeBoosts: string;
-  queuedBoosts: string;
+  activeBoostAmount: string;
+  queuedBoostAmount: string;
   queuedBoostStartBlock: number;
-  queuedUnboosts: string;
-  queuedUnboostStartBlock: number;
+  queuedDropBoostAmount: string;
+  queuedDropBoostStartBlock: number;
   hasPendingBoosts: boolean;
   hasActiveBoosts: boolean;
 };
@@ -33,36 +33,37 @@ export const getUserBoostsOnValidator = async ({
     throw new Error("publicClient is required");
   }
 
-  const [activeBoosts, queuedBoosts, queuedUnboosts] = await Promise.all([
-    publicClient.readContract({
-      address: bgtTokenAddress,
-      abi: BGT_ABI,
-      functionName: "boosted",
-      args: [account!, pubkey!],
-    }),
-    publicClient.readContract({
-      address: bgtTokenAddress,
-      abi: BGT_ABI,
-      functionName: "boostedQueue",
-      args: [account!, pubkey!],
-    }),
-    publicClient.readContract({
-      address: bgtTokenAddress,
-      abi: BGT_ABI,
-      functionName: "dropBoostQueue",
-      args: [account!, pubkey!],
-    }),
-  ]);
+  const [activeBoostAmount, queuedBoostAmount, queuedDropBoostAmount] =
+    await Promise.all([
+      publicClient.readContract({
+        address: bgtTokenAddress,
+        abi: BGT_ABI,
+        functionName: "boosted",
+        args: [account!, pubkey!],
+      }),
+      publicClient.readContract({
+        address: bgtTokenAddress,
+        abi: BGT_ABI,
+        functionName: "boostedQueue",
+        args: [account!, pubkey!],
+      }),
+      publicClient.readContract({
+        address: bgtTokenAddress,
+        abi: BGT_ABI,
+        functionName: "dropBoostQueue",
+        args: [account!, pubkey!],
+      }),
+    ]);
 
   return {
     pubkey,
-    activeBoosts: formatEther(activeBoosts),
-    queuedBoosts: formatEther(queuedBoosts[1]),
-    queuedUnboosts: formatEther(queuedUnboosts[1]),
-    queuedBoostStartBlock: queuedBoosts[0],
-    queuedUnboostStartBlock: queuedUnboosts[0],
+    activeBoostAmount: formatEther(activeBoostAmount),
+    queuedBoostAmount: formatEther(queuedBoostAmount[1]),
+    queuedDropBoostAmount: formatEther(queuedDropBoostAmount[1]),
+    queuedBoostStartBlock: queuedBoostAmount[0],
+    queuedDropBoostStartBlock: queuedDropBoostAmount[0],
     hasPendingBoosts:
-      Number(queuedBoosts[1]) > 0 || Number(queuedUnboosts[1]) > 0,
-    hasActiveBoosts: Number(activeBoosts) > 0,
+      Number(queuedBoostAmount[1]) > 0 || Number(queuedDropBoostAmount[1]) > 0,
+    hasActiveBoosts: Number(activeBoostAmount) > 0,
   };
 };

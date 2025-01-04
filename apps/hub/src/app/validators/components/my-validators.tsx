@@ -17,8 +17,8 @@ export const MyValidator = ({
   const validators = useMemo(() => {
     return data.filter((validator) => {
       if (
-        parseFloat(validator.userBoosts.activeBoosts) !== 0 ||
-        parseFloat(validator.userBoosts.queuedBoosts) !== 0
+        parseFloat(validator.userBoosts.activeBoostAmount) !== 0 ||
+        parseFloat(validator.userBoosts.queuedBoostAmount) !== 0
       ) {
         if (keyword === "") return true;
         if (validator.pubkey.includes(keyword)) return true;
