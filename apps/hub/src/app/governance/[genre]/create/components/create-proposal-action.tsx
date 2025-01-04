@@ -100,6 +100,7 @@ export const CreateProposalAction = ({
       {(action.type === ProposalTypeEnum.WHITELIST_REWARD_VAULT ||
         action.type === ProposalTypeEnum.BLACKLIST_REWARD_VAULT) && (
         <UpdateVaultWhitelistStatus
+          id={idx}
           errors={errors}
           action={action}
           setAction={

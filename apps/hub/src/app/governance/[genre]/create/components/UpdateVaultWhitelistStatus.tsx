@@ -20,6 +20,7 @@ export const UpdateVaultWhitelistStatus = ({
   action: gauge,
   setAction,
   errors,
+  id,
 }: {
   action: ProposalAction & {
     type:
@@ -36,6 +37,7 @@ export const UpdateVaultWhitelistStatus = ({
     >
   >;
   errors: CustomProposalActionErrors;
+  id: number | string;
 }) => {
   const { data: rewardVaultMetadata } = useGaugesMetadata();
 
@@ -78,7 +80,7 @@ export const UpdateVaultWhitelistStatus = ({
       </div>
       <div className="grid grid-cols-1 gap-6">
         <InputWithLabel
-          id="vault-address"
+          id={`${id}-vault-address`}
           variant="black"
           placeholder="0x..."
           label="Reward Vault Address"
@@ -100,7 +102,7 @@ export const UpdateVaultWhitelistStatus = ({
         />
         <InputWithLabel
           variant="black"
-          id="vault-name"
+          id={`${id}-vault-name`}
           label="Name"
           placeholder="Name of the vault"
           value={gauge.metadata?.name}
@@ -115,7 +117,7 @@ export const UpdateVaultWhitelistStatus = ({
         />
         <InputWithLabel
           variant="black"
-          id="vault-logo-uri"
+          id={`${id}-vault-logo-uri`}
           label="Logo URI"
           placeholder="https:// or ipfs://"
           value={gauge.metadata?.logoURI}
@@ -154,7 +156,7 @@ export const UpdateVaultWhitelistStatus = ({
         </div>
         <InputWithLabel
           variant="black"
-          id="vault-url"
+          id={`${id}-vault-url`}
           label="URL"
           placeholder="https://"
           value={gauge.metadata?.url}
@@ -167,7 +169,7 @@ export const UpdateVaultWhitelistStatus = ({
           }}
         />
         <TextArea
-          id="vault-description"
+          id={`${id}-vault-description`}
           label="Description"
           error={errors?.metadata?.description}
           variant="black"
