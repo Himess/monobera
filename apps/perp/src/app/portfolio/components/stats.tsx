@@ -107,7 +107,7 @@ export default function Stats({ markets }: { markets: IMarket[] }) {
             </Tabs>
             <Dropdown
               selected={timeFrame}
-              onSelect={(value: string) => setTimeFrame(value as TimeFrame)}
+              onSelect={(value) => setTimeFrame(value)}
               selectionList={[WEEKLY, MONTHLY, QUARTERLY]}
               sortby={false}
               triggerClassName="bg-muted border border-border"

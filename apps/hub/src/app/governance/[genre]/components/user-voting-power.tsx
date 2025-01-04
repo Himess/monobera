@@ -57,7 +57,7 @@ export const UserVotingPower = () => {
                       : truncateHash(data?.delegate)}
                   </div>
                 ) : (
-                  <p className="sm:flex items-center gap-1">
+                  <div className="sm:flex items-center gap-1">
                     <span className="leading-none max-sm:grow flex">
                       Unassigned
                     </span>
@@ -76,7 +76,7 @@ export const UserVotingPower = () => {
                       )}
                       <TokenIcon size="md" address={governanceTokenAddress} />
                     </p>
-                  </p>
+                  </div>
                 )
               ) : (
                 <Skeleton className="h-6 w-full" />
@@ -88,20 +88,18 @@ export const UserVotingPower = () => {
               Delegations (from other wallets)
             </div>
             {data?.delegate ? (
-              <p className="flex items-center gap-2">
-                <p className="flex items-center gap-1">
-                  {delegatedByOthers ? (
-                    <FormattedNumber
-                      className="text-primary font-medium"
-                      value={delegatedByOthers}
-                      symbol="BGT"
-                      compact={true}
-                    />
-                  ) : (
-                    <Skeleton className="h-6 w-full" />
-                  )}
-                  <TokenIcon size="md" address={governanceTokenAddress} />
-                </p>
+              <p className="flex items-center gap-1">
+                {delegatedByOthers ? (
+                  <FormattedNumber
+                    className="text-primary font-medium"
+                    value={delegatedByOthers}
+                    symbol="BGT"
+                    compact={true}
+                  />
+                ) : (
+                  <Skeleton className="h-6 w-full" />
+                )}
+                <TokenIcon size="md" address={governanceTokenAddress} />
               </p>
             ) : (
               <Skeleton className="h-6 w-full" />

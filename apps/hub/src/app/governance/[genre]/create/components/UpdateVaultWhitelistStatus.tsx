@@ -49,7 +49,10 @@ export const UpdateVaultWhitelistStatus = ({
       >,
     ).map((v) => v.product)) as string[]) || ["Loading..."];
 
-  const protocolArray = ["none", ...new Set(protocolValues).values()];
+  const protocolArray = [
+    { value: undefined, label: "No protocol" },
+    ...new Set(protocolValues).values(),
+  ];
 
   const isWhitelisted = gauge.type === ProposalTypeEnum.WHITELIST_REWARD_VAULT;
   return (
@@ -131,10 +134,14 @@ export const UpdateVaultWhitelistStatus = ({
             className="!w-full !grow bg-black rounded-md mt-1"
             triggerClassName="!w-full grow justify-between bg-black"
             contentClassname="!w-full !grow bg-black"
-            selectionList={protocolArray.map((protocol) => ({
-              value: protocol,
-              label: protocol,
-            }))}
+            selectionList={protocolArray.map((protocol) =>
+              typeof protocol === "string"
+                ? {
+                    value: protocol,
+                    label: protocol,
+                  }
+                : protocol,
+            )}
             placeholder="No protocol"
             selected={gauge.metadata?.protocol || ""}
             onSelect={(value) =>
