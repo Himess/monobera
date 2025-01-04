@@ -50,11 +50,11 @@ export const BgtDelegated = ({
   );
 
   const formattedData = useMemo(
-    () => formatValidatorBgtDelegated(data?.validatorBgtStaked ?? [], dayRange),
+    () => formatValidatorBgtDelegated(data?.boostByValidators ?? [], dayRange),
     [data],
   );
 
-  const lastRecordedUsage = data?.validatorBgtStaked?.[0];
+  const lastRecordedUsage = data?.boostByValidators?.[0];
   return (
     <div className="flex w-full flex-col gap-12 p-4">
       <div className="flex items-center gap-1">

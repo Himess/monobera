@@ -16,11 +16,11 @@ query GetUserValidatorInformation($address: Bytes!) {
     first: 1000
   ) {
     id
-    queuedBoosts: queuedBoostAmount
-    activeBoosts: activeBoostAmount
-    queuedUnboosts: queuedDropBoostAmount
-    queuedUnboostStartBlock: queuedDropBoostStartBlock
-    queuedBoostStartBlock: queuedBoostStartBlock
+    queuedBoostAmount
+    activeBoostAmount
+    queuedDropBoostAmount
+    queuedDropBoostStartBlock
+    queuedBoostStartBlock
     user
     validator {
       ...ValidatorMinimal
@@ -43,7 +43,7 @@ query GetAllValidators {
   }
 }
 
-fragment ValidatorStakedBgts on BoostByValidator {
+fragment BoostByValidator on BoostByValidator {
   allTimeBGTStaked: allTimeAmount
   BGTStaked: amount
   id
@@ -51,22 +51,18 @@ fragment ValidatorStakedBgts on BoostByValidator {
 }
 
 query GetValidatorBgtStaked($pubKey: String!, $timestamp: Timestamp!) {
-  validatorBgtStaked: boostByValidators(
+  boostByValidators(
     interval: day
     where: { validator: $pubKey, timestamp_gte: $timestamp }
   ) {
-    ...ValidatorStakedBgts
+    ...BoostByValidator
   }
 }
 
 fragment BlockRewardStatsByValidator on BlockRewardStatsByValidator {
   timestamp
-  # rewardRate
-  # commissionRate
-  BGTEmitted: distributedBGTAmount
-  BGTEarned: distributedBGTAmount
-  allTimeBGTEmitted: allTimeDistributedBGTAmount
-  allTimeBGTEarned: allTimeDistributedBGTAmount
+  distributedBGTAmount
+  earnedBGTAmount
 
   validator {
     ...ValidatorMinimal
@@ -181,12 +177,9 @@ fragment VaultWithStakingToken on Vault {
 }
 
 fragment GlobalInfo on GlobalInfo {
-  totalValidators: totalValidatorsCount
-  totalBGTStaked: totalActiveBoostAmount
-  totalBGTQueued: totalQueuedBoostAmount
-  totalBGTDistributed: totalDistributedAmount
-  rewardRate
   id
+  totalValidatorsCount: totalValidatorsCount
+  rewardRate
   baseRewardRate
 }
 

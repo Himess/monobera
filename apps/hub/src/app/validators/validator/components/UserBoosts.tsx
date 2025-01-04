@@ -39,7 +39,7 @@ export const UserBoosts = ({
           {isValidatorDataLoading && <Spinner size={18} color="white" />}
         </div>
         <div className="flex gap-2">
-          {Number(userBoosts?.activeBoosts) > 0 ? (
+          {Number(userBoosts?.activeBoostAmount) > 0 ? (
             <UnbondModal
               validator={validator}
               setIsValidatorDataLoading={setIsValidatorDataLoading}
@@ -68,7 +68,7 @@ export const UserBoosts = ({
                   <div className="flex items-center gap-2">
                     <Icons.bgt className="ml-1 h-6 w-6" />
                     <FormattedNumber
-                      value={userBoosts?.activeBoosts ?? 0}
+                      value={userBoosts?.activeBoostAmount ?? 0}
                       symbol="BGT"
                     />{" "}
                   </div>
@@ -78,9 +78,9 @@ export const UserBoosts = ({
                 <>
                   <hr />
                   <h3 className="text-lg font-semibold">Queued</h3>
-                  {Number(userBoosts?.queuedBoosts) > 0 ? (
+                  {Number(userBoosts?.queuedBoostAmount) > 0 ? (
                     <QueueItem
-                      amount={userBoosts?.queuedBoosts ?? "0"}
+                      amount={userBoosts?.queuedBoostAmount ?? "0"}
                       startBlock={userBoosts?.queuedBoostStartBlock ?? 0}
                       valPubKey={valPubKey}
                       isDropBoost={false}
@@ -89,10 +89,10 @@ export const UserBoosts = ({
                       }}
                     />
                   ) : null}
-                  {Number(userBoosts?.queuedUnboosts) > 0 ? (
+                  {Number(userBoosts?.queuedDropBoostAmount) > 0 ? (
                     <QueueItem
-                      amount={userBoosts?.queuedUnboosts ?? "0"}
-                      startBlock={userBoosts?.queuedUnboostStartBlock ?? 0}
+                      amount={userBoosts?.queuedDropBoostAmount ?? "0"}
+                      startBlock={userBoosts?.queuedDropBoostStartBlock ?? 0}
                       valPubKey={valPubKey}
                       isDropBoost={true}
                       onSuccess={() => {

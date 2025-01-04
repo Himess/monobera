@@ -122,17 +122,20 @@ export const ValidatorRewards = ({
                   });
                 }}
               />
-              <YAxis type="number" dataKey={(v) => parseInt(v.BGTEmitted)} />
+              <YAxis
+                type="number"
+                dataKey={(v) => parseInt(v.distributedBGTAmount)}
+              />
               <ChartTooltip cursor={false} content={<CustomTooltip />} />
               <Line
-                dataKey="BGTEarned"
+                dataKey="earnedBGTAmount"
                 type="monotone"
                 stroke="var(--color-earned)"
                 strokeWidth={2}
                 dot={false}
               />
               <Line
-                dataKey="BGTEmitted"
+                dataKey="distributedBGTAmount"
                 type="monotone"
                 stroke="var(--color-distributed)"
                 strokeWidth={2}

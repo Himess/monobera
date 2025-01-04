@@ -166,7 +166,6 @@ query GlobalData($chain: GqlChain!) {
   }
 
   polGetGlobalInfo(chain: $chain) {
-    totalBGTQueued
     totalBGTDelegated
     totalValidators
     totalWhitelistedRewardVaults
