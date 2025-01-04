@@ -31,14 +31,30 @@ const config = {
         port: "",
         pathname: "/static/img/coins/**",
       },
-    ],
-    domains: [
-      "res.cloudinary.com",
-      "raw.githubusercontent.com",
-      "s3.amazonaws.com",
-      "assets.coingecko.com",
-      "artio-static-asset-public.s3.ap-southeast-1.amazonaws.com", // clean this up with new links
-      // Add google cdn here as well
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        port: "",
+        pathname: "/duv0g402y/image/upload/**",
+      },
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+        port: "",
+        pathname: "/berachain/**",
+      },
+      {
+        protocol: "https",
+        hostname: "assets.coingecko.com",
+        port: "",
+        pathname: "/coins/images/**",
+      },
+      {
+        protocol: "https",
+        hostname: "artio-static-asset-public.s3.ap-southeast-1.amazonaws.com",
+        port: "",
+        pathname: "/assets/**",
+      },
     ],
   },
 };
