@@ -41,6 +41,13 @@ export type CustomProposalActionErrors = {
   isFriend?: null | ProposalErrorCodes;
   to?: null | ProposalErrorCodes;
   amount?: null | ProposalErrorCodes;
+  metadata?: {
+    name?: null | ProposalErrorCodes;
+    logoURI?: null | ProposalErrorCodes;
+    protocol?: null | ProposalErrorCodes;
+    url?: null | ProposalErrorCodes;
+    description?: null | ProposalErrorCodes;
+  } | null;
 } | null;
 
 export type CustomProposalErrors = {
@@ -63,7 +70,8 @@ export enum ProposalErrorCodes {
   INVALID_ADDRESS = "Invalid address",
   INVALID_ACTION = "Invalid action",
   INVALID_ABI = "Invalid ABI",
-  MUST_BE_HTTPS = "Must be https",
+  MUST_BE_HTTPS = "Must be HTTPS",
+  MUST_BE_HTTPS_OR_IPFS = "Must be HTTPS or IPFS",
   INVALID_BASEPATH = "Must be a berachain forum link",
   /**
    * Mainly used when it's not a reward vault
@@ -90,14 +98,17 @@ export type SafeProposalAction = {
       calldata: string[];
     }
   | {
-      type: ProposalTypeEnum.WHITELIST_REWARD_VAULT;
+      type:
+        | ProposalTypeEnum.WHITELIST_REWARD_VAULT
+        | ProposalTypeEnum.BLACKLIST_REWARD_VAULT;
       vault: Address;
-      metadata?: string | undefined;
-    }
-  | {
-      type: ProposalTypeEnum.BLACKLIST_REWARD_VAULT;
-      vault: Address;
-      metadata?: string | undefined;
+      metadata: Partial<{
+        name: string;
+        logoURI: string;
+        protocol: string;
+        url: string;
+        description: string;
+      }>;
     }
   | {
       type: ProposalTypeEnum.ERC20_TRANSFER;

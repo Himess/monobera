@@ -12,6 +12,7 @@ import {
   decodeFunctionData,
   erc20Abi,
 } from "viem";
+import matter from "gray-matter";
 
 function AbiInput({
   input,
@@ -22,7 +23,7 @@ function AbiInput({
 }) {
   if (typeof value === "object") {
     return (
-      <div className="m-4">
+      <div className="my-4">
         {input.name}:
         <pre>
           {JSON.stringify(
@@ -49,8 +50,36 @@ function AbiInput({
     //   ));
     // }
   }
+
+  if (input.name === "metadata") {
+    const parsedMetadata = matter(value);
+    const values = Object.entries(parsedMetadata.data);
+
+    const hiddenKeys = ["content-type", "content-encoding", "version"];
+
+    const filteredValues = values.filter(([key]) => !hiddenKeys.includes(key));
+
+    return (
+      <div>
+        {filteredValues.map(([key, value]) => (
+          <div className="my-4">
+            {key}:{" "}
+            {(key === "url" && URL.canParse(value)) ||
+            (key === "logoURI" && URL.canParse(value)) ? (
+              <a className="font-bold underline" href={value}>
+                {value}
+              </a>
+            ) : (
+              value
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div className="m-4">
+    <div className="my-4">
       {input.name}: {value?.toString()}
     </div>
   );

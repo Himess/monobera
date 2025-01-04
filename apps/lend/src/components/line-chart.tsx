@@ -164,7 +164,7 @@ export default function LineChart({
                 .replaceAll("_", " ")
                 .toUpperCase(),
             )}
-            onSelect={(t: string) => setTime(t as TimeFrameT)}
+            onSelect={(t) => setTime(t as TimeFrameT)}
           />
         </div>
       </div>
