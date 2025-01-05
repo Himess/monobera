@@ -118,7 +118,7 @@ export const Incentivize = () => {
                 <GaugeIcon
                   address={gauge as Address}
                   size="xl"
-                  overrideImage={gaugeInfo?.metadata?.logoURI ?? ""}
+                  src={gaugeInfo?.metadata?.logoURI ?? ""}
                 />
                 {gaugeInfo?.metadata?.name ?? truncateHash(gauge ?? "0x")}
               </>

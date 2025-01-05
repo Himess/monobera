@@ -31,7 +31,7 @@ export const CuttingBoardDisplay = ({
     >
       <GaugeIcon
         address={(cuttingBoard.receivingVault?.vaultAddress as Address) ?? "0x"}
-        overrideImage={cuttingBoard.receivingVault?.metadata?.logoURI ?? ""}
+        src={cuttingBoard.receivingVault?.metadata?.logoURI ?? ""}
       />
       <span className="max-w-[200px] truncate hover:underline">
         {cuttingBoard.receivingVault?.metadata?.name ??

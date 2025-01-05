@@ -34,7 +34,7 @@ export function ChartTooltip({
           <div className="text-forgeound flex flex-row items-center gap-2 whitespace-nowrap font-bold leading-5">
             <GaugeIcon
               address={gauge.receiver as Address}
-              overrideImage={gauge.receivingVault?.metadata?.logoURI ?? ""}
+              src={gauge.receivingVault?.metadata?.logoURI ?? ""}
             />{" "}
             {gauge.receivingVault?.metadata?.name ??
               truncateHash(gauge.receiver)}

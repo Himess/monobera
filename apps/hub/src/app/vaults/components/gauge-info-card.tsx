@@ -6,13 +6,18 @@ import { getHubValidatorPath } from "@bera/shared-ui";
 import { Icons } from "@bera/ui/icons";
 import { Skeleton } from "@bera/ui/skeleton";
 
-import { useValidatorEstimatedBgtPerYear } from "~/hooks/useValidatorEstimatedBgtPerYear";
+import {
+  getValidatorEstimatedBgtPerYear,
+  useValidatorEstimatedBgtPerYear,
+} from "~/hooks/useValidatorEstimatedBgtPerYear";
 import { Address } from "viem";
 
 export default function GaugeInfoCard() {
   const { data: globalData, isLoading } = usePollGlobalData();
 
   const timePerBlock = useBlockTime();
+
+  const blockTime = useBlockTime();
   const blockCountPerYear = timePerBlock
     ? (60 * 60 * 24 * 365) / timePerBlock
     : 0;
@@ -107,8 +112,11 @@ export default function GaugeInfoCard() {
           </div>
           {!isLoading && globalData ? (
             globalData.top3EmittingValidators?.map((validator, index) => {
-              const estimatedBgtPerYear =
-                useValidatorEstimatedBgtPerYear(validator);
+              const estimatedBgtPerYear = getValidatorEstimatedBgtPerYear(
+                validator,
+                globalData.validatorCount,
+                blockTime,
+              );
               return (
                 <Link
                   className="cursor-pointer flex w-full flex-1 items-center gap-2 rounded-sm border border-border bg-background px-4 py-2"

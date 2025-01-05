@@ -91,7 +91,7 @@ const _GaugeDetails = ({ address }: { address: Address }) => {
                 <GaugeIcon
                   address={rewardVault?.vaultAddress as Address}
                   size="xl"
-                  overrideImage={rewardVault?.metadata?.logoURI}
+                  src={rewardVault?.metadata?.logoURI}
                 />
                 {rewardVault?.metadata?.name ?? truncateHash(address)}
               </>

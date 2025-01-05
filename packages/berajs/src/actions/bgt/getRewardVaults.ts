@@ -12,8 +12,10 @@ import { BeraConfig } from "~/types";
 export interface GetGaugeData {
   gaugeCounts: number;
   gaugeList: ApiVaultFragment[];
-  gaugeDictionary: {
-    [key: Address]: ApiVaultFragment;
+
+  pagination: {
+    currentPage: number;
+    totalCount: number;
   };
 }
 
@@ -36,14 +38,8 @@ export const getRewardVaults = async (
   const vaults = res.data.polGetRewardVaults?.vaults;
 
   return {
-    gaugeCounts: vaults.length,
+    pagination: res.data.polGetRewardVaults.pagination,
+    gaugeCounts: res.data.polGetRewardVaults.pagination.totalCount,
     gaugeList: vaults,
-    gaugeDictionary: vaults.reduce(
-      (acc: { [key: Address]: ApiVaultFragment }, item) => {
-        acc[item.vaultAddress as Address] = item;
-        return acc;
-      },
-      {},
-    ),
   };
 };

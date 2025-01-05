@@ -5,14 +5,12 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { BribesPopover } from "~/components/bribes-tooltip";
 import { GaugeHeaderWidget } from "~/components/gauge-header-widget";
 import { ApiVaultFragment } from "@bera/graphql/pol/api";
-import { Address } from "viem";
 
 export const AllRewardVaultColumns: ColumnDef<ApiVaultFragment>[] = [
   {
     header: "Reward Vaults",
     cell: ({ row }) => (
       <GaugeHeaderWidget
-        address={row.original.vaultAddress as Address}
         gauge={row.original}
         // className="w-[150px]"
       />

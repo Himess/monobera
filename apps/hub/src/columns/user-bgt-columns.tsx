@@ -26,11 +26,7 @@ export const getUserBgtColumns = ({
         <DataTableColumnHeader column={column} title="Reward Vault" />
       ),
       cell: ({ row }) => (
-        <GaugeHeaderWidget
-          address={row.original.vault.address as Address}
-          className="w-[200px]"
-          gauge={row.original.vault}
-        />
+        <GaugeHeaderWidget className="w-[200px]" gauge={row.original.vault} />
       ),
       accessorKey: "gauge",
       enableSorting: false,

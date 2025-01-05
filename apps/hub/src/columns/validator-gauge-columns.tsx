@@ -9,6 +9,7 @@ import {
   ApiValidatorFragment,
 } from "@bera/graphql/pol/api";
 import { Address } from "viem";
+import { useRewardVault } from "@bera/berajs";
 
 export const getValidatorGaugeColumns = (validator: ApiValidatorFragment) => {
   const validatorGaugeColumns: ColumnDef<ApiRewardAllocationWeightFragment>[] =
@@ -17,12 +18,12 @@ export const getValidatorGaugeColumns = (validator: ApiValidatorFragment) => {
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Reward Vaults" />
         ),
-        cell: ({ row }) => (
-          <GaugeHeaderWidget
-            address={row.original.receiver as Address}
-            className="w-[150px]"
-          />
-        ),
+        cell: ({ row }) => {
+          const { data } = useRewardVault(row.original.receiver as Address, {
+            opts: { revalidateOnFocus: false },
+          });
+          return <GaugeHeaderWidget gauge={data} className="w-[150px]" />;
+        },
         accessorKey: "gauge",
         enableSorting: false,
       },
