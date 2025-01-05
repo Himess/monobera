@@ -70,7 +70,7 @@ export const ConfirmationCard = ({
           <div className="ml-8 text-muted-foreground ">
             <FormattedNumber
               showIsSmallerThanMin
-              value={userValidator.amountQueued}
+              value={userValidator.queuedBoostAmount}
               compact
             />{" "}
             BGT
@@ -85,7 +85,10 @@ export const ConfirmationCard = ({
                 address: bgtTokenAddress,
                 abi: BGT_ABI,
                 functionName: "activateBoost",
-                params: [pubkey, parseUnits(userValidator.amountQueued, 18)],
+                params: [
+                  pubkey,
+                  parseUnits(userValidator.queuedBoostAmount, 18),
+                ],
               })
             }
           >
@@ -99,7 +102,10 @@ export const ConfirmationCard = ({
                 address: bgtTokenAddress,
                 abi: BGT_ABI,
                 functionName: "cancelBoost",
-                params: [pubkey, parseUnits(userValidator.amountQueued, 18)],
+                params: [
+                  pubkey,
+                  parseUnits(userValidator.queuedBoostAmount, 18),
+                ],
               })
             }
           >

@@ -19,7 +19,7 @@ export const userValidatorBoostQueuedColumns: ColumnDef<UserValidatorBoostQueued
     },
     {
       header: "Boost (BGT)",
-      accessorKey: "amountQueued",
+      accessorKey: "queuedBoostAmount",
       enableSorting: false,
     },
   ];
@@ -34,7 +34,7 @@ export const userValidatorBoostDepositedColumns: ColumnDef<UserValidatorBoostDep
     },
     {
       header: "Boost (BGT)",
-      accessorKey: "amountDeposited",
+      accessorKey: "activeBoostAmount",
       enableSorting: false,
     },
   ];

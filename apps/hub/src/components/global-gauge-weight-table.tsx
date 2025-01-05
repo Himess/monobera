@@ -24,7 +24,7 @@ import {
 const GAUGE_PAGE_SIZE = 10;
 
 const map: Record<string, GqlRewardVaultOrderBy> = {
-  allTimeBGTReceived: GqlRewardVaultOrderBy.AllTimeBgtReceived,
+  allTimeReceivedBGTAmount: GqlRewardVaultOrderBy.AllTimeBgtReceived,
   dynamicData_bgtCapturePercentage: GqlRewardVaultOrderBy.BgtCapturePercentage,
 };
 export default function GlobalGaugeWeightTable({

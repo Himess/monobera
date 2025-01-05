@@ -67,7 +67,7 @@ const _GaugeDetails = ({ address }: { address: Address }) => {
       ({ address: incentive.token } as Token);
     return {
       ...incentive,
-      amountRemaining: Number(incentive.amountRemaining),
+      remainingAmount: Number(incentive.remainingAmount),
       incentiveRate: Number(incentive.incentiveRate),
       token,
       id: incentive.token,

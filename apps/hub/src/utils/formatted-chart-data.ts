@@ -53,7 +53,7 @@ const generateValidatorRewardsEmptyData = (
     validator: {
       id: "",
       publicKey: "",
-      amountDelegated: "0",
+      activeBoostAmount: "0",
     },
   };
 };
