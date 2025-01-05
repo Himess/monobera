@@ -44,7 +44,7 @@ query GetAllValidators {
 }
 
 fragment BoostByValidator on BoostByValidator {
-  allTimeBGTStaked: allTimeAmount
+  allTimeAmount
   BGTStaked: amount
   id
   timestamp
