@@ -62,9 +62,9 @@ export default function UserGaugeWeightTable({
         className="shadow"
         validating={isUserVaultInfoValidating}
         loading={isUserVaultInfoLoading}
-        onRowClick={(row: any) =>
-          router.push(getRewardsVaultUrl(row.original.vaultAddress, myGauge))
-        }
+        onRowClick={(row) => {
+          router.push(getRewardsVaultUrl(row.original.vault.address, myGauge));
+        }}
       />
     </div>
   );

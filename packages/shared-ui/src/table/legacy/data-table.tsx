@@ -22,6 +22,7 @@ import {
   TableRow,
 } from "@bera/ui/table";
 import {
+  Row,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -43,7 +44,10 @@ import { Spinner } from "../../spinner";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  onRowClick?: (row: TData) => void;
+  onRowClick?: (
+    row: Row<TData>,
+    e: React.MouseEvent<HTMLTableRowElement>,
+  ) => void;
   onCustomSortingChange?: (sorting: any) => void;
   onCustomPaginationChange?: (pagination: any) => void;
   className?: string;
@@ -333,7 +337,7 @@ export function DataTable<TData, TValue>({
                 table?.getRowModel().rows.map((row) => (
                   <TableRow
                     className={cn(onRowClick && "hover:cursor-pointer")}
-                    onClick={() => onRowClick?.(row as any)}
+                    onClick={(e) => onRowClick?.(row, e)}
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                   >
