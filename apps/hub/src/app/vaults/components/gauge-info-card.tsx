@@ -1,17 +1,12 @@
 import React from "react";
 import Link from "next/link";
-import {
-  truncateHash,
-  useBlockTime,
-  usePollGlobalData,
-  type Validator,
-} from "@bera/berajs";
+import { truncateHash, useBlockTime, usePollGlobalData } from "@bera/berajs";
 import { FormattedNumber, ValidatorIcon } from "@bera/shared-ui";
 import { getHubValidatorPath } from "@bera/shared-ui";
 import { Icons } from "@bera/ui/icons";
 import { Skeleton } from "@bera/ui/skeleton";
 
-import { getValidatorEstimatedBgtPerYear } from "~/hooks/useValidatorEstimatedBgtPerYear";
+import { useValidatorEstimatedBgtPerYear } from "~/hooks/useValidatorEstimatedBgtPerYear";
 import { Address } from "viem";
 
 export default function GaugeInfoCard() {
@@ -111,35 +106,36 @@ export default function GaugeInfoCard() {
             Top 3 Validators
           </div>
           {!isLoading && globalData ? (
-            globalData.top3EmittingValidators?.map((validator, index) => (
-              <Link
-                className="cursor-pointer flex w-full flex-1 items-center gap-2 rounded-sm border border-border bg-background px-4 py-2"
-                key={`${index}-${validator.id}`}
-                href={getHubValidatorPath(validator.pubkey)}
-                target="_blank"
-              >
-                <ValidatorIcon
-                  address={validator.pubkey as Address}
-                  size="xl"
-                  imgOverride={validator.metadata?.logoURI}
-                />
-                <div>
-                  <div className="text-nowrap text-sm font-semibold leading-5">
-                    {validator?.metadata?.name ??
-                      truncateHash(validator.pubkey)}
-                  </div>
-                  <FormattedNumber
-                    value={getValidatorEstimatedBgtPerYear(
-                      validator,
-                      globalData.validatorCount,
-                    )}
-                    showIsSmallerThanMin
-                    symbol="BGT/Year"
-                    className="block text-nowrap text-[10px] font-medium leading-3 text-muted-foreground"
+            globalData.top3EmittingValidators?.map((validator, index) => {
+              const estimatedBgtPerYear =
+                useValidatorEstimatedBgtPerYear(validator);
+              return (
+                <Link
+                  className="cursor-pointer flex w-full flex-1 items-center gap-2 rounded-sm border border-border bg-background px-4 py-2"
+                  key={`${index}-${validator.id}`}
+                  href={getHubValidatorPath(validator.pubkey)}
+                  target="_blank"
+                >
+                  <ValidatorIcon
+                    address={validator.pubkey as Address}
+                    size="xl"
+                    imgOverride={validator.metadata?.logoURI}
                   />
-                </div>
-              </Link>
-            ))
+                  <div>
+                    <div className="text-nowrap text-sm font-semibold leading-5">
+                      {validator?.metadata?.name ??
+                        truncateHash(validator.pubkey)}
+                    </div>
+                    <FormattedNumber
+                      value={estimatedBgtPerYear}
+                      showIsSmallerThanMin
+                      symbol="BGT/Year"
+                      className="block text-nowrap text-[10px] font-medium leading-3 text-muted-foreground"
+                    />
+                  </div>
+                </Link>
+              );
+            })
           ) : (
             <>
               <Skeleton className="h-14 w-full rounded-md" />
