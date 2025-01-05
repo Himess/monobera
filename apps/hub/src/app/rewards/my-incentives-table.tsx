@@ -10,7 +10,7 @@ export const MyIncentivesTableTable = () => {
       <DataTable
         columns={user_incentives_columns}
         loading={isLoading}
-        data={data ? data.filter((v: any) => v.amountDelegated !== "0") : []}
+        data={data ? data.filter((v: any) => v.activeBoostAmount !== "0") : []}
         className="min-w-[800px] shadow"
       />
     </div>
