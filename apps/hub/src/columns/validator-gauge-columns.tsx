@@ -1,6 +1,5 @@
 import React from "react";
 import { DataTableColumnHeader, FormattedNumber } from "@bera/shared-ui";
-import { Button } from "@bera/ui/button";
 import { type ColumnDef } from "@tanstack/react-table";
 
 import { BribesPopover } from "~/components/bribes-tooltip";
@@ -11,7 +10,7 @@ import {
 } from "@bera/graphql/pol/api";
 import { Address } from "viem";
 
-export const getValidatorGaugeColumns = () => {
+export const getValidatorGaugeColumns = (validator: ApiValidatorFragment) => {
   const validatorGaugeColumns: ColumnDef<ApiRewardAllocationWeightFragment>[] =
     [
       {
@@ -40,8 +39,9 @@ export const getValidatorGaugeColumns = () => {
         ),
         cell: ({ row }) => {
           const weight = row.original?.percentageNumerator / 1e5 ?? 0;
-          // TODO: get the validator's reward rate
-          const perProposal = weight * 0;
+
+          const perProposal =
+            weight * Number(validator.dynamicData?.rewardRate ?? 0);
 
           return (
             <FormattedNumber

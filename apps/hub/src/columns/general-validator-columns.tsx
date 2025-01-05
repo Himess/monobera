@@ -42,7 +42,6 @@ const GLOBAL_VOTING_POWER_COLUMN: ColumnDef<ApiValidatorFragment> = {
     <div className="w-full text-start">
       <FormattedNumber
         value={row.original.dynamicData?.activeBoostAmount ?? 0}
-        compact={false}
         symbol="BGT"
       />
     </div>
@@ -224,7 +223,7 @@ export const getGaugeValidatorColumns = (rewardVault: ApiVaultFragment) => {
           column={column}
           title="BGT Per Proposal"
           tooltip={
-            "amount of BGT this validator is directing to this vault each proposal"
+            "Amount of BGT this validator is directing to this vault each proposal"
           }
         />
       ),
@@ -238,7 +237,9 @@ export const getGaugeValidatorColumns = (rewardVault: ApiVaultFragment) => {
             cb.receiver.toLowerCase() === rewardVault.address.toLowerCase(),
         );
 
-        if (!cuttingBoard)
+        if (!cuttingBoard) {
+          console.warn("No cutting board");
+
           return (
             <FormattedNumber
               className="w-full justify-start"
@@ -248,9 +249,12 @@ export const getGaugeValidatorColumns = (rewardVault: ApiVaultFragment) => {
               value={0}
             />
           );
+        }
+
         const weight = cuttingBoard?.percentageNumerator / 1e5 ?? 0;
         const perProposal =
           weight * parseFloat(row.original.dynamicData?.rewardRate ?? "0");
+
         return (
           <div className="flex flex-col gap-1">
             <FormattedNumber
@@ -271,6 +275,22 @@ export const getGaugeValidatorColumns = (rewardVault: ApiVaultFragment) => {
       },
       accessorKey: "rewardRate",
       enableSorting: true,
+      sortingFn: (a, b) => {
+        const cuttingBoardA = a.original.rewardAllocationWeights.find(
+          (cb: any) =>
+            cb.receiver.toLowerCase() === rewardVault.address.toLowerCase(),
+        );
+        const cuttingBoardB = b.original.rewardAllocationWeights.find(
+          (cb: any) =>
+            cb.receiver.toLowerCase() === rewardVault.address.toLowerCase(),
+        );
+        return (
+          Number(cuttingBoardA?.percentageNumerator) *
+            Number(a.original.dynamicData?.rewardRate ?? 0) -
+          Number(cuttingBoardB?.percentageNumerator) *
+            Number(b.original.dynamicData?.rewardRate ?? 0)
+        );
+      },
     },
     {
       header: ({ column }) => (
@@ -278,7 +298,7 @@ export const getGaugeValidatorColumns = (rewardVault: ApiVaultFragment) => {
           column={column}
           title="Estimated BGT/yr"
           tooltip={
-            "amount of BGT this validator is directing to this vault each proposal"
+            "Amount of BGT this validator is directing to this vault yearly"
           }
         />
       ),

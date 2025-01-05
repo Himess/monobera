@@ -106,6 +106,12 @@ fragment ApiRewardAllocationWeight on GqlValidatorRewardAllocationWeight {
   startBlock
 }
 
+query GetValidator($id: String!, $chain: GqlChain!) {
+  validator: polGetValidator(validatorId: $id, chain: $chain) {
+    ...ApiValidator
+  }
+}
+
 query GetValidators(
   $where: GqlValidatorFilter
   $sortBy: GqlValidatorOrderBy = bgtCapturePercentage

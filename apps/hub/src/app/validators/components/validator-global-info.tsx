@@ -38,7 +38,7 @@ export const ValidatorsGlobalInfo = () => {
           showIsSmallerThanMin
         />
       ),
-      text: "Total Value Staked",
+      text: "Total Boosts",
       img: (
         <div className="absolute bottom-0 right-0">
           <Image

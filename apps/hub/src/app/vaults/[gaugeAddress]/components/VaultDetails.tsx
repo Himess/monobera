@@ -1,6 +1,6 @@
 "use client";
 
-import { notFound } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import {
   truncateHash,
   useRewardVault,
@@ -45,6 +45,7 @@ const _GaugeDetails = ({ address }: { address: Address }) => {
     isValidating: rewardVaultError,
   } = useRewardVault(address);
 
+  const router = useRouter();
   const { account } = useBeraJs();
 
   const {
@@ -185,8 +186,8 @@ const _GaugeDetails = ({ address }: { address: Address }) => {
                 validating={isValidatorsValidating}
                 data={validators}
                 className="min-w-[800px] shadow"
-                onRowClick={(row: any) =>
-                  window.open(getHubValidatorPath(row.original.id), "_blank")
+                onRowClick={(row) =>
+                  router.push(getHubValidatorPath(row.original.pubkey))
                 }
               />
             </TabsContent>

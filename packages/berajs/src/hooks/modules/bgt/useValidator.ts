@@ -1,6 +1,5 @@
 import { Address, keccak256 } from "viem";
 
-import { Validator } from "~/types";
 import { useOnChainValidator } from "./useOnChainValidator";
 import { useSelectedValidator } from "./useSelectedValidator";
 import { ApiValidatorFragment } from "@bera/graphql/pol/api";

@@ -26,7 +26,8 @@ export default function ValidatorDetails({
           />
         </div>
       ),
-      tooltipText: "Amount of BGT emitted by this validator",
+      tooltipText:
+        "Amount of BGT emitted by this validator to its reward allocation",
     },
     {
       title: "Bera staked",

@@ -9,7 +9,7 @@ export const ValidatorPolData = ({
 }: { validator: ApiValidatorFragment }) => {
   const gaugesTable = useAsyncTable({
     fetchData: async () => {},
-    columns: getValidatorGaugeColumns(),
+    columns: getValidatorGaugeColumns(validator),
     data: validator.rewardAllocationWeights ?? [],
     additionalTableProps: {
       manualSorting: false,

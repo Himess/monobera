@@ -1,16 +1,18 @@
+import { balancerApiChainName } from "@bera/config";
 import { bexApiGraphqlClient } from "@bera/graphql";
 import {
   ApiValidatorFragment,
-  GetValidators,
-  GetValidatorsQuery,
-  GetValidatorsQueryVariables,
+  GetValidator,
+  GetValidatorQuery,
+  GetValidatorQueryVariables,
+  GqlChain,
 } from "@bera/graphql/pol/api";
 import useSWR, { mutate } from "swr";
 import { Address } from "viem";
 import { DefaultHookOptions, DefaultHookReturnType } from "~/types";
 
 export interface UsePollValidatorInfoResponse
-  extends DefaultHookReturnType<ApiValidatorFragment> {}
+  extends DefaultHookReturnType<ApiValidatorFragment | null> {}
 
 export const useSelectedValidator = (
   id: Address,
@@ -18,25 +20,26 @@ export const useSelectedValidator = (
 ): UsePollValidatorInfoResponse => {
   const QUERY_KEY = id ? ["useSelectedValidator", id] : null;
   const swrResponse = useSWR<
-    ApiValidatorFragment | undefined,
+    ApiValidatorFragment | null,
     any,
     typeof QUERY_KEY
   >(
     QUERY_KEY,
     async () => {
+      if (!id) throw new Error("Invalid address");
+
       const results = await bexApiGraphqlClient.query<
-        GetValidatorsQuery,
-        GetValidatorsQueryVariables
+        GetValidatorQuery,
+        GetValidatorQueryVariables
       >({
-        query: GetValidators,
+        query: GetValidator,
         variables: {
-          where: {
-            idIn: [id],
-          },
+          id,
+          chain: balancerApiChainName as GqlChain,
         },
       });
 
-      return results.data?.validators?.validators?.[0];
+      return results.data?.validator ?? null;
     },
     {
       ...options?.opts,
