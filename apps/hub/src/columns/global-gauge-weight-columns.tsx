@@ -117,7 +117,11 @@ export const AllRewardVaultColumns: ColumnDef<ApiVaultFragment>[] = [
     ),
     cell: ({ row }) => (
       <div className="justify-left flex w-full items-center gap-1">
-        <BribesPopover incentives={row.original.activeIncentives} />
+        <BribesPopover
+          incentives={row.original.activeIncentives.filter((x) =>
+            Number(x.remainingAmount),
+          )}
+        />
       </div>
     ),
     accessorKey: "incentives",

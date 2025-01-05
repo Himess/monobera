@@ -104,7 +104,8 @@ const BRIBES_COLUMN: ColumnDef<ValidatorWithUserBoost> = {
       <BribesPopover
         incentives={row.original.rewardAllocationWeights
           .filter((x) => x?.receivingVault)
-          .flatMap((rv) => rv.receivingVault!.activeIncentives!)}
+          .flatMap((rv) => rv.receivingVault!.activeIncentives!)
+          .filter((x) => Number(x.remainingAmount))}
       />
     );
   },
