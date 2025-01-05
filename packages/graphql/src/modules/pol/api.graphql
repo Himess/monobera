@@ -48,8 +48,8 @@ query GetVaults(
   $where: GqlRewardVaultFilter
   $pageSize: Int
   $skip: Int
-  $orderBy: GqlRewardVaultOrderBy
-  $orderDirection: GqlRewardVaultOrderDirection
+  $orderBy: GqlRewardVaultOrderBy = bgtCapturePercentage
+  $orderDirection: GqlRewardVaultOrderDirection = desc
   $search: String
 ) {
   polGetRewardVaults(

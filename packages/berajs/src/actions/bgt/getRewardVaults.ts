@@ -1,7 +1,7 @@
 import { bexApiGraphqlClient } from "@bera/graphql";
 import {
   ApiVaultFragment,
-  GetVaultsDocument,
+  GetVaults,
   GetVaultsQuery,
   GetVaultsQueryVariables,
 } from "@bera/graphql/pol/api";
@@ -25,7 +25,7 @@ export const getRewardVaults = async (
     GetVaultsQuery,
     GetVaultsQueryVariables
   >({
-    query: GetVaultsDocument,
+    query: GetVaults,
     variables: filter,
   });
 

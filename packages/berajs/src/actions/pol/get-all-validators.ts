@@ -1,6 +1,6 @@
-import { bexApiGraphqlClient, bgtClient } from "@bera/graphql";
+import { bexApiGraphqlClient } from "@bera/graphql";
 import {
-  GetValidatorsDocument,
+  GetValidators,
   GetValidatorsQueryVariables,
   type GetValidatorsQuery,
 } from "@bera/graphql/pol/api";
@@ -22,7 +22,7 @@ export const getAllValidators = async ({
     GetValidatorsQuery,
     GetValidatorsQueryVariables
   >({
-    query: GetValidatorsDocument,
+    query: GetValidators,
     variables,
   });
 

@@ -50,9 +50,12 @@ export default function GlobalGaugeWeightTable({
   const { data, isLoading, isValidating } = useRewardVaults(
     {
       orderBy: map[sorting[0]?.id],
-      orderDirection: (sorting[0]?.desc
-        ? "desc"
-        : "asc") as GqlRewardVaultOrderDirection,
+      orderDirection:
+        sorting[0] !== undefined
+          ? sorting[0]?.desc
+            ? GqlRewardVaultOrderDirection.Desc
+            : GqlRewardVaultOrderDirection.Asc
+          : undefined,
       skip: GAUGE_PAGE_SIZE * page,
       // filterByProduct: markets,
       pageSize: GAUGE_PAGE_SIZE,

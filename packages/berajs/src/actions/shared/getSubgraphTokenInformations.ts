@@ -1,6 +1,6 @@
 import { bexSubgraphClient } from "@bera/graphql";
 import {
-  GetTokensDocument,
+  GetTokens,
   GetTokensQuery,
   GetTokensQueryVariables,
 } from "@bera/graphql/dex/subgraph";
@@ -41,7 +41,7 @@ export const getSubgraphTokenInformations = async ({
       GetTokensQuery,
       GetTokensQueryVariables
     >({
-      query: GetTokensDocument,
+      query: GetTokens,
       variables: {
         ids: swappedAddresses,
       },

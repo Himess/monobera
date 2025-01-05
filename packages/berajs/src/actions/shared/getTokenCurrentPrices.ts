@@ -1,7 +1,7 @@
 import { balancerApiChainName } from "@bera/config";
 import { bexApiGraphqlClient } from "@bera/graphql";
 import {
-  GetTokenCurrentPricesDocument,
+  GetTokenCurrentPrices,
   GetTokenCurrentPricesQuery,
   GetTokenCurrentPricesQueryVariables,
   GqlChain,
@@ -25,7 +25,7 @@ export const getTokenCurrentPrices = async (): Promise<
       GetTokenCurrentPricesQuery,
       GetTokenCurrentPricesQueryVariables
     >({
-      query: GetTokenCurrentPricesDocument,
+      query: GetTokenCurrentPrices,
       variables: {
         chains: [balancerApiChainName as GqlChain],
       },

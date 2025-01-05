@@ -1,6 +1,6 @@
 import { bexApiGraphqlClient } from "@bera/graphql";
 import {
-  GetPoolHistoricalDataDocument,
+  GetPoolHistoricalData,
   GetPoolHistoricalDataQuery,
   GetPoolHistoricalDataQueryVariables,
   GqlChain,
@@ -36,7 +36,7 @@ export const getPoolHistoricalData = async ({
     GetPoolHistoricalDataQuery,
     GetPoolHistoricalDataQueryVariables
   >({
-    query: GetPoolHistoricalDataDocument,
+    query: GetPoolHistoricalData,
     variables: { poolId, chain },
   });
   return data.poolGetSnapshots;
