@@ -182,7 +182,7 @@ export const PoolSearch = ({
                 onRowHover={(row) => {
                   router.prefetch(getPoolUrl(row.original.pool));
                 }}
-                onRowClick={(row) => router.push(getPoolUrl(row.original.pool))}
+                onRowClick={(row) => router.push(getPoolUrl(row.original))}
                 wrapperClassName="bg-transparent border-none"
                 showToolbar={true}
               />
@@ -213,7 +213,7 @@ export const PoolSearch = ({
                 dynamicFlex
                 variant="ghost"
                 mutedBackgroundOnHead={false}
-                onRowClick={(row) => router.push(getPoolUrl(row.original.pool))}
+                onRowClick={(row) => router.push(getPoolUrl(row.original))}
                 wrapperClassName="bg-transparent border-none"
                 showToolbar={true}
               />
