@@ -23,7 +23,7 @@ export const ExecuteButton = ({
 
   const { write, ModalPortal } = useTxn({
     message: "Executing proposal",
-    onSubmission: () => {
+    onSuccess: () => {
       setIsOpen(false);
       refresh();
     },

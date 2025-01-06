@@ -31,8 +31,31 @@ const config = {
         port: "",
         pathname: "/static/img/coins/**",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        port: "",
+        pathname: "/duv0g402y/image/upload/**",
+      },
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+        port: "",
+        pathname: "/berachain/**",
+      },
+      {
+        protocol: "https",
+        hostname: "assets.coingecko.com",
+        port: "",
+        pathname: "/coins/images/**",
+      },
+      {
+        protocol: "https",
+        hostname: "artio-static-asset-public.s3.ap-southeast-1.amazonaws.com",
+        port: "",
+        pathname: "/assets/**",
+      },
     ],
-    domains: ["res.cloudinary.com", "raw.githubusercontent.com"],
   },
   output: process.env.NEXT_PUBLIC_HOST === "ipfs" ? "export" : undefined,
   trailingSlash: true,
@@ -42,10 +65,9 @@ export default withSentryConfig(config, {
   // For all available options, see:
   // https://github.com/getsentry/sentry-webpack-plugin#options
   // Suppresses source map uploading logs during build
-  silent: true,
+  silent: process.env.NODE_ENV === "development",
   org: process.env.SENTRY_ORG,
   project: process.env.SENTRY_PROJECT,
-
   // For all available options, see:
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 

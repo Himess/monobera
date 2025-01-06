@@ -69,10 +69,7 @@ export const StakeFlow = ({
 
   const formattedData = useMemo(
     () =>
-      formatValidatorBgtDelegatedDelta(
-        data?.validatorBgtStaked ?? [],
-        dayRange,
-      ),
+      formatValidatorBgtDelegatedDelta(data?.boostByValidators ?? [], dayRange),
     [data],
   );
 

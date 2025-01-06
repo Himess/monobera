@@ -45,13 +45,13 @@ export const ValidatorOverview = ({
 
   const [rank, setRank] = useState<{
     validatorRank: number;
-    totalValidators: number;
+    totalValidatorsCount: number;
     blockSigningRank: number;
     blocksSigned: number;
     totalBlocks: number;
   }>({
     validatorRank: -1,
-    totalValidators: 0,
+    totalValidatorsCount: 0,
     blockSigningRank: -1,
     blocksSigned: 0,
     totalBlocks: 0,
@@ -66,7 +66,8 @@ export const ValidatorOverview = ({
     useAllValidators();
 
   useEffect(() => {
-    const totalValidators = allValidators?.validators?.validators?.length ?? 0;
+    const totalValidatorsCount =
+      allValidators?.validators?.validators?.length ?? 0;
     const valStakedRanking = allValidators?.validators?.validators?.findIndex(
       (v) => v.id === validator.id.toLowerCase(),
     );
@@ -95,7 +96,7 @@ export const ValidatorOverview = ({
 
     setRank({
       validatorRank: valStakedRanking ?? -1,
-      totalValidators,
+      totalValidatorsCount,
       blockSigningRank: blocksSigned?.rank ?? -1,
       blocksSigned: blocksSigned?.blocksSigned ?? 0,
       totalBlocks: blocksSigned?.totalBlocks ?? 0,
@@ -149,7 +150,7 @@ export const ValidatorOverview = ({
                       {rank.validatorRank === -1
                         ? "Unranked"
                         : `${rank.validatorRank + 1} of ${
-                            rank.totalValidators
+                            rank.totalValidatorsCount
                           }`}
                     </span>
                   )}
@@ -171,7 +172,7 @@ export const ValidatorOverview = ({
                       {rank.blockSigningRank === -1
                         ? "Unranked"
                         : `${rank.blockSigningRank + 1} of ${
-                            rank.totalValidators
+                            rank.totalValidatorsCount
                           }`}
                     </span>
                   )}

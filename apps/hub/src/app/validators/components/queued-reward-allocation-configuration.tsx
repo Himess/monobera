@@ -45,7 +45,7 @@ export const QueuedRewardAllocationConfiguration = ({
 
   const vaultsData = useMemo<VaultData[] | undefined>(() => {
     return data?.vaults?.map((vault) => ({
-      vaultAddress: vault.vaultAddress.toLowerCase(),
+      vaultAddress: vault.address.toLowerCase(),
       stakingTokenAddress: vault.stakingToken?.address?.toLowerCase(),
       symbol: vault.stakingToken.symbol,
       name: vault.stakingToken.name,

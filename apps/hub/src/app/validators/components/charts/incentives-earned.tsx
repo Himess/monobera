@@ -116,7 +116,7 @@ export const IncentivesEarned = ({
     },
   });
 
-  const rewardsDistributed = data?.validatorRewardsDistributeds.at(0);
+  const rewardsDistributed = data?.rewardsDistributionByValidators.at(0);
 
   return (
     <div className="flex flex-col lg:flex-row">

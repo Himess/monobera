@@ -26,7 +26,7 @@ export const UnbondModal = ({
       <Button
         variant="ghost"
         onClick={() => setOpen(true)}
-        disabled={Number(userBoosts?.activeBoosts) <= 0}
+        disabled={Number(userBoosts?.activeBoostAmount) <= 0}
       >
         Unboost
       </Button>

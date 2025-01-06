@@ -8,7 +8,7 @@ import {
 } from "@bera/ui/dropdown-menu";
 import { Icons } from "@bera/ui/icons";
 
-export const Dropdown = ({
+export const Dropdown = <T extends undefined | string>({
   disabled,
   selected,
   selectionList,
@@ -24,20 +24,20 @@ export const Dropdown = ({
   disabled?: boolean;
   placeholder?: string;
   selectionList: (
-    | string
+    | T
     | {
-        value: string;
+        value: T;
         label: string;
       }
   )[];
-  onSelect: (selected: string) => void;
+  onSelect: (selected: T) => void;
   sortby?: boolean;
   className?: string;
   triggerClassName?: string;
   contentClassname?: string;
 }) => {
-  const selectedFromList = selectionList.find(
-    (s) => typeof s === "object" && s.value === selected,
+  const selectedFromList = selectionList.find((s) =>
+    typeof s === "object" ? s.value === selected : s === selected,
   );
 
   return (
@@ -77,9 +77,9 @@ export const Dropdown = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent className={cn(contentClassname)} align="start">
             {selectionList.map((s) => {
-              const value = typeof s === "string" ? s : s.value;
+              const value = typeof s === "string" ? s : (s?.value as T);
               const label =
-                typeof s === "string" ? s.replaceAll("-", " ") : s.label;
+                typeof s === "string" ? s.replaceAll("-", " ") : s?.label;
               return (
                 <DropdownMenuCheckboxItem
                   key={value}

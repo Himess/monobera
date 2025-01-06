@@ -1,4 +1,4 @@
-import { ValidatorStakedBgtsFragment } from "@bera/graphql/pol/subgraph";
+import { BoostByValidatorFragment } from "@bera/graphql/pol/subgraph";
 import { Address } from "viem";
 
 import type { Token } from "./dex";
@@ -16,8 +16,8 @@ export interface ValidatorInfo {
 export type Validator = ApiValidatorFragment;
 
 export type UserValidator = Validator & {
-  amountDeposited: string;
-  amountQueued: string;
+  activeBoostAmount: string;
+  queuedBoostAmount: string;
   latestBlock: string;
   latestBlockTime: string;
   canActivate?: boolean;
@@ -41,7 +41,7 @@ export type Vault = {
 };
 
 export type RewardVaultIncentive = {
-  amountRemaining: number;
+  remainingAmount: number;
   id: Address;
   incentiveRate: number;
   manager: Address;
@@ -57,11 +57,11 @@ export type Market = {
 };
 
 export type UserValidatorBoostQueued = {
-  amountQueued: string;
+  queuedBoostAmount: string;
   user: Address;
 };
 
 export type UserValidatorBoostDeposited = {
-  amountDeposited: string;
+  activeBoostAmount: string;
   user: Address;
 };

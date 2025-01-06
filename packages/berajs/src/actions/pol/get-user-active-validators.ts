@@ -72,15 +72,15 @@ export const getUserActiveValidators = async ({
           "pubkey" in userDeposited
             ? userDeposited.pubkey
             : userDeposited.validator.publicKey,
-        activeBoosts: userDeposited?.activeBoosts,
-        queuedBoosts: userDeposited?.queuedBoosts,
+        activeBoostAmount: userDeposited?.activeBoostAmount,
+        queuedBoostAmount: userDeposited?.queuedBoostAmount,
         queuedBoostStartBlock: userDeposited?.queuedBoostStartBlock,
-        queuedUnboosts: userDeposited?.queuedUnboosts,
-        queuedUnboostStartBlock: userDeposited?.queuedUnboostStartBlock,
+        queuedDropBoostAmount: userDeposited?.queuedDropBoostAmount,
+        queuedDropBoostStartBlock: userDeposited?.queuedDropBoostStartBlock,
         hasPendingBoosts:
-          Number(userDeposited?.queuedBoosts) > 0 ||
-          Number(userDeposited?.queuedUnboosts) > 0,
-        hasActiveBoosts: Number(userDeposited?.activeBoosts) > 0,
+          Number(userDeposited?.queuedBoostAmount) > 0 ||
+          Number(userDeposited?.queuedDropBoostAmount) > 0,
+        hasActiveBoosts: Number(userDeposited?.activeBoostAmount) > 0,
       } satisfies UserBoostsOnValidator,
     } satisfies ValidatorWithUserBoost;
   });

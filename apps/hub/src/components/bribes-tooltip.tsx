@@ -73,7 +73,7 @@ export const BribesTooltip = ({
 
       return {
         totalIncentives:
-          acc.totalIncentives + Number(ab.amountRemaining) * tokenPrice,
+          acc.totalIncentives + Number(ab.remainingAmount) * tokenPrice,
         amountPerProposal:
           acc.amountPerProposal + Number(ab.incentiveRate) * tokenPrice,
       };
@@ -93,7 +93,7 @@ export const BribesTooltip = ({
             );
             return {
               totalIncentives:
-                acc.totalIncentives + Number(ab.amountRemaining) * tokenPrice,
+                acc.totalIncentives + Number(ab.remainingAmount) * tokenPrice,
               amountPerProposal:
                 acc.amountPerProposal + Number(ab.incentiveRate) * tokenPrice,
             };
@@ -116,7 +116,7 @@ export const BribesTooltip = ({
         );
 
         const bribeTotalValues: TotalValues = {
-          totalIncentives: Number(ab.amountRemaining) * tokenPrice,
+          totalIncentives: Number(ab.remainingAmount) * tokenPrice,
           amountPerProposal: Number(ab.incentiveRate) * tokenPrice,
           tokenAmountPerProposal: Number(ab.incentiveRate),
         };
@@ -183,8 +183,8 @@ function reduceIncentives(
 
       const prevIncentive = { ...acc[prevPosition] };
 
-      prevIncentive.amountRemaining = String(
-        Number(prevIncentive.amountRemaining) + Number(curr.amountRemaining),
+      prevIncentive.remainingAmount = String(
+        Number(prevIncentive.remainingAmount) + Number(curr.remainingAmount),
       );
 
       // FIXME: This is not correct, we need to check with quants
