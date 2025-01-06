@@ -66,8 +66,6 @@ export default function GaugeInfoCard() {
             <div className="flex items-center gap-1">
               <FormattedNumber
                 value={globalData?.bgtTotalSupply ?? 0}
-                compact={false}
-                compactThreshold={999_999_999}
                 className="items-center text-xl font-bold leading-5"
               />
               <Icons.bgt className="h-4 w-4" />
@@ -117,6 +115,7 @@ export default function GaugeInfoCard() {
                 globalData.validatorCount,
                 blockTime,
               );
+
               return (
                 <Link
                   className="cursor-pointer flex w-full flex-1 items-center gap-2 rounded-sm border border-border bg-background px-4 py-2"
