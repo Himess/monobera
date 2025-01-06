@@ -191,9 +191,9 @@ export const usePoolTable = ({
                   ? "text-info-foreground"
                   : "text-warning-foreground"
               }`}
-              title={`pool APR: ${(poolAPR * 100).toFixed(
-                2,
-              )}%, vault APY: ${vaultAPY.toFixed(2)}%`} // TODO (#BFE-463): tooltip for this
+              title={`pool APR: ${(poolAPR * 100).toFixed(2)}%, vault APY: ${(
+                vaultAPY * 100
+              ).toFixed(2)}%`} // TODO (#BFE-463): tooltip for this
             >
               <FormattedNumber
                 value={effectiveAPY?.toString() ?? "0"}
