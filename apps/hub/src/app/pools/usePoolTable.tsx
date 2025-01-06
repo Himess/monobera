@@ -1,21 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import {
-  ADDRESS_ZERO,
-  useBgtInflation,
-  useIsWhitelistedVault,
-  useRewardVaultAddressesFromTokens,
-  useRewardVaults,
-} from "@bera/berajs";
+import { useMemo, useState } from "react";
 import { MinimalPoolInListFragment } from "@bera/graphql/dex/api";
 import {
   DataTableColumnHeader,
   FormattedNumber,
-  TokenIconList,
   useAsyncTable,
 } from "@bera/shared-ui";
-import { cn } from "@bera/ui";
-import { Badge } from "@bera/ui/badge";
-import { Icons } from "@bera/ui/icons";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { PoolSummary } from "../../components/pools-table-columns";
@@ -48,6 +37,7 @@ export const usePoolTable = ({
 
   const pools = userPoolsOnly ? walletPools : allPools;
 
+  // NOTE: we memoize this to reduce render thrashing on page load (in accordance with tanstack best practices)
   const tableColumns: ColumnDef<MinimalPoolInListFragment>[] = useMemo(() => {
     return [
       {
@@ -171,24 +161,34 @@ export const usePoolTable = ({
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
-            title="APR"
+            title="APY"
             className="whitespace-nowrap"
           />
         ),
         cell: ({ row }) => {
+          // NOTE: typically you would never sum APY and APR directly, but @don have given go ahead to do so in this
+          // case as the APY is not a 'real' APY.
+          const vaultAPY = Number(
+            row.original.rewardVault?.dynamicData?.apy ?? 0,
+          );
+          const poolAPR = Number(
+            row.original.dynamicData?.aprItems?.at(0)?.apr ?? 0,
+          );
+          const effectiveAPY = vaultAPY + poolAPR;
+
           return (
             <div
               className={`flex items-center justify-start text-sm ${
-                row.original.dynamicData?.aprItems?.at(0)?.apr === 0
+                effectiveAPY === 0
                   ? "text-info-foreground"
                   : "text-warning-foreground"
               }`}
+              title={`pool APR: ${(poolAPR * 100).toFixed(2)}%, vault APY: ${(
+                vaultAPY * 100
+              ).toFixed(2)}%`} // TODO (#BFE-463): tooltip for this
             >
               <FormattedNumber
-                value={
-                  row.original.dynamicData?.aprItems?.at(0)?.apr?.toString() ??
-                  "0"
-                }
+                value={effectiveAPY?.toString() ?? "0"}
                 percent
                 compact
                 showIsSmallerThanMin
@@ -201,39 +201,12 @@ export const usePoolTable = ({
         },
         sortingFn: (rowA, rowB) => {
           return (
-            Number(rowA.original.dynamicData?.aprItems?.at(0)?.apr ?? "0") -
-            Number(rowB.original.dynamicData?.aprItems?.at(0)?.apr ?? "0")
+            Number(rowA.original.rewardVault?.dynamicData?.apy ?? 0) +
+            Number(rowA.original.dynamicData?.aprItems?.at(0)?.apr ?? 0) -
+            (Number(rowB.original.rewardVault?.dynamicData?.apy ?? 0) +
+              Number(rowB.original.dynamicData?.aprItems?.at(0)?.apr ?? 0))
           );
         },
-      },
-      {
-        accessorKey: "vault.dynamicData.apy",
-        header: ({ column }) => (
-          <DataTableColumnHeader
-            column={column}
-            title="Vault APY"
-            className="whitespace-nowrap"
-          />
-        ),
-        cell: ({ row }) => {
-          return (
-            <div className="flex flex-col gap-1">
-              <div className="text-sm leading-5">
-                {row.original.rewardVault?.dynamicData?.apy ? (
-                  <FormattedNumber
-                    value={row.original.rewardVault.dynamicData?.apy}
-                    percent
-                    compact
-                    showIsSmallerThanMin
-                  />
-                ) : (
-                  "—" // Placeholder for missing APY data
-                )}
-              </div>
-            </div>
-          );
-        },
-        enableSorting: true,
       },
     ];
   }, [pools]);
