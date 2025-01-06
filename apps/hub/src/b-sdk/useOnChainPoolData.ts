@@ -113,7 +113,7 @@ export function useOnChainPoolData(poolId: string) {
   });
 
   const { data: tokenPrices } = useSubgraphTokenInformations({
-    tokenAddresses: poolData?.poolTokens[0] as Address[],
+    tokenAddresses: poolData?.poolTokens[0] as Address[] | undefined,
   });
 
   useEffect(() => {

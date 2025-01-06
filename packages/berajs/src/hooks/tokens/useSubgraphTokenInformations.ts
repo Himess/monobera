@@ -21,7 +21,7 @@ export const useSubgraphTokenInformations = (
   options?: DefaultHookOptions,
 ): DefaultHookReturnType<SubgraphTokenInformations | undefined> => {
   const method = "subgraphTokenInformations";
-  const QUERY_KEY = [tokenAddresses, method];
+  const QUERY_KEY = tokenAddresses ? [tokenAddresses, method] : null;
   const { config: beraConfig } = useBeraJs();
   const swrResponse = useSWR(
     QUERY_KEY,

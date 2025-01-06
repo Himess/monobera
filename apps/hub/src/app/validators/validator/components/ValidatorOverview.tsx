@@ -13,6 +13,7 @@ import { UserBoosts } from "./UserBoosts";
 import { ApiValidatorFragment } from "@bera/graphql/pol/api";
 import { useEffect, useState } from "react";
 import { isSameAddress } from "@berachain-foundation/berancer-sdk";
+import { beraTokenAddress } from "@bera/config";
 
 export const ValidatorDataCard = ({
   title,
@@ -72,8 +73,6 @@ export const ValidatorOverview = ({
       (v) => v.id === validator.id.toLowerCase(),
     );
 
-    console.log({ allValidatorBlockData });
-
     const blocksSigned = allValidatorBlockData?.blockStatsByValidators?.reduce(
       (acc, v, idx) => {
         if (isSameAddress(v.validator.id, validator.id as Address)) {
@@ -115,19 +114,38 @@ export const ValidatorOverview = ({
   const { data: tokenHoneyPrices } = useTokenHoneyPrices({
     tokenAddresses: activeIncentivesTokens
       ?.map((t) => t?.token?.address)
-      .filter((t) => t !== undefined) as Address[] | undefined,
+      .filter((t) => t !== undefined)
+      .concat([beraTokenAddress]) as Address[],
   });
 
-  const returnPerBgt: number = activeIncentivesArray?.reduce(
+  const returnPerBgt: number = validator.rewardAllocationWeights?.reduce(
     (acc: number, ab) => {
       if (!ab) return acc;
-      const tokenPrice = parseFloat(
-        tokenHoneyPrices?.[ab.token.address] ?? "0",
-      );
-      return acc + Number(ab?.incentiveRate) * tokenPrice;
+      const totalIncentiveValue =
+        ab.receivingVault?.activeIncentives.reduce(
+          (totalIncentiveValue, currIncentive) => {
+            const tokenPrice = parseFloat(
+              tokenHoneyPrices?.[currIncentive.token.address] ?? "0",
+            );
+            return (
+              totalIncentiveValue +
+              Number(currIncentive.incentiveRate) * tokenPrice
+            );
+          },
+          0,
+        ) ?? 0;
+
+      return acc + (totalIncentiveValue * ab.percentageNumerator) / 1e4;
     },
     0,
   );
+
+  const boostApy =
+    (returnPerBgt *
+      Number(validator.dynamicData?.lastDayDistributedBGTAmount ?? 0) *
+      365) /
+    (Number(validator.dynamicData?.activeBoostAmount ?? 0) *
+      Number(tokenHoneyPrices?.[beraTokenAddress] ?? 0));
 
   return (
     <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
@@ -203,14 +221,14 @@ export const ValidatorOverview = ({
           />
           <ValidatorDataCard
             className="h-[130px]"
-            title="APY"
+            title="Boost APY"
             value={
               <div className="flex flex-col items-start gap-1">
                 <div className="relative flex w-full flex-row gap-1">
                   <FormattedNumber
-                    value={0}
+                    value={boostApy}
                     percent
-                    className="text-2xl font-semibold opacity-20"
+                    className="text-2xl font-semibold"
                   />
                 </div>
               </div>
@@ -220,7 +238,7 @@ export const ValidatorOverview = ({
             className="h-[130px]"
             title="Est. Return per BGT"
             value={
-              <div className="flex flex-row gap-1 text-2xl font-semibold opacity-20">
+              <div className="flex flex-row gap-1 text-2xl font-semibold">
                 $
                 <FormattedNumber
                   value={returnPerBgt}
