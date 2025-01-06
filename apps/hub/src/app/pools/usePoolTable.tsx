@@ -168,12 +168,20 @@ export const usePoolTable = ({
         cell: ({ row }) => {
           // NOTE: typically you would never sum APY and APR directly, but @don have given go ahead to do so in this
           // case as the APY is not a 'real' APY.
-          const vaultAPY = Number(
+          let vaultAPY = Number(
             row.original.rewardVault?.dynamicData?.apy ?? 0,
           );
           const poolAPR = Number(
             row.original.dynamicData?.aprItems?.at(0)?.apr ?? 0,
           );
+          // If a vault APY is -1 it's null.
+          if (vaultAPY < 0) {
+            vaultAPY = 0;
+          } else {
+            // vault APYs are stored as percentages unlike pool APRs
+            vaultAPY /= 100;
+          }
+
           const effectiveAPY = vaultAPY + poolAPR;
 
           return (
@@ -183,9 +191,9 @@ export const usePoolTable = ({
                   ? "text-info-foreground"
                   : "text-warning-foreground"
               }`}
-              title={`pool APR: ${(poolAPR * 100).toFixed(2)}%, vault APY: ${(
-                vaultAPY * 100
-              ).toFixed(2)}%`} // TODO (#BFE-463): tooltip for this
+              title={`pool APR: ${(poolAPR * 100).toFixed(
+                2,
+              )}%, vault APY: ${vaultAPY.toFixed(2)}%`} // TODO (#BFE-463): tooltip for this
             >
               <FormattedNumber
                 value={effectiveAPY?.toString() ?? "0"}

@@ -164,7 +164,7 @@ export const PoolSearch = ({
         </div>
 
         <TabsContent value="allPools" className="mt-4 text-center">
-          {data === undefined || isLoading ? (
+          {data === undefined && isLoading ? (
             <div className="flex w-full flex-col items-center justify-center gap-4">
               <DataTableLoading
                 columns={table.getAllColumns().length}
