@@ -22,6 +22,7 @@ export const MyGaugeDetails = ({
   const { data } = usePollVaultsInfo({
     vaultAddress: rewardVault.vaultAddress as Address,
   });
+
   const { data: price } = useTokenHoneyPrice({
     tokenAddress: beraTokenAddress,
   });

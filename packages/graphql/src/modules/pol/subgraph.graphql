@@ -191,8 +191,8 @@ query GetGauges {
 }
 
 query GetWeeklyBgtInflation($wbera: ID!) {
-  globalRewardDistributions(interval: day, first: 7) {
-    BGTDistributed: distributedBGTAmount
+  globalRewardDistributions(interval: day, first: 7, subgraphError: allow) {
+    distributedBGTAmount
   }
   tokenInformation(id: $wbera) {
     ...StakingToken
@@ -205,7 +205,7 @@ query GetRewardVault($stakingToken: String) {
   }
 }
 
-query GetValidatorByOperator($operator: Bytes = "") {
+query GetValidatorByOperator($operator: Bytes!) {
   validators(where: { operator: $operator }) {
     publicKey
   }

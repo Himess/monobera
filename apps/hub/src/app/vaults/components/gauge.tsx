@@ -17,7 +17,7 @@ export default function Gauge() {
         <GlobalGaugeWeightChart
           gaugeWeights={data?.globalCuttingBoard ?? []}
           isLoading={isGlobalDataLoading}
-          totalAmountStaked={data?.bgtInfo?.totalStakeBgt ?? "0"}
+          totalAmountStaked={data?.bgtInfo?.totalActiveBoostAmount ?? "0"}
           globalAmountStaked={data?.bgtTotalSupply ?? "0"}
         />
       </div>

@@ -1,26 +1,27 @@
 import React from "react";
 import Link from "next/link";
-import { truncateHash, useBlockTime, usePollGlobalData } from "@bera/berajs";
+import {
+  truncateHash,
+  useBgtInflation,
+  useBlockTime,
+  usePollGlobalData,
+} from "@bera/berajs";
 import { FormattedNumber, ValidatorIcon } from "@bera/shared-ui";
 import { getHubValidatorPath } from "@bera/shared-ui";
 import { Icons } from "@bera/ui/icons";
 import { Skeleton } from "@bera/ui/skeleton";
 
-import {
-  getValidatorEstimatedBgtPerYear,
-  useValidatorEstimatedBgtPerYear,
-} from "~/hooks/useValidatorEstimatedBgtPerYear";
+import { getValidatorEstimatedBgtPerYear } from "~/hooks/useValidatorEstimatedBgtPerYear";
 import { Address } from "viem";
 
 export default function GaugeInfoCard() {
   const { data: globalData, isLoading } = usePollGlobalData();
 
-  const timePerBlock = useBlockTime();
+  const { data: bgtInflation, isLoading: isBgtInflationLoading } =
+    useBgtInflation();
 
   const blockTime = useBlockTime();
-  const blockCountPerYear = timePerBlock
-    ? (60 * 60 * 24 * 365) / timePerBlock
-    : 0;
+
   return (
     <div className="flex w-full flex-1 flex-col gap-6 sm:flex-row">
       <div className="flex flex-1 flex-row gap-6 sm:flex-col">
@@ -42,7 +43,7 @@ export default function GaugeInfoCard() {
           </div>
           {!isLoading && globalData ? (
             <FormattedNumber
-              value={globalData.sumAllIncentivesInHoney}
+              value={globalData.totalActiveIncentivesValueUSD}
               symbol="USD"
               compact={false}
               compactThreshold={999_999_999}
@@ -77,16 +78,15 @@ export default function GaugeInfoCard() {
           <div className="text-sm font-medium leading-5 text-muted-foreground">
             BGT Distribution (Yearly)
           </div>
-          {isLoading ? (
+          {isBgtInflationLoading ? (
             <Skeleton className="h-8 w-full" />
           ) : (
             // Get BGT emitted last day and multiply by 365
             <FormattedNumber
-              value={0}
+              value={bgtInflation?.bgtInflation ?? 0}
               compact={false}
               compactThreshold={999_999}
-              symbol="BGT"
-              className="items-center text-xl font-bold opacity-20 leading-5"
+              className="items-center text-xl font-bold leading-5"
             />
           )}
         </div>

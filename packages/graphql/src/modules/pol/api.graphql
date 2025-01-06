@@ -139,7 +139,11 @@ query GetValidators(
 }
 
 query GetVaultValidators($vaultId: String!) {
-  validators: polGetValidators(where: { vaultAddress: $vaultId }) {
+  validators: polGetValidators(
+    where: { vaultAddress: $vaultId }
+    orderDirection: desc
+    orderBy: rewardRate
+  ) {
     pagination {
       currentPage
       totalCount

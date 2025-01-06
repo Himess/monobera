@@ -53,7 +53,7 @@ export const ValidatorsGlobalInfo = () => {
     {
       amount: (
         <FormattedNumber
-          value={data?.sumAllIncentivesInHoney ?? 0}
+          value={data?.totalActiveIncentivesValueUSD ?? 0}
           symbol="USD"
         />
       ),

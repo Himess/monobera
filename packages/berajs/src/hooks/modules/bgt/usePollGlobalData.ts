@@ -46,6 +46,7 @@ export const usePollGlobalData = (
       } as any;
     },
     {
+      revalidateOnFocus: false,
       ...options?.opts,
     },
   );
