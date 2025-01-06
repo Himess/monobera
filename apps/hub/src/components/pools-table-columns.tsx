@@ -1,15 +1,10 @@
 "use client";
 
 import { GqlPoolType, MinimalPoolInListFragment } from "@bera/graphql/dex/api";
-import { TokenIconList, Tooltip } from "@bera/shared-ui";
+import { TokenIconList } from "@bera/shared-ui";
 import { cn } from "@bera/ui";
 import { Badge } from "@bera/ui/badge";
 import { Icons } from "@bera/ui/icons";
-import {
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@bera/ui/tooltip";
 
 export const poolTypeLabels: Record<any, string> = {
   [GqlPoolType.ComposableStable]: "Stable",
@@ -20,12 +15,12 @@ export const poolTypeLabels: Record<any, string> = {
 export const PoolSummary = ({
   pool,
   isWhitelistedVault,
+  providedLiquidity,
 }: {
   pool: MinimalPoolInListFragment;
   isWhitelistedVault: boolean;
+  providedLiquidity: boolean;
 }) => {
-  const providedLiquidity =
-    pool.userBalance && pool.userBalance.walletBalance !== "0";
   return (
     <div className="flex items-center gap-2">
       <div className="flex flex-row items-start gap-2">
