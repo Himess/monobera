@@ -100,9 +100,20 @@ export const CreateProposalAction = ({
       {(action.type === ProposalTypeEnum.WHITELIST_REWARD_VAULT ||
         action.type === ProposalTypeEnum.BLACKLIST_REWARD_VAULT) && (
         <UpdateVaultWhitelistStatus
+          id={idx}
           errors={errors}
           action={action}
-          setAction={setAction}
+          setAction={
+            setAction as Dispatch<
+              SetStateAction<
+                ProposalAction & {
+                  type:
+                    | ProposalTypeEnum.BLACKLIST_REWARD_VAULT
+                    | ProposalTypeEnum.WHITELIST_REWARD_VAULT;
+                }
+              >
+            >
+          }
         />
       )}
       {action.type === ProposalTypeEnum.ERC20_TRANSFER && (

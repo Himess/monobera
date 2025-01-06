@@ -40,11 +40,13 @@ export const getBGTGlobalInfo = async (
     bgtInfo: {
       // TODO: get bgt inflation somehow, maybe from the backend
       bgtInflation: 0,
-      totalStakeBgt: Number(data.polGetGlobalInfo?.totalBGTDelegated ?? "0"),
+      totalStakeBgt: Number(
+        data.polGetGlobalInfo?.totalActiveBoostAmount ?? "0",
+      ),
     },
     sumAllIncentivesInHoney:
       data.polGetGlobalInfo?.totalActiveIncentivesValueUSD ?? "0",
-    validatorCount: data.polGetGlobalInfo?.totalValidators ?? 0,
+    validatorCount: data.polGetGlobalInfo?.totalValidatorsCount ?? 0,
     activeRewardVaultCount: data.polGetGlobalInfo?.totalActiveRewardVaults ?? 0,
     whitelistedRewardVaultCount:
       data.polGetGlobalInfo?.totalWhitelistedRewardVaults ?? 0,

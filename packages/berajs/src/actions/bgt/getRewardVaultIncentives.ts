@@ -13,7 +13,7 @@ export interface RewardVaultIncentive {
   manager: Address;
   minIncentiveRate: string;
   incentiveRate: string;
-  amountRemaining: string;
+  remainingAmount: string;
 }
 
 export const getRewardVaultIncentives = async (
@@ -64,12 +64,12 @@ export const getRewardVaultIncentives = async (
   ]);
 
   return incentives.map<RewardVaultIncentive>(
-    ([minIncentiveRate, incentiveRate, amountRemaining, manager], index) => ({
+    ([minIncentiveRate, incentiveRate, remainingAmount, manager], index) => ({
       token: whitelistedTokens[index],
       manager,
       minIncentiveRate: formatEther(minIncentiveRate),
       incentiveRate: formatEther(incentiveRate),
-      amountRemaining: formatUnits(amountRemaining, decimals[index]),
+      remainingAmount: formatUnits(remainingAmount, decimals[index]),
       symbol: symbols[index],
     }),
   );

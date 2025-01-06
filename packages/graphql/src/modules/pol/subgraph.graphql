@@ -1,7 +1,7 @@
 fragment ValidatorMinimal on Validator {
   id
   publicKey
-  amountDelegated
+  activeBoostAmount: activeBoostAmount
 }
 fragment SubgraphStatusMeta on _Meta_ {
   block {
@@ -11,16 +11,16 @@ fragment SubgraphStatusMeta on _Meta_ {
 }
 
 query GetUserValidatorInformation($address: Bytes!) {
-  userValidatorInformations: userValidatorBGTDelegateds(
+  userValidatorInformations: userBoosts(
     where: { user: $address }
     first: 1000
   ) {
     id
-    queuedBoosts: amountQueued
-    activeBoosts: amountDeposited
-    queuedUnboosts: amountDropQueued
-    queuedUnboostStartBlock: dropQueuedStartBlock
-    queuedBoostStartBlock: queuedStartBlock
+    queuedBoostAmount
+    activeBoostAmount
+    queuedDropBoostAmount
+    queuedDropBoostStartBlock
+    queuedBoostStartBlock
     user
     validator {
       ...ValidatorMinimal
@@ -38,35 +38,31 @@ query GetValidValidator($address: ID!) {
 }
 
 query GetAllValidators {
-  validators(first: 1000, orderDirection: desc, orderBy: amountDelegated) {
+  validators(first: 1000, orderDirection: desc, orderBy: activeBoostAmount) {
     ...ValidatorMinimal
   }
 }
 
-fragment ValidatorStakedBgts on ValidatorBGTDelegated {
-  allTimeBGTStaked: allTimeBGTDelegated
-  BGTStaked: BGTDelegated
+fragment BoostByValidator on BoostByValidator {
+  allTimeBGTStaked: allTimeAmount
+  BGTStaked: amount
   id
   timestamp
 }
 
 query GetValidatorBgtStaked($pubKey: String!, $timestamp: Timestamp!) {
-  validatorBgtStaked: validatorBGTDelegateds(
+  boostByValidators(
     interval: day
     where: { validator: $pubKey, timestamp_gte: $timestamp }
   ) {
-    ...ValidatorStakedBgts
+    ...BoostByValidator
   }
 }
 
 fragment BlockRewardStatsByValidator on BlockRewardStatsByValidator {
   timestamp
-  # rewardRate
-  # commissionRate
-  BGTEmitted
-  BGTEarned
-  allTimeBGTEmitted
-  allTimeBGTEarned
+  distributedBGTAmount
+  earnedBGTAmount
 
   validator {
     ...ValidatorMinimal
@@ -87,47 +83,47 @@ query GetValidatorIncentivesReceiveds(
   $address: String!
   $timestamp: Timestamp!
 ) {
-  validatorIncentivesReceiveds(
+  incentiveDistributionByValidators(
     interval: day
     where: { validator: $address, timestamp_gte: $timestamp }
   ) {
     token {
       ...StakingToken
     }
-    tokenReceived
+    tokenReceived: receivedTokenAmount
     # usdValueTokenRewarded
     timestamp
-    allTimeTokenReceived
+    allTimeTokenReceived: allTimeReceivedTokenAmount
     # allTimeUsdValueTokenRewarded
     id
   }
-  validatorRewardsDistributeds(
+  rewardsDistributionByValidators(
     interval: day
     where: { validator: $address }
     first: 1
   ) {
     # allTimeUsdValueTokenRewarded
-    allTimeBGTDistributed
+    allTimeBGTDistributed: allTimeDistributedBGTAmount
   }
 }
 
 query GetValidatorBgtBoost($address: String!) {
-  userValidatorBoostQueued: userValidatorBGTDelegateds(
+  userValidatorBoostQueued: userBoosts(
     first: 10
-    where: { validator: $address, amountQueued_gt: "0" }
-    orderBy: amountQueued
+    where: { validator: $address, queuedBoostAmount_gt: "0" }
+    orderBy: queuedBoostAmount
     orderDirection: desc
   ) {
-    amountQueued
+    queuedBoostAmount: queuedBoostAmount
     user
   }
-  userValidatorBoostDeposited: userValidatorBGTDelegateds(
+  userValidatorBoostDeposited: userBoosts(
     first: 10
-    where: { validator: $address, amountDeposited_gt: "0" }
-    orderBy: amountDeposited
+    where: { validator: $address, activeBoostAmount_gt: "0" }
+    orderBy: activeBoostAmount
     orderDirection: desc
   ) {
-    amountDeposited
+    activeBoostAmount: activeBoostAmount
     user
   }
 }
@@ -169,7 +165,7 @@ fragment StakingToken on TokenInformation {
 fragment VaultMinimal on Vault {
   id
   stakingTokenAmount
-  vaultAddress
+  address
   # activeIncentivesValueUsd
 }
 
@@ -181,12 +177,9 @@ fragment VaultWithStakingToken on Vault {
 }
 
 fragment GlobalInfo on GlobalInfo {
-  totalValidators
-  totalBGTStaked: totalBGTDelegated
-  totalBGTQueued
-  totalBGTDistributed
-  rewardRate
   id
+  totalValidatorsCount: totalValidatorsCount
+  rewardRate
   baseRewardRate
 }
 
@@ -199,7 +192,7 @@ query GetGauges {
 
 query GetWeeklyBgtInflation($wbera: ID!) {
   globalRewardDistributions(interval: day, first: 7) {
-    BGTDistributed
+    BGTDistributed: distributedBGTAmount
   }
   tokenInformation(id: $wbera) {
     ...StakingToken

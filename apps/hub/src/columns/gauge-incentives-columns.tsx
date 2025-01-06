@@ -68,12 +68,12 @@ export const gauge_incentives_columns: ColumnDef<RewardVaultIncentive>[] = [
       return (
         <div className="flex flex-col gap-1">
           <FormattedNumber
-            value={row.original.amountRemaining}
+            value={row.original.remainingAmount}
             symbol={row.original.token.symbol}
           />
           <span className="text-xs text-muted-foreground">
             <FormattedNumber
-              value={row.original.amountRemaining * parseFloat(price ?? "0")}
+              value={row.original.remainingAmount * parseFloat(price ?? "0")}
               symbol="USD"
             />
           </span>

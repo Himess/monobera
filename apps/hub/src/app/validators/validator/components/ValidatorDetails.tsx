@@ -22,7 +22,7 @@ export default function ValidatorDetails({
       value: (
         <div className="text-xl font-semibold">
           <FormattedNumber
-            value={validator?.dynamicData?.bgtEmittedAllTime ?? 0}
+            value={validator?.dynamicData?.allTimeDistributedBGTAmount ?? 0}
           />
         </div>
       ),
@@ -33,7 +33,7 @@ export default function ValidatorDetails({
       value: (
         <div className="text-xl font-semibold">
           <FormattedNumber
-            value={validator?.dynamicData?.depositStakedAmount ?? 0}
+            value={validator?.dynamicData?.stakedBeraAmount ?? 0}
           />
         </div>
       ),
@@ -44,7 +44,7 @@ export default function ValidatorDetails({
       value: (
         <span className="text-xl font-semibold">
           <FormattedNumber
-            value={validator?.dynamicData?.amountDelegated ?? "10"}
+            value={validator?.dynamicData?.activeBoostAmount ?? "10"}
             showIsSmallerThanMin
             symbol="BGT"
           />

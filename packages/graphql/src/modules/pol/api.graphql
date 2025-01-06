@@ -1,6 +1,6 @@
 fragment ApiVaultIncentive on GqlRewardVaultIncentive {
   active
-  amountRemaining
+  remainingAmount
   incentiveRate
   tokenAddress
   token {
@@ -18,7 +18,7 @@ fragment ApiVault on GqlRewardVault {
   isVaultWhitelisted
 
   dynamicData {
-    allTimeBGTReceived
+    allTimeReceivedBGTAmount
     apy
     bgtCapturePercentage
     activeIncentivesValueUsd
@@ -81,15 +81,15 @@ fragment ApiValidator on GqlValidator {
     description
   }
   dynamicData {
-    amountDelegated
-    usersDelegated
-    amountQueued
-    usersQueued
+    activeBoostAmount
+    usersActiveBoostCount
+    queuedBoostAmount
+    usersQueuedBoostCount
     apy
     bgtCapturePercentage
-    bgtEmittedAllTime
+    allTimeDistributedBGTAmount
     rewardRate
-    depositStakedAmount
+    stakedBeraAmount
   }
   rewardAllocationWeights {
     ...ApiRewardAllocationWeight
@@ -166,9 +166,8 @@ query GlobalData($chain: GqlChain!) {
   }
 
   polGetGlobalInfo(chain: $chain) {
-    totalBGTQueued
-    totalBGTDelegated
-    totalValidators
+    totalActiveBoostAmount
+    totalValidatorsCount
     totalWhitelistedRewardVaults
     totalActiveRewardVaults
     totalActiveIncentives

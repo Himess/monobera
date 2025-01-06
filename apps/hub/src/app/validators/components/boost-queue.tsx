@@ -42,7 +42,7 @@ export const BoostQueue = ({
       : data.flatMap((validator) => {
           const items: QueueItem[] = [];
 
-          if (Number(validator.userBoosts.queuedBoosts) > 0) {
+          if (Number(validator.userBoosts.queuedBoostAmount) > 0) {
             items.push({
               ...validator,
               canActivate:
@@ -54,11 +54,11 @@ export const BoostQueue = ({
             });
           }
 
-          if (Number(validator.userBoosts.queuedUnboosts) > 0) {
+          if (Number(validator.userBoosts.queuedDropBoostAmount) > 0) {
             items.push({
               ...validator,
               canActivate:
-                validator.userBoosts?.queuedUnboostStartBlock +
+                validator.userBoosts?.queuedDropBoostStartBlock +
                   HISTORY_BUFFER -
                   Number(blockNumber) <=
                 0,
@@ -218,12 +218,12 @@ const ConfirmationCard = ({
 
   const amount =
     userValidator.type === "boost"
-      ? userValidator.userBoosts.queuedBoosts
-      : userValidator.userBoosts.queuedUnboosts;
+      ? userValidator.userBoosts.queuedBoostAmount
+      : userValidator.userBoosts.queuedDropBoostAmount;
   const startBlock =
     userValidator.type === "boost"
       ? userValidator.userBoosts.queuedBoostStartBlock
-      : userValidator.userBoosts.queuedUnboostStartBlock;
+      : userValidator.userBoosts.queuedDropBoostStartBlock;
 
   const blocksLeft = Number(startBlock) + HISTORY_BUFFER - Number(block);
 

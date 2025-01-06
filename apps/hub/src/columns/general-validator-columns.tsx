@@ -41,7 +41,7 @@ const GLOBAL_VOTING_POWER_COLUMN: ColumnDef<ApiValidatorFragment> = {
   cell: ({ row }) => (
     <div className="w-full text-start">
       <FormattedNumber
-        value={row.original.dynamicData?.amountDelegated ?? 0}
+        value={row.original.dynamicData?.activeBoostAmount ?? 0}
         compact={false}
         symbol="BGT"
       />
@@ -49,14 +49,14 @@ const GLOBAL_VOTING_POWER_COLUMN: ColumnDef<ApiValidatorFragment> = {
   ),
   minSize: 200,
 
-  accessorKey: "dynamicData.amountDelegated",
+  accessorKey: "dynamicData.activeBoostAmount",
 
   sortingFn: (a, b) => {
     console.log({ a, b });
 
     return (
-      Number(a.original.dynamicData?.amountDelegated) -
-      Number(b.original.dynamicData?.amountDelegated)
+      Number(a.original.dynamicData?.activeBoostAmount) -
+      Number(b.original.dynamicData?.activeBoostAmount)
     );
   },
   enableSorting: true,
@@ -151,15 +151,15 @@ const USER_BOOSTED_COLUMN: ColumnDef<ValidatorWithUserBoost> = {
     return (
       <FormattedNumber
         showIsSmallerThanMin
-        value={row.original.userBoosts.activeBoosts ?? 0}
+        value={row.original.userBoosts.activeBoostAmount ?? 0}
         symbol="BGT"
       />
     );
   },
-  accessorKey: "userBoosts.activeBoosts",
+  accessorKey: "userBoosts.activeBoostAmount",
   sortingFn: (a, b) =>
-    Number(a.original.userBoosts.activeBoosts) -
-    Number(b.original.userBoosts.activeBoosts),
+    Number(a.original.userBoosts.activeBoostAmount) -
+    Number(b.original.userBoosts.activeBoostAmount),
   enableSorting: true,
 };
 
@@ -174,15 +174,15 @@ const USER_QUEUED_BOOSTS_COLUMN: ColumnDef<ValidatorWithUserBoost> = {
   cell: ({ row }) => {
     return (
       <FormattedNumber
-        value={row.original.userBoosts?.queuedBoosts ?? 0}
+        value={row.original.userBoosts?.queuedBoostAmount ?? 0}
         symbol="BGT"
       />
     );
   },
-  accessorKey: "userBoosts.queuedBoosts",
+  accessorKey: "userBoosts.queuedBoostAmount",
   sortingFn: (a, b) =>
-    Number(a.original.userBoosts?.queuedBoosts) -
-    Number(b.original.userBoosts?.queuedBoosts),
+    Number(a.original.userBoosts?.queuedBoostAmount) -
+    Number(b.original.userBoosts?.queuedBoostAmount),
   enableSorting: true,
 };
 
@@ -198,8 +198,8 @@ const USER_QUEUED_DROP_BOOSTS_COLUMN: ColumnDef<ValidatorWithUserBoost> = {
     return (
       <FormattedNumber
         value={
-          Number(row.original.userBoosts?.queuedUnboosts) > 0
-            ? -row.original.userBoosts?.queuedUnboosts
+          Number(row.original.userBoosts?.queuedDropBoostAmount) > 0
+            ? -row.original.userBoosts?.queuedDropBoostAmount
             : 0
         }
         symbol="BGT"
@@ -207,10 +207,10 @@ const USER_QUEUED_DROP_BOOSTS_COLUMN: ColumnDef<ValidatorWithUserBoost> = {
       />
     );
   },
-  accessorKey: "userBoosts.queuedUnboosts",
+  accessorKey: "userBoosts.queuedDropBoostAmount",
   sortingFn: (a, b) =>
-    Number(a.original.userBoosts?.queuedUnboosts) -
-    Number(b.original.userBoosts?.queuedUnboosts),
+    Number(a.original.userBoosts?.queuedDropBoostAmount) -
+    Number(b.original.userBoosts?.queuedDropBoostAmount),
   enableSorting: true,
 };
 

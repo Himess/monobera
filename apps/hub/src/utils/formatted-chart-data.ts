@@ -1,6 +1,6 @@
 import { type Token } from "@bera/berajs";
 import {
-  ValidatorStakedBgtsFragment,
+  BoostByValidatorFragment,
   type BlockRewardStatsByValidatorFragment,
   type GetValidatorIncentivesReceivedsQuery,
 } from "@bera/graphql/pol/subgraph";
@@ -11,11 +11,11 @@ type GroupedValidatorRewardsData = {
 };
 
 type GroupedValidatorBgtStakedData = {
-  [timestamp: string]: ValidatorStakedBgtsFragment;
+  [timestamp: string]: BoostByValidatorFragment;
 };
 
 type GroupedValidatorBgtStakedDataDelta = {
-  [timestamp: string]: ValidatorStakedBgtsFragment;
+  [timestamp: string]: BoostByValidatorFragment;
 };
 
 type TokenInformation = Token & {
@@ -48,21 +48,19 @@ const generateValidatorRewardsEmptyData = (
 ): BlockRewardStatsByValidatorFragment => {
   return {
     timestamp: timestamp,
-    BGTEmitted: "0",
-    BGTEarned: "0",
-    allTimeBGTEmitted: "0",
-    allTimeBGTEarned: "0",
+    distributedBGTAmount: "0",
+    earnedBGTAmount: "0",
     validator: {
       id: "",
       publicKey: "",
-      amountDelegated: "0",
+      activeBoostAmount: "0",
     },
   };
 };
 
 const generateValidatorBgtStakedEmptyData = (
   timestamp: string,
-): ValidatorStakedBgtsFragment => {
+): BoostByValidatorFragment => {
   return {
     allTimeBGTStaked: "0",
     BGTStaked: "0",
@@ -117,14 +115,14 @@ export const formatValidatorRewardsData = (
 };
 
 export const formatValidatorBgtDelegated = (
-  data: ValidatorStakedBgtsFragment[],
+  data: BoostByValidatorFragment[],
   days: number,
 ) => {
   const groupedData = {} as GroupedValidatorBgtStakedData;
 
   let currentBgtTotal = 0;
 
-  data.forEach((item: ValidatorStakedBgtsFragment) => {
+  data.forEach((item: BoostByValidatorFragment) => {
     const timestamp = item.timestamp;
     const dateKey = new Date(parseInt(timestamp) / 1000)
       .toISOString()
@@ -168,7 +166,7 @@ export const formatValidatorTokenRewardsUsage = (
   const groupedData = {} as GroupedTokenRewardsUsageData;
   const groupedTokens = {} as GroupedTokenRewardsData;
 
-  data.validatorIncentivesReceiveds.forEach((item) => {
+  data.incentiveDistributionByValidators.forEach((item) => {
     const timestamp = item.timestamp;
     const dateKey = new Date(parseInt(timestamp) / 1000)
       .toISOString()
@@ -242,7 +240,7 @@ export const formatValidatorTokenRewardsUsage = (
 };
 
 export const formatValidatorBgtDelegatedDelta = (
-  data: ValidatorStakedBgtsFragment[],
+  data: BoostByValidatorFragment[],
   days: number,
 ) => {
   const groupedData = {} as GroupedValidatorBgtStakedDataDelta;
@@ -250,7 +248,7 @@ export const formatValidatorBgtDelegatedDelta = (
   let delegationIn = 0;
   let delegationOut = 0;
 
-  data.forEach((item: ValidatorStakedBgtsFragment) => {
+  data.forEach((item: BoostByValidatorFragment) => {
     const timestamp = item.timestamp;
     const dateKey = new Date(parseInt(timestamp) / 1000)
       .toISOString()

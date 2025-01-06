@@ -26,27 +26,30 @@ export const useValidator = ({ pubkey }: { pubkey: Address }) => {
             ...onChainValidator,
             operator: onChainValidator?.operator ?? indexerValidator?.operator,
             dynamicData: {
-              amountDelegated:
-                onChainValidator?.dynamicData?.amountDelegated ??
-                indexerValidator?.dynamicData?.amountDelegated ??
+              activeBoostAmount:
+                onChainValidator?.dynamicData?.activeBoostAmount ??
+                indexerValidator?.dynamicData?.activeBoostAmount ??
                 "",
-              amountQueued: indexerValidator?.dynamicData?.amountQueued ?? "",
-              usersDelegated:
-                indexerValidator?.dynamicData?.usersDelegated ?? 0,
-              usersQueued: indexerValidator?.dynamicData?.usersQueued ?? 0,
+              queuedBoostAmount:
+                indexerValidator?.dynamicData?.queuedBoostAmount ?? "",
+              usersActiveBoostCount:
+                indexerValidator?.dynamicData?.usersActiveBoostCount ?? 0,
+              usersQueuedBoostCount:
+                indexerValidator?.dynamicData?.usersQueuedBoostCount ?? 0,
               apy: indexerValidator?.dynamicData?.apy ?? "",
               bgtCapturePercentage:
                 onChainValidator?.dynamicData?.bgtCapturePercentage ??
                 indexerValidator?.dynamicData?.bgtCapturePercentage ??
                 "",
-              bgtEmittedAllTime:
-                indexerValidator?.dynamicData?.bgtEmittedAllTime ?? "0",
+              allTimeDistributedBGTAmount:
+                indexerValidator?.dynamicData?.allTimeDistributedBGTAmount ??
+                "0",
               rewardRate:
                 onChainValidator?.dynamicData?.rewardRate ??
                 indexerValidator?.dynamicData?.rewardRate ??
                 "",
-              depositStakedAmount:
-                indexerValidator?.dynamicData?.depositStakedAmount ?? "",
+              stakedBeraAmount:
+                indexerValidator?.dynamicData?.stakedBeraAmount ?? "",
             },
             id: onChainValidator?.id ?? indexerValidator?.id ?? "",
             pubkey: onChainValidator?.pubkey ?? indexerValidator?.pubkey ?? "",

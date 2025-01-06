@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRewardVaults } from "@bera/berajs";
 import {
@@ -24,7 +24,7 @@ import {
 const GAUGE_PAGE_SIZE = 10;
 
 const map: Record<string, GqlRewardVaultOrderBy> = {
-  allTimeBGTReceived: GqlRewardVaultOrderBy.AllTimeBgtReceived,
+  allTimeReceivedBGTAmount: GqlRewardVaultOrderBy.AllTimeBgtReceived,
   dynamicData_bgtCapturePercentage: GqlRewardVaultOrderBy.BgtCapturePercentage,
 };
 export default function GlobalGaugeWeightTable({
@@ -41,6 +41,11 @@ export default function GlobalGaugeWeightTable({
   const router = useRouter();
   const [page, setPage] = useState(0);
   const [sorting, setSorting] = useState<SortingState>([]);
+
+  useEffect(() => {
+    // Set page to 0 if markets change to avoid showing empty page
+    setPage(0);
+  }, [markets]);
 
   const { data, isLoading, isValidating } = useRewardVaults(
     {
