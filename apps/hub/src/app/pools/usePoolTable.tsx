@@ -54,7 +54,7 @@ export const usePoolTable = ({
             row.original.rewardVault?.isVaultWhitelisted;
           const providedLiquidity =
             row.original.userBalance &&
-            row.original.userBalance?.walletBalance !== "0";
+            row.original.userBalance?.totalBalanceUsd > 0;
           return (
             <PoolSummary
               pool={row.original}
