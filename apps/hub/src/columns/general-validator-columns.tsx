@@ -36,7 +36,7 @@ const VALIDATOR_COLUMN: ColumnDef<ApiValidatorFragment> = {
   enableSorting: false,
 };
 
-const GLOBAL_VOTING_POWER_COLUMN: ColumnDef<ApiValidatorFragment> = {
+const BOOSTS_COLUMN: ColumnDef<ApiValidatorFragment> = {
   header: "BGT Boosts",
   cell: ({ row }) => (
     <div className="w-full text-start">
@@ -51,13 +51,28 @@ const GLOBAL_VOTING_POWER_COLUMN: ColumnDef<ApiValidatorFragment> = {
   accessorKey: "dynamicData.activeBoostAmount",
 
   sortingFn: (a, b) => {
-    console.log({ a, b });
-
     return (
       Number(a.original.dynamicData?.activeBoostAmount) -
       Number(b.original.dynamicData?.activeBoostAmount)
     );
   },
+  enableSorting: true,
+};
+
+const STAKED_BERAS_COLUMN: ColumnDef<ApiValidatorFragment> = {
+  header: "Staked BERA",
+  cell: ({ row }) => (
+    <div className="w-full text-start">
+      <FormattedNumber
+        value={row.original.dynamicData?.stakedBeraAmount ?? 0}
+        symbol="BERA"
+        compact
+      />
+    </div>
+  ),
+  minSize: 200,
+
+  accessorKey: "dynamicData.stakedBeraAmount",
   enableSorting: true,
 };
 
@@ -355,7 +370,8 @@ export const getGaugeValidatorColumns = (rewardVault: ApiVaultFragment) => {
 
 export const generalValidatorColumns: ColumnDef<ApiValidatorFragment>[] = [
   VALIDATOR_COLUMN,
-  GLOBAL_VOTING_POWER_COLUMN,
+  BOOSTS_COLUMN,
+  STAKED_BERAS_COLUMN,
   APY_COLUMN,
   MOST_WEIGHTED_GAUGE_COLUMN,
   BRIBES_COLUMN as ColumnDef<ApiValidatorFragment>,

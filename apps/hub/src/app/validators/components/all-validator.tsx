@@ -18,8 +18,9 @@ const VALIDATOR_PAGE_SIZE = 10;
 
 const map: Record<string, GqlValidatorOrderBy> = {
   dynamicData_bgtCapturePercentage: GqlValidatorOrderBy.BgtCapturePercentage,
-  dynamicData_amountDelegated: GqlValidatorOrderBy.AmountDelegated,
-  dynamicData_amountQueued: GqlValidatorOrderBy.AmountQueued,
+  dynamicData_activeBoostAmount: GqlValidatorOrderBy.ActiveBoostAmount,
+  dynamicData_queuedBoostAmount: GqlValidatorOrderBy.QueuedBoostAmount,
+  dynamicData_stakedBeraAmount: GqlValidatorOrderBy.StakedBeraAmount,
 };
 
 export const AllValidator = ({
@@ -82,11 +83,14 @@ export const AllValidator = ({
   );
 
   const handleSortingChange = useCallback(
-    (updater: Updater<SortingState>) => {
+    (updaterOrValue: Updater<SortingState>) => {
       setSorting((prev) => {
-        const newPaginationState =
-          typeof updater === "function" ? updater(prev ?? []) : updater;
-        return newPaginationState.slice(0, 1);
+        const newSortingState =
+          typeof updaterOrValue === "function"
+            ? updaterOrValue(prev ?? [])
+            : updaterOrValue;
+
+        return newSortingState.slice(0, 1);
       });
     },
     [setPage],
