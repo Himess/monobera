@@ -204,9 +204,8 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
         symbol: "USD",
       },
       {
-        label: "APR",
+        label: "Pool APY",
         value: v3Pool?.aprItems.at(0)?.apr ?? 0,
-        percent: true,
         colored: true,
       },
     ];
