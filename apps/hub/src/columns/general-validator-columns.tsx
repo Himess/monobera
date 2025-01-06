@@ -37,7 +37,7 @@ const VALIDATOR_COLUMN: ColumnDef<ApiValidatorFragment> = {
 };
 
 const BOOSTS_COLUMN: ColumnDef<ApiValidatorFragment> = {
-  header: "BGT Boosts",
+  header: "Boosts",
   cell: ({ row }) => (
     <div className="w-full text-start">
       <FormattedNumber
@@ -60,7 +60,7 @@ const BOOSTS_COLUMN: ColumnDef<ApiValidatorFragment> = {
 };
 
 const STAKED_BERAS_COLUMN: ColumnDef<ApiValidatorFragment> = {
-  header: "Staked BERA",
+  header: "Staked",
   cell: ({ row }) => (
     <div className="w-full text-start">
       <FormattedNumber
@@ -77,14 +77,15 @@ const STAKED_BERAS_COLUMN: ColumnDef<ApiValidatorFragment> = {
 };
 
 const APY_COLUMN: ColumnDef<ApiValidatorFragment> = {
-  header: "Capture",
+  header: "BGT Emissions (24h)",
   cell: ({ row }) => (
     <div className="flex h-full w-[91px] items-center">
       <FormattedNumber
         value={
-          Number(row.original.dynamicData?.bgtCapturePercentage ?? 0) / 100
+          Number(row.original.dynamicData?.lastDayDistributedBGTAmount ?? 0) /
+          100
         }
-        percent
+        symbol="BGT"
       />
     </div>
   ),
@@ -93,7 +94,7 @@ const APY_COLUMN: ColumnDef<ApiValidatorFragment> = {
     tooltip: bribeApyTooltipText(),
     headerClassname: "flex-initial",
   },
-  accessorKey: "dynamicData.bgtCapturePercentage",
+  accessorKey: "dynamicData.lastDayDistributedBGTAmount",
   enableSorting: true,
 };
 

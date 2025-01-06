@@ -49,6 +49,9 @@ export const useValidator = ({ pubkey }: { pubkey: Address }) => {
                 "",
               stakedBeraAmount:
                 indexerValidator?.dynamicData?.stakedBeraAmount ?? "",
+              lastDayDistributedBGTAmount:
+                indexerValidator?.dynamicData?.lastDayDistributedBGTAmount ??
+                "",
             },
             id: onChainValidator?.id ?? indexerValidator?.id ?? "",
             pubkey: onChainValidator?.pubkey ?? indexerValidator?.pubkey ?? "",

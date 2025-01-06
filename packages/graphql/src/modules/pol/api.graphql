@@ -90,6 +90,7 @@ fragment ApiValidator on GqlValidator {
     allTimeDistributedBGTAmount
     rewardRate
     stakedBeraAmount
+    lastDayDistributedBGTAmount
   }
   rewardAllocationWeights {
     ...ApiRewardAllocationWeight
