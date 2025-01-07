@@ -493,9 +493,11 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
                         </p>
                       </div>
                     ) : (
-                      <div className="flex items-center text-muted-foreground">
-                        Not whitelisted
-                      </div>
+                      isLoadingRewardVault && (
+                        <div className="flex items-center text-muted-foreground">
+                          Not whitelisted
+                        </div>
+                      )
                     )}
                   </div>
                 </CardContent>
@@ -516,8 +518,8 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
             timeCreated={pool?.createTime}
           />
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            {cards.map((card) => (
-              <Card className="px-4 py-2" key={card.label}>
+            {cards.map((card, index) => (
+              <Card className="px-4 py-2" key={`${card.label}-${index}`}>
                 <div className="flex flex-row items-center justify-between">
                   <div className="overflow-hidden truncate whitespace-nowrap text-sm ">
                     {card.label}
@@ -573,6 +575,7 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
           <TabsList className="w-full" variant="compact">
             {tabs.map(([value, label]) => (
               <TabsTrigger
+                key={value}
                 value={value}
                 className="w-full text-xs sm:text-sm"
                 variant="compact"
@@ -583,7 +586,11 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
           </TabsList>
           <Card className="mt-4">
             {tabs.map(([value, _label, content]) => (
-              <TabsContent value={value} className="mt-0 overflow-x-auto">
+              <TabsContent
+                value={value}
+                className="mt-0 overflow-x-auto"
+                key={value}
+              >
                 {content}
               </TabsContent>
             ))}
