@@ -14,6 +14,7 @@ import {
 import { beraTokenAddress, blockExplorerUrl } from "@bera/config";
 import { GqlPoolEventType } from "@bera/graphql/dex/api";
 import {
+  ActionButton,
   FormattedNumber,
   PoolHeader,
   TokenIcon,
@@ -314,14 +315,14 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
       <Separator />
       <div className="grid w-full auto-rows-min grid-cols-1 gap-4 lg:grid-cols-12 ">
         <div className="row-start-1 grid auto-rows-min grid-cols-1 gap-4 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1">
-          {isConnected && (
-            <Card>
-              <CardContent className="flex h-full flex-col items-center justify-between gap-4 p-4">
-                <div className="flex h-8 w-full items-center justify-between text-lg font-semibold">
-                  <h3 className="text-md font-semibold capitalize">
-                    My deposits
-                  </h3>
-                  <div className="flex gap-2">
+          <Card>
+            <CardContent className="flex h-full flex-col items-center justify-between gap-4 p-4">
+              <div className="flex h-8 w-full items-center justify-between text-lg font-semibold">
+                <h3 className="text-md font-semibold capitalize">
+                  My deposits
+                </h3>
+                <div className="flex gap-2">
+                  <ActionButton>
                     <Button
                       variant="outline"
                       size="md"
@@ -330,74 +331,73 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
                     >
                       Deposit
                     </Button>
-                    {userSharePercentage ? (
-                      <Button
-                        variant="outline"
-                        size="md"
-                        as={Link}
-                        href={getPoolWithdrawUrl(pool)}
-                      >
-                        Withdraw
-                      </Button>
-                    ) : null}
-                  </div>
+                  </ActionButton>
+                  {userSharePercentage ? (
+                    <Button
+                      variant="outline"
+                      size="md"
+                      as={Link}
+                      href={getPoolWithdrawUrl(pool)}
+                    >
+                      Withdraw
+                    </Button>
+                  ) : null}
                 </div>
-                {didUserDeposit ? (
-                  <>
-                    <div className="mt-4 grow self-stretch">
-                      <TokenView
-                        isLoading={
-                          (!userLpBalance && isUserLpBalanceLoading) ||
-                          isPoolLoading
-                        }
-                        tokens={
-                          pool?.tokens
-                            ?.filter((t) => t.address !== pool.address)
-                            ?.map((t) => ({
-                              address: t.address!,
-                              symbol: t.symbol!,
-                              value:
-                                parseFloat(t.balance) * userSharePercentage,
-                              valueUSD:
-                                parseFloat(t.balance) *
-                                parseFloat(t.token?.latestUSDPrice ?? "0") *
-                                userSharePercentage,
-                            })) ?? []
-                        }
-                      />
-                    </div>
-                    <div className="flex w-full justify-between font-medium">
-                      <span>Total</span>
-                      {isUserLpBalanceLoading || tvlInUsd === undefined ? (
-                        <Skeleton className="h-[32px] w-[150px]" />
-                      ) : tvlInUsd === null ? (
-                        "–"
-                      ) : (
-                        <FormattedNumber
-                          value={tvlInUsd * userSharePercentage}
-                          symbol="USD"
-                        />
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex h-48 flex-col items-center justify-center text-center text-sm text-muted-foreground">
-                    <div className="mb-2 flex gap-2">
-                      <h4>Earn APY</h4>
-                      <FormattedNumber
-                        className="font-semibold text-green-500"
-                        percent
-                        value={effectiveApy}
-                      />
-                    </div>
-                    <p className="max-w-48">
-                      You have no current deposits in this pool
-                    </p>
+              </div>
+              {didUserDeposit && isConnected ? (
+                <>
+                  <div className="mt-4 grow self-stretch">
+                    <TokenView
+                      isLoading={
+                        (!userLpBalance && isUserLpBalanceLoading) ||
+                        isPoolLoading
+                      }
+                      tokens={
+                        pool?.tokens
+                          ?.filter((t) => t.address !== pool.address)
+                          ?.map((t) => ({
+                            address: t.address!,
+                            symbol: t.symbol!,
+                            value: parseFloat(t.balance) * userSharePercentage,
+                            valueUSD:
+                              parseFloat(t.balance) *
+                              parseFloat(t.token?.latestUSDPrice ?? "0") *
+                              userSharePercentage,
+                          })) ?? []
+                      }
+                    />
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
+                  <div className="flex w-full justify-between font-medium">
+                    <span>Total</span>
+                    {isUserLpBalanceLoading || tvlInUsd === undefined ? (
+                      <Skeleton className="h-[32px] w-[150px]" />
+                    ) : tvlInUsd === null ? (
+                      "–"
+                    ) : (
+                      <FormattedNumber
+                        value={tvlInUsd * userSharePercentage}
+                        symbol="USD"
+                      />
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="flex h-48 flex-col items-center justify-center text-center text-sm text-muted-foreground">
+                  <div className="mb-2 flex gap-2">
+                    <h4>Earn APY</h4>
+                    <FormattedNumber
+                      className="font-semibold text-green-500"
+                      percent
+                      value={effectiveApy}
+                    />
+                  </div>
+                  <p className="max-w-48">
+                    You have no current deposits in this pool
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
           {isLoadingRewardVault || errorLoadingRewardVault ? (
             <Card>
               <CardContent className="p-4">
@@ -550,7 +550,11 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
                 </div>
                 <div className="overflow-hidden truncate whitespace-nowrap text-lg font-semibold">
                   {card.value !== null ? (
-                    <FormattedNumber value={card.value ?? 0} symbol="USD" />
+                    <FormattedNumber
+                      value={card.value ?? 0}
+                      symbol="USD"
+                      percent={card.percent}
+                    />
                   ) : (
                     "–"
                   )}
