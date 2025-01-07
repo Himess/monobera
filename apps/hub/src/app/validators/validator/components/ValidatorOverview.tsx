@@ -50,12 +50,14 @@ export const ValidatorOverview = ({
     blockSigningRank: number;
     blocksSigned: number;
     totalBlocks: number;
+    isLoading: boolean;
   }>({
     validatorRank: -1,
     totalValidatorsCount: 0,
     blockSigningRank: -1,
     blocksSigned: 0,
     totalBlocks: 0,
+    isLoading: true,
   });
 
   const {
@@ -63,7 +65,7 @@ export const ValidatorOverview = ({
     isLoading: isLoadingAllValidatorBlockData,
   } = usePollValidatorAllBlockStats();
 
-  const { data: allValidators, isLoading: isLoadingValidators } =
+  const { data: allValidators, isLoading: isLoadingAllValidators } =
     useAllValidators();
 
   useEffect(() => {
@@ -99,6 +101,8 @@ export const ValidatorOverview = ({
       blockSigningRank: blocksSigned?.rank ?? -1,
       blocksSigned: blocksSigned?.blocksSigned ?? 0,
       totalBlocks: blocksSigned?.totalBlocks ?? 0,
+      isLoading:
+        allValidatorBlockData === undefined || allValidators === undefined,
     });
   }, [validator.id, allValidatorBlockData, allValidators]);
 
@@ -140,6 +144,11 @@ export const ValidatorOverview = ({
     0,
   );
 
+  const isLoadingReturnPerBgt = !validator || tokenHoneyPrices === undefined;
+
+  const isLoadingBoostApy =
+    !validator.dynamicData || isLoadingReturnPerBgt || isLoadingAllValidators;
+
   const boostApy =
     (returnPerBgt *
       Number(validator.dynamicData?.lastDayDistributedBGTAmount ?? 0) *
@@ -161,7 +170,7 @@ export const ValidatorOverview = ({
             value={
               <div className="flex flex-col items-start gap-1">
                 <div className="relative flex w-full flex-row justify-between">
-                  {isLoadingValidators || rank.validatorRank === -1 ? (
+                  {isLoadingAllValidators || rank.validatorRank === -1 ? (
                     <Skeleton className="mt-1 h-8 w-40" />
                   ) : (
                     <span className="text-2xl font-semibold">
@@ -179,27 +188,27 @@ export const ValidatorOverview = ({
           />
           <ValidatorDataCard
             className="h-[130px]"
-            title="Block Signing"
+            title="Block Signing Rate"
             value={
               <div className="flex flex-col items-start gap-1">
                 <div className="relative flex w-full flex-row justify-between">
-                  {isLoadingValidators ? (
-                    <Skeleton className="mt-1 h-8 w-44" />
+                  {rank.isLoading ? (
+                    <Skeleton className="mt-1 h-8 w-40" />
                   ) : (
                     <span className="text-2xl font-semibold">
-                      {rank.blockSigningRank === -1
-                        ? "Unranked"
-                        : `${rank.blockSigningRank + 1} of ${
-                            rank.totalValidatorsCount
-                          }`}
+                      <FormattedNumber
+                        value={rank.blocksSigned / rank.totalBlocks}
+                        compact
+                        percent
+                        showIsSmallerThanMin
+                      />
                     </span>
                   )}
                   <Icons.cube className="absolute right-0 h-16 w-16 self-center text-muted" />
                 </div>
 
-                {isLoadingAllValidatorBlockData ||
-                rank.blockSigningRank === -1 ? (
-                  <Skeleton className="mt-1 h-4 w-full" />
+                {rank.isLoading ? (
+                  <Skeleton className="mt-1 h-4 w-12" />
                 ) : (
                   <span className="overflow-hidden text-ellipsis whitespace-nowrap text-sm text-muted-foreground">
                     Last day:{" "}
@@ -222,14 +231,15 @@ export const ValidatorOverview = ({
           <ValidatorDataCard
             className="h-[130px]"
             title="Boost APY"
+            tooltipText="Total value of incentives distributed in 24 hours on the total BGT boost (annualized)"
             value={
               <div className="flex flex-col items-start gap-1">
-                <div className="relative flex w-full flex-row gap-1">
-                  <FormattedNumber
-                    value={boostApy}
-                    percent
-                    className="text-2xl font-semibold"
-                  />
+                <div className="w-full text-2xl font-semibold">
+                  {isLoadingBoostApy ? (
+                    <Skeleton className="mt-1 h-[1em]" />
+                  ) : (
+                    <FormattedNumber value={boostApy} percent />
+                  )}
                 </div>
               </div>
             }
@@ -239,13 +249,18 @@ export const ValidatorOverview = ({
             title="Est. Return per BGT"
             value={
               <div className="flex flex-row gap-1 text-2xl font-semibold">
-                $
-                <FormattedNumber
-                  value={returnPerBgt}
-                  compact
-                  showIsSmallerThanMin
-                />
-                <Icons.honey className="h-6 w-6 self-center" />
+                {isLoadingReturnPerBgt ? (
+                  <Skeleton className="mt-1 w-8 h-[1em]" />
+                ) : (
+                  <>
+                    <FormattedNumber
+                      value={returnPerBgt}
+                      compact
+                      showIsSmallerThanMin
+                    />
+                    <Icons.honey className="h-6 w-6 self-center" />
+                  </>
+                )}
               </div>
             }
           />

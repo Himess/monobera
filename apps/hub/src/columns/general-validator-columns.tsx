@@ -46,7 +46,7 @@ const BOOSTS_COLUMN: ColumnDef<ApiValidatorFragment> = {
       />
     </div>
   ),
-  minSize: 200,
+  minSize: 150,
 
   accessorKey: "dynamicData.activeBoostAmount",
 
@@ -70,7 +70,7 @@ const STAKED_BERAS_COLUMN: ColumnDef<ApiValidatorFragment> = {
       />
     </div>
   ),
-  minSize: 200,
+  minSize: 150,
 
   accessorKey: "dynamicData.stakedBeraAmount",
   enableSorting: true,
@@ -79,7 +79,7 @@ const STAKED_BERAS_COLUMN: ColumnDef<ApiValidatorFragment> = {
 const APY_COLUMN: ColumnDef<ApiValidatorFragment> = {
   header: "BGT Emissions (24h)",
   cell: ({ row }) => (
-    <div className="flex h-full w-[91px] items-center">
+    <div className="flex h-full items-center">
       <FormattedNumber
         value={
           Number(row.original.dynamicData?.lastDayDistributedBGTAmount ?? 0) /
@@ -89,9 +89,8 @@ const APY_COLUMN: ColumnDef<ApiValidatorFragment> = {
       />
     </div>
   ),
-  minSize: 150,
+  minSize: 200,
   meta: {
-    tooltip: bribeApyTooltipText(),
     headerClassname: "flex-initial",
   },
   accessorKey: "dynamicData.lastDayDistributedBGTAmount",
@@ -99,7 +98,7 @@ const APY_COLUMN: ColumnDef<ApiValidatorFragment> = {
 };
 
 const MOST_WEIGHTED_GAUGE_COLUMN: ColumnDef<ApiValidatorFragment> = {
-  header: "Most Weighted Vault",
+  header: "Main Reward Vault",
   cell: ({ row }) => {
     const cuttingBoards = [...(row.original.rewardAllocationWeights ?? [])];
 
@@ -109,6 +108,9 @@ const MOST_WEIGHTED_GAUGE_COLUMN: ColumnDef<ApiValidatorFragment> = {
     return <CuttingBoardDisplay cuttingBoard={mostWeightedCuttingBoard} />;
   },
   accessorKey: "mostWeightedGauge",
+  meta: {
+    headerClassname: "whitespace-nowrap",
+  },
   enableSorting: false,
 };
 

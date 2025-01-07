@@ -19,6 +19,23 @@ export const AllRewardVaultColumns: ColumnDef<ApiVaultFragment>[] = [
     enableSorting: false,
   },
   {
+    header: "BGT Capture",
+    cell: ({ row }) => (
+      <FormattedNumber
+        className="justify-start"
+        compact={false}
+        percent
+        value={Number(row.original.dynamicData?.bgtCapturePercentage) / 100}
+      />
+    ),
+    meta: {
+      tooltip: "The percentage of global BGT captured by the gauge.",
+      headerClassname: "flex-initial whitespace-nowrap",
+    },
+    accessorKey: "dynamicData.bgtCapturePercentage",
+    enableSorting: true,
+  },
+  {
     header: "Total Incentive Value",
     cell: ({ row }) => (
       <FormattedNumber
@@ -34,23 +51,6 @@ export const AllRewardVaultColumns: ColumnDef<ApiVaultFragment>[] = [
       headerClassname: "flex-initial whitespace-nowrap",
     },
     accessorKey: "dynamicData?.activeIncentivesValueUsd",
-    enableSorting: true,
-  },
-  {
-    header: "BGT Capture",
-    cell: ({ row }) => (
-      <FormattedNumber
-        className="pl-2 justify-start"
-        compact={false}
-        percent
-        value={Number(row.original.dynamicData?.bgtCapturePercentage) / 100}
-      />
-    ),
-    meta: {
-      tooltip: "The percentage of global BGT captured by the gauge.",
-      headerClassname: "flex-initial whitespace-nowrap",
-    },
-    accessorKey: "dynamicData.bgtCapturePercentage",
     enableSorting: true,
   },
   // {

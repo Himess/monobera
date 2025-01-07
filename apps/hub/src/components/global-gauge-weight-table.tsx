@@ -136,8 +136,8 @@ export default function GlobalGaugeWeightTable({
   return (
     <SimpleTable
       table={allGaugeTable}
-      className="min-h-[200px] w-full min-w-[800px] shadow"
-      wrapperClassName="min-h-[200px] w-full min-w-[800px]"
+      className="min-h-[200px] shadow overflow-x-scroll max-w-full"
+      wrapperClassName="min-h-[200px]"
       variant="ghost"
       mutedBackgroundOnHead={false}
       flexTable

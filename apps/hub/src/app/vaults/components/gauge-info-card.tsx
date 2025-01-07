@@ -13,6 +13,7 @@ import { Skeleton } from "@bera/ui/skeleton";
 
 import { getValidatorEstimatedBgtPerYear } from "~/hooks/useValidatorEstimatedBgtPerYear";
 import { Address } from "viem";
+import { Badge } from "@bera/ui/badge";
 
 export default function GaugeInfoCard() {
   const { data: globalData, isLoading } = usePollGlobalData();
@@ -23,8 +24,8 @@ export default function GaugeInfoCard() {
   const blockTime = useBlockTime();
 
   return (
-    <div className="flex w-full flex-1 flex-col gap-6 sm:flex-row">
-      <div className="flex flex-1 flex-row gap-6 sm:flex-col">
+    <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] w-full flex-1  gap-4 sm:gap-6">
+      <div className="grid grid-cols-2 gap-4 sm:gap-6 sm:grid-cols-2">
         <div className="flex flex-1 flex-col gap-2 rounded-lg border border-border px-4 py-6">
           <div className="text-sm font-medium leading-5 text-muted-foreground">
             Active Reward Vaults
@@ -45,17 +46,12 @@ export default function GaugeInfoCard() {
             <FormattedNumber
               value={globalData.totalActiveIncentivesValueUSD}
               symbol="USD"
-              compact={false}
-              compactThreshold={999_999_999}
-              className="items-center text-xl font-bold leading-5"
+              className="items-center text-2xl font-bold leading-5"
             />
           ) : (
             <Skeleton className="h-8 w-[100px]" />
           )}
         </div>
-      </div>
-
-      <div className="flex flex-1 flex-row gap-6 sm:flex-col">
         <div className="flex flex-1 flex-col gap-2 rounded-lg border border-border px-4 py-6">
           <div className="text-sm font-medium leading-5 text-muted-foreground">
             Total Circulating BGT
@@ -66,7 +62,7 @@ export default function GaugeInfoCard() {
             <div className="flex items-center gap-1">
               <FormattedNumber
                 value={globalData?.bgtTotalSupply ?? 0}
-                className="items-center text-xl font-bold leading-5"
+                className="items-center text-2xl font-bold leading-5"
               />
               <Icons.bgt className="h-4 w-4" />
             </div>
@@ -77,15 +73,22 @@ export default function GaugeInfoCard() {
             BGT Distribution (Yearly)
           </div>
           {isBgtInflationLoading ? (
-            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-12" />
           ) : (
-            // Get BGT emitted last day and multiply by 365
-            <FormattedNumber
-              value={bgtInflation?.bgtInflation ?? 0}
-              compact={false}
-              compactThreshold={999_999}
-              className="items-center text-xl font-bold leading-5"
-            />
+            <div className="sm:flex gap-2">
+              <FormattedNumber
+                value={bgtInflation?.annualizedBGTEmission ?? 0}
+                compact={false}
+                compactThreshold={999_999}
+                className="items-center text-2xl font-bold leading-5"
+              />
+              <Badge variant="success">
+                <FormattedNumber
+                  value={bgtInflation?.annualizedBGTInflation ?? 0}
+                  percent
+                />
+              </Badge>
+            </div>
           )}
         </div>
       </div>

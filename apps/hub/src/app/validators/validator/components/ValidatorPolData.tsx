@@ -20,23 +20,18 @@ export const ValidatorPolData = ({
   });
 
   return (
-    <div className="mt-6 flex w-full flex-col gap-6 lg:flex-row">
-      <div className="w-full">
-        <SimpleTable
-          table={gaugesTable}
-          // variant="ghost"
-          wrapperClassName={"w-full"}
-          flexTable
-          dynamicFlex
-          showToolbar={false}
-        />
-      </div>
+    <div className="mt-6 grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-6">
+      <SimpleTable
+        table={gaugesTable}
+        // variant="ghost"
+        wrapperClassName={"w-full"}
+        flexTable
+        dynamicFlex
+        showToolbar={false}
+      />
       <GlobalGaugeWeightChart
         gaugeWeights={validator?.rewardAllocationWeights}
-        totalAmountStaked={validator?.dynamicData?.activeBoostAmount ?? "0"}
-        globalAmountStaked={"10000000"}
         isLoading={false}
-        showTotal={false}
       />
     </div>
   );

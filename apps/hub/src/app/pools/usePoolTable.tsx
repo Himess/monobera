@@ -169,11 +169,9 @@ export const usePoolTable = ({
 
           return (
             <div
-              className={`flex items-center justify-start text-sm ${
-                effectiveApy === 0
-                  ? "text-info-foreground"
-                  : "text-warning-foreground"
-              }`}
+              className={
+                "flex items-center justify-start text-sm text-info-foreground"
+              }
               title={`pool APR: ${(poolApr * 100).toFixed(2)}%, vault APY: ${(
                 vaultApy * 100
               ).toFixed(2)}%`} // TODO (#BFE-463): tooltip for this
