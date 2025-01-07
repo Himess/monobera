@@ -123,7 +123,7 @@ export const GeneralInfo = () => {
                   >
                     <GaugeIcon
                       address={gauge.vault.vaultAddress as Address}
-                      overrideImage={gauge.vault.metadata?.logoURI}
+                      src={gauge.vault.metadata?.logoURI}
                       className="h-4 w-4"
                     />
                     <span className="text-xs">

@@ -1,6 +1,5 @@
 import React from "react";
 import { DataTableColumnHeader, FormattedNumber } from "@bera/shared-ui";
-import { Button } from "@bera/ui/button";
 import { type ColumnDef } from "@tanstack/react-table";
 
 import { BribesPopover } from "~/components/bribes-tooltip";
@@ -10,20 +9,21 @@ import {
   ApiValidatorFragment,
 } from "@bera/graphql/pol/api";
 import { Address } from "viem";
+import { useRewardVault } from "@bera/berajs";
 
-export const getValidatorGaugeColumns = () => {
+export const getValidatorGaugeColumns = (validator: ApiValidatorFragment) => {
   const validatorGaugeColumns: ColumnDef<ApiRewardAllocationWeightFragment>[] =
     [
       {
         header: ({ column }) => (
           <DataTableColumnHeader column={column} title="Reward Vaults" />
         ),
-        cell: ({ row }) => (
-          <GaugeHeaderWidget
-            address={row.original.receiver as Address}
-            className="w-[150px]"
-          />
-        ),
+        cell: ({ row }) => {
+          const { data } = useRewardVault(row.original.receiver as Address, {
+            opts: { revalidateOnFocus: false },
+          });
+          return <GaugeHeaderWidget gauge={data} className="w-[150px]" />;
+        },
         accessorKey: "gauge",
         enableSorting: false,
       },
@@ -40,8 +40,9 @@ export const getValidatorGaugeColumns = () => {
         ),
         cell: ({ row }) => {
           const weight = row.original?.percentageNumerator / 1e5 ?? 0;
-          // TODO: get the validator's reward rate
-          const perProposal = weight * 0;
+
+          const perProposal =
+            weight * Number(validator.dynamicData?.rewardRate ?? 0);
 
           return (
             <FormattedNumber

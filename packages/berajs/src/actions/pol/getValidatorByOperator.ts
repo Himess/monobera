@@ -2,6 +2,7 @@ import { bgtClient } from "@bera/graphql";
 import {
   GetValidatorByOperator,
   type GetValidatorByOperatorQuery,
+  type GetValidatorByOperatorQueryVariables,
 } from "@bera/graphql/pol/subgraph";
 import { Address } from "viem";
 
@@ -18,10 +19,15 @@ export const getValidatorByOperator = async ({
     if (!config.subgraphs?.polSubgraph) {
       throw new Error("pol subgraph uri is not found in config");
     }
-    const result = await bgtClient.query<GetValidatorByOperatorQuery>({
+
+    const result = await bgtClient.query<
+      GetValidatorByOperatorQuery,
+      GetValidatorByOperatorQueryVariables
+    >({
       query: GetValidatorByOperator,
       variables: { operator: address.toLowerCase() },
     });
+
     return result.data;
   } catch (e) {
     console.error("getValidatorByOperator:", e);

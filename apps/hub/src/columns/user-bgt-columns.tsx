@@ -26,11 +26,7 @@ export const getUserBgtColumns = ({
         <DataTableColumnHeader column={column} title="Reward Vault" />
       ),
       cell: ({ row }) => (
-        <GaugeHeaderWidget
-          address={row.original.vault.address as Address}
-          className="w-[200px]"
-          gauge={row.original.vault}
-        />
+        <GaugeHeaderWidget className="w-[200px]" gauge={row.original.vault} />
       ),
       accessorKey: "gauge",
       enableSorting: false,
@@ -86,13 +82,7 @@ export const getUserBgtColumns = ({
       enableSorting: true,
     },
     {
-      header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          title="Incentives"
-          className="w-20 items-center text-center"
-        />
-      ),
+      header: () => <></>,
       cell: ({ row }) => {
         const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
 
@@ -108,8 +98,9 @@ export const getUserBgtColumns = ({
               className="leading-5"
               variant="ghost"
               disabled={isLoading || row.original.unclaimedBgt === "0"}
-              onClick={(e: any) => {
+              onClick={(e) => {
                 e.stopPropagation();
+                e.preventDefault();
                 setIsClaimModalOpen(true);
               }}
             >

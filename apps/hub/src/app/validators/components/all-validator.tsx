@@ -1,12 +1,7 @@
-import React, { useCallback, useMemo, useState } from "react";
-import {
-  useAllValidators,
-  useUserActiveValidators,
-  type UserValidator,
-} from "@bera/berajs";
+import React, { useCallback, useState } from "react";
+import { useAllValidators } from "@bera/berajs";
 import { SimpleTable, useAsyncTable } from "@bera/shared-ui";
 import type {
-  ColumnDef,
   PaginationState,
   SortingState,
   TableState,
@@ -23,8 +18,9 @@ const VALIDATOR_PAGE_SIZE = 10;
 
 const map: Record<string, GqlValidatorOrderBy> = {
   dynamicData_bgtCapturePercentage: GqlValidatorOrderBy.BgtCapturePercentage,
-  dynamicData_amountDelegated: GqlValidatorOrderBy.AmountDelegated,
-  dynamicData_amountQueued: GqlValidatorOrderBy.AmountQueued,
+  dynamicData_activeBoostAmount: GqlValidatorOrderBy.ActiveBoostAmount,
+  dynamicData_queuedBoostAmount: GqlValidatorOrderBy.QueuedBoostAmount,
+  dynamicData_stakedBeraAmount: GqlValidatorOrderBy.StakedBeraAmount,
 };
 
 export const AllValidator = ({
@@ -48,6 +44,7 @@ export const AllValidator = ({
     data: validatorData,
     isLoading,
     isValidating,
+    error,
   } = useAllValidators({
     sortBy: map[sorting?.[0]?.id as string],
     sortOrder: sorting?.[0]
@@ -86,11 +83,14 @@ export const AllValidator = ({
   );
 
   const handleSortingChange = useCallback(
-    (updater: Updater<SortingState>) => {
+    (updaterOrValue: Updater<SortingState>) => {
       setSorting((prev) => {
-        const newPaginationState =
-          typeof updater === "function" ? updater(prev ?? []) : updater;
-        return newPaginationState.slice(0, 1);
+        const newSortingState =
+          typeof updaterOrValue === "function"
+            ? updaterOrValue(prev ?? [])
+            : updaterOrValue;
+
+        return newSortingState.slice(0, 1);
       });
     },
     [setPage],
@@ -105,11 +105,13 @@ export const AllValidator = ({
         (page + 1) * VALIDATOR_PAGE_SIZE,
       ) ?? [],
     enablePagination: true,
+
     additionalTableProps: {
       meta: {
         loading: isLoading,
         loadingText: "Loading...",
         validating: isValidating,
+        emptyDataText: error ? "Error fetching data" : undefined,
       },
       state: {
         pagination: {
@@ -119,7 +121,10 @@ export const AllValidator = ({
         sorting,
       },
       autoResetPageIndex: false,
-      pageCount: Math.ceil(validators.length / VALIDATOR_PAGE_SIZE),
+      pageCount: Math.ceil(
+        (validatorData?.validators.pagination.totalCount ?? 0) /
+          VALIDATOR_PAGE_SIZE,
+      ),
       onPaginationChange: handlePaginationChange,
       onSortingChange: handleSortingChange,
     },

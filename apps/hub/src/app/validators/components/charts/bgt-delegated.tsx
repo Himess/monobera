@@ -22,7 +22,7 @@ const CustomBgtDelegatedTooltip = ({ active, payload, label }: any) => {
         />
         <p className="">{"All Time Boosts: "}</p>
         <FormattedNumber
-          value={payload[0].payload.allTimeBGTStaked}
+          value={payload[0].payload.allTimeAmount}
           className="text-sm font-semibold text-foreground"
         />
       </div>
@@ -62,7 +62,7 @@ export const BgtDelegated = ({
         <span className="text-md mr-2 font-semibold">BGT Boosted</span>
         <span className="text-sm text-muted-foreground">{"All Time:"}</span>
         <FormattedNumber
-          value={lastRecordedUsage ? lastRecordedUsage?.allTimeBGTStaked : ""}
+          value={lastRecordedUsage ? lastRecordedUsage?.allTimeAmount : ""}
           className="text-sm text-muted-foreground"
         />
         <span className="text-sm text-muted-foreground">
@@ -121,12 +121,12 @@ export const BgtDelegated = ({
                   }}
                 />
                 <YAxis
-                  dataKey={(v) => parseInt(v.allTimeBGTStaked)}
+                  dataKey={(v) => parseInt(v.allTimeAmount)}
                   type="number"
                   padding={{ top: 0, bottom: 0 }}
                 />
                 <ChartTooltip content={<CustomBgtDelegatedTooltip />} />
-                <Bar dataKey={"allTimeBGTStaked"} fill={"var(--color-bgt)"} />
+                <Bar dataKey={"allTimeAmount"} fill={"var(--color-bgt)"} />
               </BarChart>
             </ChartContainer>
           }

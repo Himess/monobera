@@ -48,8 +48,8 @@ query GetVaults(
   $where: GqlRewardVaultFilter
   $pageSize: Int
   $skip: Int
-  $orderBy: GqlRewardVaultOrderBy
-  $orderDirection: GqlRewardVaultOrderDirection
+  $orderBy: GqlRewardVaultOrderBy = bgtCapturePercentage
+  $orderDirection: GqlRewardVaultOrderDirection = desc
   $search: String
 ) {
   polGetRewardVaults(
@@ -90,6 +90,7 @@ fragment ApiValidator on GqlValidator {
     allTimeDistributedBGTAmount
     rewardRate
     stakedBeraAmount
+    lastDayDistributedBGTAmount
   }
   rewardAllocationWeights {
     ...ApiRewardAllocationWeight
@@ -104,6 +105,12 @@ fragment ApiRewardAllocationWeight on GqlValidatorRewardAllocationWeight {
   }
   receiver
   startBlock
+}
+
+query GetValidator($id: String!, $chain: GqlChain!) {
+  validator: polGetValidator(validatorId: $id, chain: $chain) {
+    ...ApiValidator
+  }
 }
 
 query GetValidators(
@@ -133,7 +140,11 @@ query GetValidators(
 }
 
 query GetVaultValidators($vaultId: String!) {
-  validators: polGetValidators(where: { vaultAddress: $vaultId }) {
+  validators: polGetValidators(
+    where: { vaultAddress: $vaultId }
+    orderDirection: desc
+    orderBy: rewardRate
+  ) {
     pagination {
       currentPage
       totalCount

@@ -6,24 +6,14 @@ import { isAddressEqual } from "viem";
 import { Address } from "viem";
 
 export const GaugeHeaderWidget = ({
-  address,
   className,
-  gauge: defaultGauge,
+  gauge,
+  isLoading,
 }: {
-  address: Address;
   className?: string;
-  gauge?: ApiVaultFragment;
+  gauge: ApiVaultFragment | undefined;
+  isLoading?: boolean;
 }) => {
-  const { data: vaultsData, isLoading } = useRewardVaults({
-    pageSize: 9999,
-  });
-
-  const gauge =
-    defaultGauge ??
-    vaultsData?.gaugeList?.find((gauge) =>
-      isAddressEqual(gauge.vaultAddress as Address, address),
-    );
-
   const { data } = useTokens();
   const tokenList = data?.tokenList ?? [];
   let list: any = [];
@@ -45,7 +35,7 @@ export const GaugeHeaderWidget = ({
           <div className="text-md flex items-center gap-1 font-medium leading-6">
             <GaugeIcon
               address={gauge.vaultAddress as Address}
-              overrideImage={gauge.metadata?.logoURI}
+              src={gauge.metadata?.logoURI}
             />
             {gauge.metadata?.name ??
               truncateHash(gauge.id ?? gauge.vaultAddress)}

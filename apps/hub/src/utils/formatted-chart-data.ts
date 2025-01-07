@@ -62,7 +62,7 @@ const generateValidatorBgtStakedEmptyData = (
   timestamp: string,
 ): BoostByValidatorFragment => {
   return {
-    allTimeBGTStaked: "0",
+    allTimeAmount: "0",
     BGTStaked: "0",
     id: "",
     timestamp: timestamp,

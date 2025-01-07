@@ -227,8 +227,9 @@ export const BribesPopover = ({
               />
             </div>
           }
-          children={<BribesTooltip activeIncentive={reducedIncentives ?? []} />}
-        />
+        >
+          <BribesTooltip activeIncentive={reducedIncentives ?? []} />
+        </Tooltip>
       )}
     </>
   );

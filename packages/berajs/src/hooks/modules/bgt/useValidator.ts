@@ -1,6 +1,5 @@
 import { Address, keccak256 } from "viem";
 
-import { Validator } from "~/types";
 import { useOnChainValidator } from "./useOnChainValidator";
 import { useSelectedValidator } from "./useSelectedValidator";
 import { ApiValidatorFragment } from "@bera/graphql/pol/api";
@@ -50,6 +49,9 @@ export const useValidator = ({ pubkey }: { pubkey: Address }) => {
                 "",
               stakedBeraAmount:
                 indexerValidator?.dynamicData?.stakedBeraAmount ?? "",
+              lastDayDistributedBGTAmount:
+                indexerValidator?.dynamicData?.lastDayDistributedBGTAmount ??
+                "",
             },
             id: onChainValidator?.id ?? indexerValidator?.id ?? "",
             pubkey: onChainValidator?.pubkey ?? indexerValidator?.pubkey ?? "",

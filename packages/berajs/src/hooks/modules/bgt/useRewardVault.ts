@@ -12,7 +12,7 @@ export const useRewardVault = (
   id: Address | undefined,
   options?: DefaultHookOptions,
 ): UsePollValidatorInfoResponse => {
-  const QUERY_KEY = id ? ["useSelectedValidator", id] : null;
+  const QUERY_KEY = id ? ["useRewardVault", id] : null;
   const swrResponse = useSWR<ApiVaultFragment, any, typeof QUERY_KEY>(
     QUERY_KEY,
     async () => {

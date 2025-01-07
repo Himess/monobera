@@ -32,33 +32,19 @@ interface IconProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof IconVariants> {
   address?: Address;
-  overrideImage?: string;
+  src?: string;
 }
 
 export const GaugeIcon = ({
   address = "0x",
-  overrideImage,
+  src,
   className,
   size,
   ...props
 }: IconProps) => {
-  const { data } = useRewardVaults({
-    pageSize: 9999,
-  });
-
-  const gaugeDictionary = data?.gaugeDictionary;
-
-  const img = useMemo(
-    () => gaugeDictionary?.[address]?.metadata?.logoURI ?? "",
-    [address],
-  );
   return (
     <Avatar className={cn(IconVariants({ size }), className)} {...props}>
-      <AvatarImage
-        src={overrideImage ? overrideImage : img}
-        className="rounded-full"
-        alt={address}
-      />
+      <AvatarImage src={src} className="rounded-full" alt={address} />
       <AvatarFallback>
         <Icons.gauge className="h-full w-full p-[15%]" />
       </AvatarFallback>

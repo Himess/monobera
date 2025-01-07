@@ -2,7 +2,6 @@ import { FALLBACK_BLOCK_TIME } from "@bera/config";
 import { governanceClient } from "@bera/graphql";
 import {
   GetProposal,
-  GetProposalDocument,
   ProposalWithVotesFragment,
 } from "@bera/graphql/governance";
 import { wagmiConfig } from "@bera/wagmi/config";

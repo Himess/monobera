@@ -53,12 +53,6 @@ export default function GaugeTables() {
                 }, 1000);
                 setTypingTimer(newTimer);
               }}
-              // onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-              //   if (e.key === "Enter" && keywords) {
-              //     setKeywordList([...keywordList, keywords]);
-              //     setKeywords("");
-              //   }
-              // }}
               className="w-full bg-background md:w-[300px]"
             />
 

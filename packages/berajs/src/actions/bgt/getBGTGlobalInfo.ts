@@ -12,9 +12,9 @@ import type { BeraConfig } from "~/types";
 export interface GlobalInfo {
   bgtInfo: {
     bgtInflation: number;
-    totalStakeBgt: number;
+    totalActiveBoostAmount: number;
   };
-  sumAllIncentivesInHoney: string;
+  totalActiveIncentivesValueUSD: string;
   top3EmittingValidators: ApiValidatorFragment[];
   validatorCount: number;
   activeRewardVaultCount: number;
@@ -40,11 +40,11 @@ export const getBGTGlobalInfo = async (
     bgtInfo: {
       // TODO: get bgt inflation somehow, maybe from the backend
       bgtInflation: 0,
-      totalStakeBgt: Number(
+      totalActiveBoostAmount: Number(
         data.polGetGlobalInfo?.totalActiveBoostAmount ?? "0",
       ),
     },
-    sumAllIncentivesInHoney:
+    totalActiveIncentivesValueUSD:
       data.polGetGlobalInfo?.totalActiveIncentivesValueUSD ?? "0",
     validatorCount: data.polGetGlobalInfo?.totalValidatorsCount ?? 0,
     activeRewardVaultCount: data.polGetGlobalInfo?.totalActiveRewardVaults ?? 0,

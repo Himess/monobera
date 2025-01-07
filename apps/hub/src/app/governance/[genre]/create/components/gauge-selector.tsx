@@ -64,7 +64,7 @@ export const GaugeSelector = ({
                   <div className="flex gap-2 text-sm font-semibold">
                     <GaugeIcon
                       address={gauge.vault}
-                      overrideImage={selectedGaugeMetadata?.logoURI}
+                      src={selectedGaugeMetadata?.logoURI}
                     />
                     <Link
                       href={`${blockExplorerUrl}/address/${gauge.vault}`}
@@ -145,10 +145,7 @@ export const GaugeSelector = ({
                 }}
               >
                 <div className="flex gap-2 text-sm font-semibold">
-                  <GaugeIcon
-                    address={vault.id}
-                    overrideImage={gaugeMetadata?.logoURI}
-                  />
+                  <GaugeIcon address={vault.id} src={gaugeMetadata?.logoURI} />
                   <div>{gaugeMetadata?.name ?? truncateHash(vault.id)}</div>
                 </div>
                 <div className="text-sm font-medium text-muted-foreground ">
