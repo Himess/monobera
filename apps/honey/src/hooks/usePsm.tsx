@@ -197,7 +197,7 @@ export const usePsm = (): PsmHookReturn => {
 
   // ===== COLLATERAL WEIGHTS =====
   // Get collateral weights for basket mode
-  const { data: collateralWeights } = useCollateralWeights();
+  const { data: collateralWeights } = useCollateralWeights(collateralList);
 
   // create the write transaction to actually mint or redeem
   // Analytics
@@ -251,7 +251,7 @@ export const usePsm = (): PsmHookReturn => {
         ? undefined
         : collaterals.find((token) => token.address === changedAsset) ??
           collaterals[0],
-      collateralList: isBasketModeEnabled ? collateralList : undefined,
+      collateralList: collateralList,
       amount: changedAsset
         ? givenIn
           ? fromAmount[changedAsset] ?? "0"

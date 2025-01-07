@@ -1,5 +1,5 @@
-import { Token } from "~/types";
 import { Address, PublicClient } from "viem";
+
 import { honeyFactoryAbi } from "~/abi/honey/honeyFactory";
 import { BeraConfig } from "~/types/global";
 

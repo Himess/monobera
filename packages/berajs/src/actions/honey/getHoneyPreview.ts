@@ -2,7 +2,6 @@ import { Address, PublicClient, parseUnits } from "viem";
 
 import { honeyFactoryReaderAbi } from "~/abi";
 import { BeraConfig, Token } from "~/types";
-import { getHoneyCollaterals } from "~/actions/honey";
 
 export enum HoneyPreviewMethod {
   Mint = "previewMintHoney",
@@ -15,7 +14,7 @@ export interface HoneyPreviewArgs {
   client: PublicClient;
   config: BeraConfig;
   collateral: Token;
-  collateralList: Token[] | undefined;
+  collateralList: Token[];
   amount: string;
   method: HoneyPreviewMethod;
 }
@@ -37,6 +36,7 @@ export const getHoneyPreview = async ({
   client,
   config,
   collateral,
+  collateralList,
   amount,
   method,
 }: HoneyPreviewArgs): Promise<HoneyPreviewResult | undefined> => {
@@ -83,18 +83,15 @@ export const getHoneyPreview = async ({
       };
     }
 
-    const collateralList = await getHoneyCollaterals({
-      client: client,
-      config,
-    });
-
     // ======= TEMP FIX ==========
     /**
      * TEMP FIX: the smart contract (when not in basket mode and when the user change the honey amount) returns the collateral value in the first position
      * of the array disregarding the collateral order inside the contracts.
      * [TODO] when the smart contract are updated we need to remove this fix
      */
-    const collIdx = collateralList.indexOf(collateral.address);
+    const collIdx = collateralList.findIndex(
+      (token) => token.address === collateral.address,
+    );
     if (
       (collIdx !== 0 && formattedResult.collaterals[collIdx] === BigInt(0)) ||
       !formattedResult.collaterals[collIdx]
@@ -108,12 +105,16 @@ export const getHoneyPreview = async ({
     const amountsWithAddress: Record<Address, bigint> = collateralList.reduce(
       (agg, key, idx) => {
         if (
-          key === collateral.address &&
+          key.address === collateral.address &&
           formattedResult.collaterals[idx] === BigInt(0)
         ) {
-          return Object.assign(agg, { [key]: formattedResult.collaterals[0] });
+          return Object.assign(agg, {
+            [key.address]: formattedResult.collaterals[0],
+          });
         }
-        return Object.assign(agg, { [key]: formattedResult.collaterals[idx] });
+        return Object.assign(agg, {
+          [key.address]: formattedResult.collaterals[idx],
+        });
       },
       {},
     );
