@@ -7,6 +7,7 @@ import {
 } from "@bera/shared-ui";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { calcPoolEffectiveApy } from "~/utils/calculateApy";
 import { PoolSummary } from "../../components/pools-table-columns";
 import { usePools } from "./usePools";
 
@@ -166,37 +167,23 @@ export const usePoolTable = ({
           />
         ),
         cell: ({ row }) => {
-          // NOTE: typically you would never sum APY and APR directly, but @don have given go ahead to do so in this
-          // case as the APY is not a 'real' APY.
-          let vaultAPY = Number(
-            row.original.rewardVault?.dynamicData?.apy ?? 0,
+          const { effectiveApy, vaultApy, poolApr } = calcPoolEffectiveApy(
+            row.original,
           );
-          const poolAPR = Number(
-            row.original.dynamicData?.aprItems?.at(0)?.apr ?? 0,
-          );
-          // If a vault APY is -1 it's null.
-          if (vaultAPY < 0) {
-            vaultAPY = 0;
-          } else {
-            // vault APYs are stored as percentages unlike pool APRs
-            vaultAPY /= 100;
-          }
-
-          const effectiveAPY = vaultAPY + poolAPR;
 
           return (
             <div
               className={`flex items-center justify-start text-sm ${
-                effectiveAPY === 0
+                effectiveApy === 0
                   ? "text-info-foreground"
                   : "text-warning-foreground"
               }`}
-              title={`pool APR: ${(poolAPR * 100).toFixed(2)}%, vault APY: ${(
-                vaultAPY * 100
+              title={`pool APR: ${(poolApr * 100).toFixed(2)}%, vault APY: ${(
+                vaultApy * 100
               ).toFixed(2)}%`} // TODO (#BFE-463): tooltip for this
             >
               <FormattedNumber
-                value={effectiveAPY?.toString() ?? "0"}
+                value={effectiveApy?.toString() ?? "0"}
                 percent
                 compact
                 showIsSmallerThanMin
@@ -209,9 +196,9 @@ export const usePoolTable = ({
         },
         sortingFn: (rowA, rowB) => {
           return (
-            Number(rowA.original.rewardVault?.dynamicData?.apy ?? 0) +
+            Number(rowA.original.rewardVault?.dynamicData?.apy ?? 0) / 100 +
             Number(rowA.original.dynamicData?.aprItems?.at(0)?.apr ?? 0) -
-            (Number(rowB.original.rewardVault?.dynamicData?.apy ?? 0) +
+            (Number(rowB.original.rewardVault?.dynamicData?.apy ?? 0) / 100 +
               Number(rowB.original.dynamicData?.aprItems?.at(0)?.apr ?? 0))
           );
         },
