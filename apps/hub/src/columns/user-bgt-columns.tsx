@@ -95,7 +95,7 @@ export const getUserBgtColumns = ({
             />
             <Button
               size="sm"
-              className="leading-5"
+              className="leading-5 whitespace-nowrap"
               variant="ghost"
               disabled={isLoading || row.original.unclaimedBgt === "0"}
               onClick={(e) => {

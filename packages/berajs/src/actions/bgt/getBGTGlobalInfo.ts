@@ -10,16 +10,14 @@ import {
 import type { BeraConfig } from "~/types";
 
 export interface GlobalInfo {
-  bgtInfo: {
-    bgtInflation: number;
-    totalActiveBoostAmount: number;
-  };
   totalActiveIncentivesValueUSD: string;
   top3EmittingValidators: ApiValidatorFragment[];
   validatorCount: number;
   activeRewardVaultCount: number;
   whitelistedRewardVaultCount: number;
   totalDistributedBGTAmount: string;
+  annualizedBGTEmission: string;
+  annualizedBGTInflation: string;
 }
 
 export const getBGTGlobalInfo = async (
@@ -38,13 +36,6 @@ export const getBGTGlobalInfo = async (
   const data = apiRes.data;
 
   return {
-    bgtInfo: {
-      // TODO: get bgt inflation somehow, maybe from the backend
-      bgtInflation: 0,
-      totalActiveBoostAmount: Number(
-        data.polGetGlobalInfo?.totalActiveBoostAmount ?? "0",
-      ),
-    },
     totalActiveIncentivesValueUSD:
       data.polGetGlobalInfo?.totalActiveIncentivesValueUSD ?? "0",
     validatorCount: data.polGetGlobalInfo?.totalValidatorsCount ?? 0,
@@ -54,5 +45,8 @@ export const getBGTGlobalInfo = async (
     top3EmittingValidators: apiRes.data.top3EmittingValidators.validators,
     totalDistributedBGTAmount:
       data.polGetGlobalInfo?.totalDistributedBGTAmount ?? "0",
+    annualizedBGTEmission: data.polGetGlobalInfo?.annualizedBGTEmission ?? "0",
+    annualizedBGTInflation:
+      data.polGetGlobalInfo?.annualizedBGTInflation ?? "0",
   } satisfies GlobalInfo;
 };

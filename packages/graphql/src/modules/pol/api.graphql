@@ -184,6 +184,8 @@ query GlobalData($chain: GqlChain!) {
     totalActiveIncentives
     totalActiveIncentivesValueUSD
     totalDistributedBGTAmount
+    annualizedBGTEmission
+    annualizedBGTInflation
   }
 }
 
