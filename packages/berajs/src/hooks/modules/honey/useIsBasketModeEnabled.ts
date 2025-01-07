@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { usePublicClient } from "wagmi";
-import { honeyFactoryAbi } from "~/abi";
 
+import { honeyFactoryAbi } from "~/abi";
 import { useBeraJs } from "~/contexts";
 import POLLING from "~/enum/polling";
 import { DefaultHookOptions, DefaultHookReturnType } from "~/types";
@@ -34,7 +34,7 @@ export const useIsBasketModeEnabled = (
     },
     {
       ...options?.opts,
-      refreshInterval: options?.opts?.refreshInterval ?? POLLING.NORMAL,
+      refreshInterval: options?.opts?.refreshInterval ?? POLLING.FAST,
     },
   );
   return {

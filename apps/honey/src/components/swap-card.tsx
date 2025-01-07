@@ -10,17 +10,17 @@ import {
   SSRSpinner,
   TokenInput,
 } from "@bera/shared-ui";
+import { cn } from "@bera/ui";
 import { Alert, AlertDescription, AlertTitle } from "@bera/ui/alert";
 import { Button } from "@bera/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@bera/ui/card";
 import { Icons } from "@bera/ui/icons";
 import { Skeleton } from "@bera/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@bera/ui/tabs";
+import BigNumber from "bignumber.js";
 import { Address, formatUnits, parseUnits } from "viem";
 
 import { usePsm } from "~/hooks/usePsm";
-import { cn } from "@bera/ui";
-import BigNumber from "bignumber.js";
 
 export function SwapCard() {
   const [tabValue, setTabValue] = useState<"mint" | "burn">("mint");
@@ -83,7 +83,7 @@ export function SwapCard() {
         <CardHeader className="pb-3">
           <CardTitle>
             <span>{isMint ? "Mint" : "Redeem"}</span>
-            {isFeeLoading ? (
+            {isFeeLoading || fee === -1 ? (
               <Skeleton className="absolute right-6 top-5 h-6 w-40" />
             ) : (
               <div className="absolute right-6 top-5 text-base font-medium text-muted-foreground">
@@ -122,7 +122,7 @@ export function SwapCard() {
             <ul className="relative">
               <div
                 className={cn(
-                  "border rounded-md",
+                  "rounded-md border",
                   isBasketModeEnabled ? "mb-4" : "rounded-b-none border-b-0",
                 )}
               >
@@ -205,7 +205,7 @@ export function SwapCard() {
               )}
               <div
                 className={cn(
-                  "border rounded-md",
+                  "rounded-md border",
                   !isBasketModeEnabled && "rounded-t-none",
                 )}
               >

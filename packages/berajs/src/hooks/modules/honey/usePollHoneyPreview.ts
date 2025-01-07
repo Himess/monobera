@@ -1,4 +1,5 @@
 import useSWR from "swr";
+import { Address } from "viem";
 import { usePublicClient } from "wagmi";
 
 import {
@@ -12,7 +13,7 @@ import { DefaultHookOptions, DefaultHookReturnType, Token } from "~/types";
 
 export interface UsePollHoneyPreviewArgs {
   collateral: Token | undefined;
-  collateralList: Token[] | undefined;
+  collateralList?: Token[];
   amount: string;
   mint: boolean; // true mint, false redeem
   given_in: boolean; // true given in, false given out
@@ -41,7 +42,7 @@ export const usePollHoneyPreview = (
       : HoneyPreviewMethod.HoneyToRedeem;
 
   const QUERY_KEY =
-    collateral && Number(amount)
+    collateral && Number(amount) && collateralList
       ? [method, collateral?.address, amount, mint, given_in.toString()]
       : null;
   const { config: beraConfig } = useBeraJs();
@@ -55,6 +56,8 @@ export const usePollHoneyPreview = (
         throw new Error("missing contract address honeyFactoryAddress");
       if (!collateral) throw new Error("invalid collateral");
       if (Number(amount) <= 0) throw new Error("invalid amount");
+      if (!collateralList) throw new Error("missing collateralList");
+
       return await getHoneyPreview({
         client: publicClient,
         config,

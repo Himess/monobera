@@ -1,9 +1,7 @@
-import { PublicClient } from "viem";
+import { Address, PublicClient } from "viem";
 
-import { Address } from "viem";
-import { BeraConfig } from "~/types";
 import { honeyFactoryAbi } from "~/abi";
-import { getHoneyCollaterals } from "~/actions/honey";
+import { BeraConfig, Token } from "~/types";
 
 /**
  * Arguments for the getCollateralWeights function.
@@ -11,6 +9,7 @@ import { getHoneyCollaterals } from "~/actions/honey";
 interface getCollateralWeightsArgs {
   client: PublicClient;
   config: BeraConfig;
+  collateralList: Token[];
 }
 
 /**
@@ -22,16 +21,12 @@ interface getCollateralWeightsArgs {
  */
 export const getCollateralWeights = async ({
   client,
+  collateralList,
   config,
 }: getCollateralWeightsArgs): Promise<Record<Address, bigint> | undefined> => {
   try {
     if (!config.contracts?.honeyFactoryAddress)
       throw new Error("missing contract address honeyFactoryAddress");
-
-    const collateralList = await getHoneyCollaterals({
-      client: client,
-      config,
-    });
 
     // Fetch the weights for all collateral assets
     const collateralWeights = await client.readContract({
@@ -43,7 +38,8 @@ export const getCollateralWeights = async ({
     // Combine the addresses and weights into a single object
     // where each address maps to its corresponding weight
     const weightsWithAddress: Record<Address, bigint> = collateralList.reduce(
-      (agg, key, idx) => Object.assign(agg, { [key]: collateralWeights[idx] }),
+      (agg, key, idx) =>
+        Object.assign(agg, { [key.address]: collateralWeights[idx] }),
       {},
     );
 

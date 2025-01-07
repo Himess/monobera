@@ -184,20 +184,17 @@ export const usePsm = (): PsmHookReturn => {
   // ===== FEE =====
   // Get current fees for selected collateral
   const { getCollateralRate, isLoading: isFeeLoading } = useCollateralsRates({
-    collateralList: collateralList?.map((token: any) => token.address) ?? [],
+    collateralList,
   });
   const params =
-    collaterals?.length && isBasketModeEnabled !== undefined
-      ? getCollateralRate(
-          collaterals[0].address as Address,
-          isBasketModeEnabled,
-        )
+    collaterals?.length && isBasketModeEnabled !== undefined && collateralList
+      ? getCollateralRate(collaterals[0].address, isBasketModeEnabled)
       : undefined;
-  const fee = params ? (isMint ? params.mintFee : params.redeemFee) : 0;
+  const fee = params ? (isMint ? params.mintFee : params.redeemFee) : -1;
 
   // ===== COLLATERAL WEIGHTS =====
   // Get collateral weights for basket mode
-  const { data: collateralWeights } = useCollateralWeights();
+  const { data: collateralWeights } = useCollateralWeights(collateralList);
 
   // create the write transaction to actually mint or redeem
   // Analytics
@@ -251,7 +248,7 @@ export const usePsm = (): PsmHookReturn => {
         ? undefined
         : collaterals.find((token) => token.address === changedAsset) ??
           collaterals[0],
-      collateralList: isBasketModeEnabled ? collateralList : undefined,
+      collateralList: collateralList,
       amount: changedAsset
         ? givenIn
           ? fromAmount[changedAsset] ?? "0"
