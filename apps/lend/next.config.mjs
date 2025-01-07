@@ -72,7 +72,11 @@ export default withSentryConfig(config, {
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
   // Upload a larger set of source maps for prettier stack traces (increases build time)
-  widenClientFileUpload: true,
+  // widenClientFileUpload: true,
+
+  sourcemaps: {
+    disable: process.env.VERCEL_ENV !== "production",
+  },
 
   // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
   tunnelRoute: "/monitoring-tunnel",
