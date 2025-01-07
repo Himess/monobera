@@ -45,8 +45,6 @@ export default function GaugeInfoCard() {
             <FormattedNumber
               value={globalData.totalActiveIncentivesValueUSD}
               symbol="USD"
-              compact={false}
-              compactThreshold={999_999_999}
               className="items-center text-xl font-bold leading-5"
             />
           ) : (
