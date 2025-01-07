@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useBeraJs } from "@bera/berajs";
 import { balancerApiChainName } from "@bera/config";
 import { bexApiGraphqlClient } from "@bera/graphql";
@@ -68,16 +68,17 @@ export const usePools = ({ keyword }: { keyword: string }) => {
     if (!walletPools) return pools;
 
     return pools.map((pool) => {
-      const walletPool = walletPools.find((p) => p.id === pool.id);
-      return { ...pool, ...walletPool };
+      const walletPool = walletPools.find(
+        (p) => p.id.toLowerCase() === pool.id.toLowerCase(),
+      );
+      return { ...pool, ...(walletPool || {}) };
     });
   }, [account, pools, walletPools]);
 
   return {
     pools: mergedPools,
     walletPools,
-    isPoolsLoading,
-    isWalletPoolsLoading,
+    isLoading: isPoolsLoading || isWalletPoolsLoading,
     refresh: () => {
       mutatePools();
       mutateWalletPools();

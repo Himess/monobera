@@ -30,11 +30,7 @@ export const usePoolTable = ({
     }
   };
 
-  const {
-    pools: allPools,
-    isPoolsLoading,
-    walletPools,
-  } = usePools({ keyword });
+  const { pools: allPools, isLoading, walletPools } = usePools({ keyword });
 
   const pools = userPoolsOnly ? walletPools : allPools;
 
@@ -224,7 +220,7 @@ export const usePoolTable = ({
     table,
     search,
     setSearch,
-    isLoading: isPoolsLoading,
+    isLoading,
     handleEnter,
     keyword,
     setKeyword,
