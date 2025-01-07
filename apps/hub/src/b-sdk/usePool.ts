@@ -26,6 +26,7 @@ export const usePool = ({ poolId }: { poolId: string }) => {
     return merge;
   }, [onChainPool, subgraphPool]);
 
+  // TODO: we really need to strongly type these return values here
   return {
     data: [pool, v3Pool] as const,
     isLoading: isPoolLoading,

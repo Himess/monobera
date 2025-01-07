@@ -10,7 +10,7 @@ export { usePollValidatorTokenRewards } from "./hooks/poll-validator-token-rewar
 export { useUserActiveValidators } from "./hooks/useUserActiveValidators";
 export * from "./hooks/useRewardVaultBalanceFromStakingToken";
 export { useRewardVaultFromToken } from "./hooks/useRewardVaultFromToken";
-export { useRewardVaultsFromTokens } from "./hooks/useRewardVaultsFromTokens";
+export { useRewardVaultAddressesFromTokens } from "./hooks/useRewardVaultAddressesFromTokens";
 export { usePollRewardVault } from "./hooks/poll-reward-vault";
 export { useSubgraphUserValidators } from "./hooks/useSubgraphUserValidators";
 

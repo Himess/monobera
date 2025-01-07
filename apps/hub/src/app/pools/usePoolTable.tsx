@@ -1,17 +1,13 @@
 import { useMemo, useState } from "react";
-import {
-  ADDRESS_ZERO,
-  useBgtInflation,
-  useIsWhitelistedVault,
-  useRewardVaultsFromTokens,
-} from "@bera/berajs";
 import { MinimalPoolInListFragment } from "@bera/graphql/dex/api";
 import {
   DataTableColumnHeader,
   FormattedNumber,
   useAsyncTable,
 } from "@bera/shared-ui";
+import { ColumnDef } from "@tanstack/react-table";
 
+import { calcPoolEffectiveApy } from "~/utils/calculateApy";
 import { PoolSummary } from "../../components/pools-table-columns";
 import { usePools } from "./usePools";
 
@@ -34,51 +30,13 @@ export const usePoolTable = ({
     }
   };
 
-  const {
-    pools: allPools,
-    isPoolsLoading,
-    walletPools,
-  } = usePools({ keyword });
+  const { pools: allPools, isLoading, walletPools } = usePools({ keyword });
 
   const pools = userPoolsOnly ? walletPools : allPools;
 
-  // Fetch reward vault addresses from token addresses
-  const tokenAddresses = useMemo(
-    () => pools?.map((pool) => pool.address) || [],
-    [pools],
-  );
-
-  // Extract vault addresses from the token addresse and fetch the whitelist statuses for all of those vaults
-  const { data: rewardVaults } = useRewardVaultsFromTokens({
-    tokenAddresses,
-  });
-
-  const vaultAddresses = useMemo(
-    () => Object.values(rewardVaults ?? {}).filter((v) => v !== ADDRESS_ZERO),
-    [rewardVaults],
-  );
-
-  const { data: whitelistedVaults } = useIsWhitelistedVault(vaultAddresses);
-
-  // Map vault whitelist status
-  const whitelistStatusMap = useMemo(() => {
-    return new Map(
-      whitelistedVaults?.map((vault) => [vault.address, vault.isWhitelisted]) ||
-        [],
-    );
-  }, [whitelistedVaults]);
-
-  const table = useAsyncTable<MinimalPoolInListFragment>({
-    data: pools ?? [],
-    fetchData: async () => {},
-    additionalTableProps: {
-      initialState: { sorting, pagination: { pageSize: 10, pageIndex: 0 } },
-      manualPagination: false,
-      manualSorting: false,
-    },
-    enablePagination: true,
-    enableRowSelection: false,
-    columns: [
+  // NOTE: we memoize this to reduce render thrashing on page load (in accordance with tanstack best practices)
+  const tableColumns: ColumnDef<MinimalPoolInListFragment>[] = useMemo(() => {
+    return [
       {
         accessorKey: "address",
         header: ({ column }) => (
@@ -89,23 +47,17 @@ export const usePoolTable = ({
           />
         ),
         cell: ({ row }) => {
-          const rewardVault =
-            rewardVaults?.[row.original.address.toLowerCase()];
-          const isWhitelistedVault = rewardVault
-            ? whitelistedVaults?.some(
-                (vault) =>
-                  vault.address.toLowerCase() === rewardVault.toLowerCase() &&
-                  vault.isWhitelisted,
-              ) ?? false
-            : false;
-
+          const isWhitelistedVault =
+            row.original.rewardVault?.isVaultWhitelisted;
+          const providedLiquidity =
+            row.original.userBalance &&
+            row.original.userBalance?.totalBalanceUsd > 0;
           return (
-            <div className="flex items-center gap-2">
-              <PoolSummary
-                pool={row.original}
-                isWhitelistedVault={isWhitelistedVault}
-              />
-            </div>
+            <PoolSummary
+              pool={row.original}
+              isWhitelistedVault={isWhitelistedVault ?? false}
+              providedLiquidity={providedLiquidity ?? false}
+            />
           );
         },
         enableSorting: false,
@@ -125,7 +77,7 @@ export const usePoolTable = ({
           <div className="flex flex-col gap-1">
             <div className="text-sm leading-5">
               <FormattedNumber
-                value={row.original?.dynamicData?.totalLiquidity ?? 0}
+                value={row.original.dynamicData?.totalLiquidity ?? 0}
                 symbol="USD"
               />
             </div>
@@ -136,8 +88,8 @@ export const usePoolTable = ({
         },
         sortingFn: (rowA, rowB) => {
           return (
-            Number(rowA.original.dynamicData.totalLiquidity ?? "0") -
-            Number(rowB.original.dynamicData.totalLiquidity ?? "0")
+            Number(rowA.original.dynamicData?.totalLiquidity ?? "0") -
+            Number(rowB.original.dynamicData?.totalLiquidity ?? "0")
           );
         },
       },
@@ -154,7 +106,7 @@ export const usePoolTable = ({
           <div className="flex flex-col gap-1">
             <div className="text-sm leading-5">
               <FormattedNumber
-                value={row.original.dynamicData.fees24h ?? "0"}
+                value={row.original.dynamicData?.fees24h ?? "0"}
                 symbol="USD"
               />
             </div>
@@ -166,8 +118,8 @@ export const usePoolTable = ({
         },
         sortingFn: (rowA, rowB) => {
           return (
-            Number(rowA.original.dynamicData.fees24h ?? "0") -
-            Number(rowB.original.dynamicData.fees24h ?? "0")
+            Number(rowA.original.dynamicData?.fees24h ?? "0") -
+            Number(rowB.original.dynamicData?.fees24h ?? "0")
           );
         },
       },
@@ -184,7 +136,7 @@ export const usePoolTable = ({
           <div className="flex flex-col gap-1">
             <div className="text-sm leading-5">
               <FormattedNumber
-                value={row.original.dynamicData.volume24h ?? "0"}
+                value={row.original.dynamicData?.volume24h ?? "0"}
                 symbol="USD"
               />
             </div>
@@ -196,8 +148,8 @@ export const usePoolTable = ({
         },
         sortingFn: (rowA, rowB) => {
           return (
-            Number(rowA.original.dynamicData.volume24h ?? "0") -
-            Number(rowB.original.dynamicData.volume24h ?? "0")
+            Number(rowA.original.dynamicData?.volume24h ?? "0") -
+            Number(rowB.original.dynamicData?.volume24h ?? "0")
           );
         },
       },
@@ -206,24 +158,28 @@ export const usePoolTable = ({
         header: ({ column }) => (
           <DataTableColumnHeader
             column={column}
-            title="APR"
+            title="APY"
             className="whitespace-nowrap"
           />
         ),
         cell: ({ row }) => {
+          const { effectiveApy, vaultApy, poolApr } = calcPoolEffectiveApy(
+            row.original,
+          );
+
           return (
             <div
               className={`flex items-center justify-start text-sm ${
-                row.original.dynamicData.aprItems?.at(0)?.apr === 0
+                effectiveApy === 0
                   ? "text-info-foreground"
                   : "text-warning-foreground"
               }`}
+              title={`pool APR: ${(poolApr * 100).toFixed(2)}%, vault APY: ${(
+                vaultApy * 100
+              ).toFixed(2)}%`} // TODO (#BFE-463): tooltip for this
             >
               <FormattedNumber
-                value={
-                  row.original.dynamicData.aprItems?.at(0)?.apr?.toString() ??
-                  "0"
-                }
+                value={effectiveApy?.toString() ?? "0"}
                 percent
                 compact
                 showIsSmallerThanMin
@@ -236,12 +192,27 @@ export const usePoolTable = ({
         },
         sortingFn: (rowA, rowB) => {
           return (
-            Number(rowA.original.dynamicData.aprItems?.at(0)?.apr ?? "0") -
-            Number(rowB.original.dynamicData.aprItems?.at(0)?.apr ?? "0")
+            Number(rowA.original.rewardVault?.dynamicData?.apy ?? 0) / 100 +
+            Number(rowA.original.dynamicData?.aprItems?.at(0)?.apr ?? 0) -
+            (Number(rowB.original.rewardVault?.dynamicData?.apy ?? 0) / 100 +
+              Number(rowB.original.dynamicData?.aprItems?.at(0)?.apr ?? 0))
           );
         },
       },
-    ],
+    ];
+  }, [pools]);
+
+  const table = useAsyncTable<MinimalPoolInListFragment>({
+    data: pools ?? [],
+    fetchData: async () => {},
+    additionalTableProps: {
+      initialState: { sorting, pagination: { pageSize: 10, pageIndex: 0 } },
+      manualPagination: false,
+      manualSorting: false,
+    },
+    enablePagination: true,
+    enableRowSelection: false,
+    columns: tableColumns,
   });
 
   return {
@@ -249,7 +220,7 @@ export const usePoolTable = ({
     table,
     search,
     setSearch,
-    isLoading: isPoolsLoading,
+    isLoading,
     handleEnter,
     keyword,
     setKeyword,

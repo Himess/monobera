@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   useMultipleTokenInformation,
   useSubgraphTokenInformations,
@@ -18,8 +18,6 @@ import { usePublicClient } from "wagmi";
 export function useOnChainPoolData(poolId: string) {
   const address = poolId.slice(0, 42) as Address;
   const publicClient = usePublicClient();
-
-  const [pool, setPool] = useState<SubgraphPoolFragment | undefined>(undefined);
 
   const isAddressValid = isAddress(address);
 
@@ -116,10 +114,9 @@ export function useOnChainPoolData(poolId: string) {
     tokenAddresses: poolData?.poolTokens[0] as Address[] | undefined,
   });
 
-  useEffect(() => {
+  const pool = useMemo(() => {
     if (!poolData || !tokenInformation) {
-      setPool(undefined);
-      return;
+      return undefined;
     }
 
     const pool: SubgraphPoolFragment = {
@@ -159,7 +156,7 @@ export function useOnChainPoolData(poolId: string) {
 
     pool.totalLiquidity = totalLiquidity;
 
-    setPool(pool);
+    return pool;
   }, [poolData, tokenInformation, tokenPrices]);
 
   return {

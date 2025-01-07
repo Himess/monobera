@@ -3,16 +3,18 @@
 import React, { ComponentProps, ReactNode, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
+  ADDRESS_ZERO,
   SWRFallback,
   truncateHash,
   useBeraJs,
   usePollBalance,
-  ADDRESS_ZERO,
-  useRewardVaultBalanceFromStakingToken,
   useRewardVault,
+  useRewardVaultBalanceFromStakingToken,
 } from "@bera/berajs";
 import { beraTokenAddress, blockExplorerUrl } from "@bera/config";
+import { GqlPoolEventType } from "@bera/graphql/dex/api";
 import {
+  ActionButton,
   FormattedNumber,
   PoolHeader,
   TokenIcon,
@@ -21,21 +23,19 @@ import {
 } from "@bera/shared-ui";
 import { Button } from "@bera/ui/button";
 import { Card, CardContent } from "@bera/ui/card";
+import { Icons } from "@bera/ui/icons";
 import { Separator } from "@bera/ui/separator";
 import { Skeleton } from "@bera/ui/skeleton";
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@bera/ui/tabs";
+import { unstable_serialize } from "swr";
 import { Address, formatUnits } from "viem";
 
-import { EventTable } from "./PoolEventTable";
-import { getPoolAddLiquidityUrl, getPoolWithdrawUrl } from "../../fetchPools";
-import { GqlPoolEventType } from "@bera/graphql/dex/api";
-import { usePoolUserPosition } from "~/b-sdk/usePoolUserPosition";
-import { unstable_serialize } from "swr";
-import { Icons } from "@bera/ui/icons";
-import { PoolCreateRewardVault } from "./PoolCreateRewardVault";
-import { PoolChart } from "./PoolChart";
 import { usePool } from "~/b-sdk/usePool";
+import { usePoolUserPosition } from "~/b-sdk/usePoolUserPosition";
+import { getPoolAddLiquidityUrl, getPoolWithdrawUrl } from "../../fetchPools";
+import { PoolChart } from "./PoolChart";
+import { PoolCreateRewardVault } from "./PoolCreateRewardVault";
+import { EventTable } from "./PoolEventTable";
 
 enum Selection {
   AllTransactions = "allTransactions",
@@ -96,7 +96,7 @@ const TokenView = ({
                       : token.symbol}
                   </a>{" "}
                   {showWeights && token.weight && (
-                    <span className="text-muted-foreground ml-2">
+                    <span className="ml-2 text-muted-foreground">
                       {(Number(token.weight) * 100).toFixed(0)}%
                     </span>
                   )}
@@ -145,11 +145,7 @@ export const PoolPageWrapper = ({
     </SWRFallback>
   );
 };
-export default function PoolPageContent({
-  poolId,
-}: {
-  poolId: string;
-}) {
+export default function PoolPageContent({ poolId }: { poolId: string }) {
   const {
     data: [pool, v3Pool] = [],
     isLoading: isPoolLoading,
@@ -163,8 +159,6 @@ export default function PoolPageContent({
       address: pool?.address,
     });
 
-  const isLoading = isPoolLoading;
-
   const tvlInUsd = pool
     ? pool?.totalLiquidity
       ? Number(pool?.totalLiquidity ?? 0)
@@ -172,20 +166,34 @@ export default function PoolPageContent({
     : undefined;
 
   const { data: userPositionBreakdown } = usePoolUserPosition({ pool: pool });
-  const { data: rewardVault, refresh: refreshRewardVault } =
-    useRewardVaultBalanceFromStakingToken({
-      stakingToken: pool?.address as Address,
-    });
 
-  const { data: gauge } = useRewardVault(rewardVault?.address as Address);
+  // NOTE: this is on-chain
+  const {
+    data: rewardVault,
+    refresh: refreshRewardVault,
+    isLoading: isLoadingRewardVaultOnChain,
+    error: errorLoadingRewardVault,
+  } = useRewardVaultBalanceFromStakingToken({
+    stakingToken: pool?.address as Address,
+  });
+
+  if (errorLoadingRewardVault) {
+    console.error("Error loading reward vault", errorLoadingRewardVault);
+  }
+
+  // NOTE: we could instead pull the v3Pool from bex API? (it has rewardVault inside unlike v3Pool)
+  const { data: gauge, isLoading: isLoadingRewardVaultSubGraph } =
+    useRewardVault(rewardVault?.address as Address);
   const userSharePercentage = userPositionBreakdown?.userSharePercentage ?? 0;
+
+  const isVaultExists = rewardVault && rewardVault.address !== ADDRESS_ZERO;
+  const isLoadingRewardVault =
+    isLoadingRewardVaultOnChain ||
+    isLoadingRewardVaultSubGraph ||
+    (isPoolLoading as boolean);
 
   const didUserDeposit =
     userSharePercentage || (rewardVault?.balance && rewardVault?.balance > 0n);
-
-  useEffect(() => {
-    console.log("POOL", pool, v3Pool);
-  }, [v3Pool, pool]);
 
   const poolType =
     (pool?.type ?? "") in poolTypeLabels
@@ -210,10 +218,10 @@ export default function PoolPageContent({
         symbol: "USD",
       },
       {
-        label: "APR",
+        label: "Pool APR",
         value: v3Pool?.aprItems.at(0)?.apr ?? 0,
-        percent: true,
         colored: true,
+        percent: true,
       },
     ];
 
@@ -221,7 +229,7 @@ export default function PoolPageContent({
     [
       Selection.AllTransactions,
       "All transactions",
-      <EventTable pool={pool} isLoading={isLoading} />,
+      <EventTable pool={pool} isLoading={isPoolLoading} />,
     ],
     [
       Selection.Swaps,
@@ -229,7 +237,7 @@ export default function PoolPageContent({
       <EventTable
         pool={pool}
         types={[GqlPoolEventType.Swap]}
-        isLoading={isLoading}
+        isLoading={isPoolLoading}
       />,
     ],
     [
@@ -238,10 +246,19 @@ export default function PoolPageContent({
       <EventTable
         pool={pool}
         types={[GqlPoolEventType.Add, GqlPoolEventType.Remove]}
-        isLoading={isLoading}
+        isLoading={isPoolLoading}
       />,
     ],
   ];
+
+  // FIXME we should share a function but the way we fetch doesnt align here with PoolsTable
+  const effectiveApy = useMemo(() => {
+    return (
+      Number(v3Pool?.aprItems.at(0)?.apr ?? 0) +
+      Number(gauge?.dynamicData?.apy ?? 0) / 100
+    );
+  }, [v3Pool, gauge]);
+
   return (
     <div className="flex flex-col gap-8">
       <PoolHeader
@@ -296,16 +313,16 @@ export default function PoolPageContent({
         ]}
       />
       <Separator />
-      <div className="w-full grid-cols-1 lg:grid-cols-12 gap-4 grid auto-rows-min ">
-        {isConnected && (
-          <div className="lg:col-span-5 grid grid-cols-1 gap-4 lg:row-start-1 row-start-1 lg:col-start-8 auto-rows-min lg:row-span-2">
-            <Card>
-              <CardContent className="flex h-full items-center flex-col justify-between gap-4 p-4">
-                <div className="flex h-8 w-full items-center justify-between text-lg font-semibold">
-                  <h3 className="text-md font-semibold capitalize">
-                    My deposits
-                  </h3>
-                  <div className="flex gap-2">
+      <div className="grid w-full auto-rows-min grid-cols-1 gap-4 lg:grid-cols-12 ">
+        <div className="row-start-1 grid auto-rows-min grid-cols-1 gap-4 lg:col-span-5 lg:col-start-8 lg:row-span-2 lg:row-start-1">
+          <Card>
+            <CardContent className="flex h-full flex-col items-center justify-between gap-4 p-4">
+              <div className="flex h-8 w-full items-center justify-between text-lg font-semibold">
+                <h3 className="text-md font-semibold capitalize">
+                  My deposits
+                </h3>
+                <div className="flex gap-2">
+                  <ActionButton>
                     <Button
                       variant="outline"
                       size="md"
@@ -314,75 +331,96 @@ export default function PoolPageContent({
                     >
                       Deposit
                     </Button>
-                    {userSharePercentage ? (
-                      <Button
-                        variant="outline"
-                        size="md"
-                        as={Link}
-                        href={getPoolWithdrawUrl(pool)}
-                      >
-                        Withdraw
-                      </Button>
-                    ) : null}
+                  </ActionButton>
+                  {userSharePercentage ? (
+                    <Button
+                      variant="outline"
+                      size="md"
+                      as={Link}
+                      href={getPoolWithdrawUrl(pool)}
+                    >
+                      Withdraw
+                    </Button>
+                  ) : null}
+                </div>
+              </div>
+              {didUserDeposit && isConnected ? (
+                <>
+                  <div className="mt-4 grow self-stretch">
+                    <TokenView
+                      isLoading={
+                        (!userLpBalance && isUserLpBalanceLoading) ||
+                        isPoolLoading
+                      }
+                      tokens={
+                        pool?.tokens
+                          ?.filter((t) => t.address !== pool.address)
+                          ?.map((t) => ({
+                            address: t.address!,
+                            symbol: t.symbol!,
+                            value: parseFloat(t.balance) * userSharePercentage,
+                            valueUSD:
+                              parseFloat(t.balance) *
+                              parseFloat(t.token?.latestUSDPrice ?? "0") *
+                              userSharePercentage,
+                          })) ?? []
+                      }
+                    />
+                  </div>
+                  <div className="flex w-full justify-between font-medium">
+                    <span>Total</span>
+                    {isUserLpBalanceLoading || tvlInUsd === undefined ? (
+                      <Skeleton className="h-[32px] w-[150px]" />
+                    ) : tvlInUsd === null ? (
+                      "–"
+                    ) : (
+                      <FormattedNumber
+                        value={tvlInUsd * userSharePercentage}
+                        symbol="USD"
+                      />
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="flex h-48 flex-col items-center justify-center text-center text-sm text-muted-foreground">
+                  <div className="mb-2 flex gap-2">
+                    <h4>Earn APY</h4>
+                    <FormattedNumber
+                      className="font-semibold text-green-500"
+                      percent
+                      value={effectiveApy}
+                    />
+                  </div>
+                  <p className="max-w-48">
+                    You have no current deposits in this pool
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          {isLoadingRewardVault || errorLoadingRewardVault ? (
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex w-full justify-between">
+                  <h3 className="text-md font-semibold capitalize">
+                    Reward Vault
+                  </h3>
+                  <div className="flex items-center text-muted-foreground">
+                    Loading...
                   </div>
                 </div>
-                {didUserDeposit ? (
-                  <>
-                    <div className="mt-4 grow self-stretch">
-                      <TokenView
-                        isLoading={
-                          (!userLpBalance && isUserLpBalanceLoading) ||
-                          isPoolLoading
-                        }
-                        tokens={
-                          pool?.tokens
-                            ?.filter((t) => t.address !== pool.address)
-                            ?.map((t) => ({
-                              address: t.address!,
-                              symbol: t.symbol!,
-                              value:
-                                parseFloat(t.balance) * userSharePercentage,
-                              valueUSD:
-                                parseFloat(t.balance) *
-                                parseFloat(t.token?.latestUSDPrice ?? "0") *
-                                userSharePercentage,
-                            })) ?? []
-                        }
-                      />
-                    </div>
-                    <div className="flex justify-between w-full font-medium">
-                      <span>Total</span>
-                      {isUserLpBalanceLoading || tvlInUsd === undefined ? (
-                        <Skeleton className="h-[32px] w-[150px]" />
-                      ) : tvlInUsd === null ? (
-                        "–"
-                      ) : (
-                        <FormattedNumber
-                          value={tvlInUsd * userSharePercentage}
-                          symbol="USD"
-                        />
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <div className="h-48 text-muted-foreground text-sm text-center flex flex-col justify-center items-center">
-                    <h4 className="mb-2">Earn APY</h4>
-                    <p className="max-w-48">
-                      You have no current deposits in this pool
-                    </p>
-                  </div>
-                )}
               </CardContent>
             </Card>
-            {rewardVault && rewardVault.address !== ADDRESS_ZERO ? (
-              didUserDeposit ? (
-                <>
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex w-full items-center justify-between text-lg font-semibold">
-                        <h3 className="text-md font-semibold capitalize">
-                          Receipt Tokens
-                        </h3>
+          ) : isVaultExists ? (
+            <>
+              {isConnected && (
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex w-full items-center justify-between text-lg font-semibold">
+                      <h3 className="text-md font-semibold capitalize">
+                        Receipt Tokens
+                      </h3>
+                      {didUserDeposit && (
                         <div className="flex gap-2">
                           <Button
                             variant="outline"
@@ -391,7 +429,7 @@ export default function PoolPageContent({
                             disabled={userLpBalance?.balance === 0n}
                             as={Link}
                             href={getRewardsVaultUrl(
-                              rewardVault?.address ?? "0x",
+                              rewardVault.address ?? "0x",
                             )}
                           >
                             Stake
@@ -400,106 +438,111 @@ export default function PoolPageContent({
                             variant="outline"
                             className="block"
                             size="md"
-                            disabled={rewardVault?.balance === 0n}
+                            disabled={rewardVault.balance === 0n}
                             as={Link}
                             href={getRewardsVaultUrl(
-                              rewardVault?.address ?? "0x",
+                              rewardVault.address ?? "0x",
                             )}
                           >
                             Unstake
                           </Button>
                         </div>
+                      )}
+                    </div>
+                    <div className="mt-4 grow self-stretch font-medium">
+                      <div className="flex w-full justify-between">
+                        <h4 className="font-semibold">Available</h4>
+                        <FormattedNumber
+                          className="text-muted-foreground"
+                          value={
+                            didUserDeposit
+                              ? userLpBalance?.formattedBalance ?? 0
+                              : 0
+                          }
+                        />
                       </div>
-                      <div className="mt-4 grow self-stretch font-medium">
-                        <div className="flex justify-between w-full">
-                          <h4 className="font-semibold">Available</h4>
-                          <FormattedNumber
-                            className="text-muted-foreground"
-                            value={userLpBalance?.formattedBalance ?? 0}
-                          />
-                        </div>
-                        <div className="flex justify-between w-full">
-                          <h4 className="font-semibold">Staked</h4>
-                          <FormattedNumber
-                            className="text-muted-foreground"
-                            value={formatUnits(
-                              BigInt(rewardVault?.balance ?? "0"),
-                              userLpBalance?.decimals ?? 18,
-                            )}
-                          />
-                        </div>
+                      <div className="flex w-full justify-between">
+                        <h4 className="font-semibold">Staked</h4>
+                        <FormattedNumber
+                          className="text-muted-foreground"
+                          value={
+                            didUserDeposit
+                              ? formatUnits(
+                                  BigInt(rewardVault.balance ?? "0"),
+                                  userLpBalance?.decimals ?? 18,
+                                )
+                              : 0
+                          }
+                        />
                       </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between w-full">
-                        <div>
-                          <h3 className="text-md font-semibold capitalize">
-                            Reward Vault
-                          </h3>
-                          <div className="flex w-fit items-center gap-1 text-sm">
-                            <Link
-                              href={getRewardsVaultUrl(
-                                rewardVault?.address ?? "",
-                              )}
-                              className="hover:underline align-middle"
-                            >
-                              <span>
-                                {truncateHash(rewardVault?.address ?? "")}
-                              </span>{" "}
-                              <Icons.externalLink className="inline-block h-3 w-3 text-muted-foreground" />
-                            </Link>
-                          </div>
-                        </div>
-
-                        {rewardVault?.isWhitelisted ? (
-                          <div>
-                            <h4 className="font-semibold">BGT capture</h4>
-                            <p className="text-success-foreground font-semibold">
-                              {gauge ? (
-                                <FormattedNumber
-                                  compact={false}
-                                  compactThreshold={999_999_999}
-                                  percent
-                                  value={
-                                    Number(
-                                      gauge?.dynamicData?.bgtCapturePercentage,
-                                    ) / 100 ?? 0
-                                  }
-                                />
-                              ) : (
-                                "–"
-                              )}
-                            </p>
-                          </div>
-                        ) : (
-                          <div className="flex items-center text-muted-foreground">
-                            Not whitelisted
-                          </div>
-                        )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {/* NOTE: we display the Vault even if you are not connected */}
+              <Card>
+                <CardContent className="p-4">
+                  <div className="flex w-full justify-between">
+                    <div>
+                      <h3 className="text-md font-semibold capitalize">
+                        Reward Vault
+                      </h3>
+                      <div className="flex w-fit items-center gap-1 text-sm">
+                        <Link
+                          href={getRewardsVaultUrl(rewardVault.address ?? "")}
+                          className="align-middle hover:underline"
+                        >
+                          <span>{truncateHash(rewardVault.address ?? "")}</span>{" "}
+                          <Icons.externalLink className="inline-block h-3 w-3 text-muted-foreground" />
+                        </Link>
                       </div>
-                    </CardContent>
-                  </Card>
-                </>
-              ) : null
-            ) : (
+                    </div>
+                    {rewardVault.isWhitelisted ? (
+                      <div>
+                        <h4 className="font-semibold">BGT APY</h4>
+                        <p className="font-semibold text-success-foreground">
+                          {gauge ? (
+                            <FormattedNumber
+                              compact={false}
+                              compactThreshold={999_999_999}
+                              percent
+                              value={Number(gauge.dynamicData?.apy) / 100 ?? 0}
+                            />
+                          ) : (
+                            "–"
+                          )}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex items-center text-muted-foreground">
+                        Not whitelisted
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          ) : (
+            // If no vault exists and we are connected, and the pool exists, we will allow user to create a vault.
+            isConnected &&
+            pool?.address && (
               <PoolCreateRewardVault
                 onSuccess={() => refreshRewardVault()}
-                address={pool?.address as Address}
+                address={pool.address as Address}
               />
-            )}
-          </div>
-        )}
-        <div className="grid grid-cols-1 lg:col-span-7 lg:col-start-1 auto-rows-auto gap-4">
+            )
+          )}
+        </div>
+
+        <div className="grid auto-rows-auto grid-cols-1 gap-4 lg:col-span-7 lg:col-start-1">
           <PoolChart
             pool={pool}
             currentTvl={tvlInUsd}
             timeCreated={pool?.createTime}
           />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {cards.map((card) => (
-              <Card className="px-4 py-2" key={card.label}>
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {cards.map((card, index) => (
+              <Card className="px-4 py-2" key={`${card.label}-${index}`}>
                 <div className="flex flex-row items-center justify-between">
                   <div className="overflow-hidden truncate whitespace-nowrap text-sm ">
                     {card.label}
@@ -507,7 +550,11 @@ export default function PoolPageContent({
                 </div>
                 <div className="overflow-hidden truncate whitespace-nowrap text-lg font-semibold">
                   {card.value !== null ? (
-                    <FormattedNumber value={card.value ?? 0} symbol="USD" />
+                    <FormattedNumber
+                      value={card.value ?? 0}
+                      symbol="USD"
+                      percent={card.percent}
+                    />
                   ) : (
                     "–"
                   )}
@@ -555,6 +602,7 @@ export default function PoolPageContent({
           <TabsList className="w-full" variant="compact">
             {tabs.map(([value, label]) => (
               <TabsTrigger
+                key={value}
                 value={value}
                 className="w-full text-xs sm:text-sm"
                 variant="compact"
@@ -565,7 +613,11 @@ export default function PoolPageContent({
           </TabsList>
           <Card className="mt-4">
             {tabs.map(([value, _label, content]) => (
-              <TabsContent value={value} className="mt-0 overflow-x-auto">
+              <TabsContent
+                value={value}
+                className="mt-0 overflow-x-auto"
+                key={value}
+              >
                 {content}
               </TabsContent>
             ))}

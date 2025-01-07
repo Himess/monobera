@@ -22,6 +22,22 @@ fragment UserBalance on GqlPoolUserBalance {
   walletBalance
   walletBalanceUsd
 }
+fragment RewardVault on GqlRewardVault {
+  activeIncentives {
+    tokenAddress
+    incentiveRate
+    active
+  }
+  dynamicData {
+    activeIncentivesValueUsd
+    apy
+    bgtCapturePercentage
+    allTimeReceivedBGTAmount
+  }
+  isVaultWhitelisted
+  vaultAddress
+  stakingTokenAddress
+}
 
 fragment DynamicData on GqlPoolDynamicData {
   totalShares
@@ -55,6 +71,9 @@ fragment MinimalPoolInList on GqlPoolMinimal {
   }
   userBalance {
     ...UserBalance
+  }
+  rewardVault {
+    ...RewardVault
   }
 }
 

@@ -6,7 +6,7 @@ import { usePublicClient } from "wagmi";
 import { rewardVaultFactoryAbi } from "~/abi";
 import { ADDRESS_ZERO } from "~/config";
 
-export const useRewardVaultsFromTokens = ({
+export const useRewardVaultAddressesFromTokens = ({
   tokenAddresses,
 }: {
   tokenAddresses: Address[];
@@ -15,12 +15,12 @@ export const useRewardVaultsFromTokens = ({
 
   return useSWRImmutable(
     client && tokenAddresses.length > 0
-      ? ["useRewardVaultsFromTokens", tokenAddresses]
+      ? ["useRewardVaultAddressesFromTokens", tokenAddresses]
       : null,
     async () => {
       if (!tokenAddresses || tokenAddresses.length === 0) {
         throw new Error(
-          "useRewardVaultsFromTokens needs valid token addresses",
+          "useRewardVaultAddressesFromTokens needs valid token addresses",
         );
       }
 

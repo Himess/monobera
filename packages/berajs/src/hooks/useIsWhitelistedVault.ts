@@ -39,6 +39,7 @@ export const useIsWhitelistedVault = (vaultAddresses: Address[]) => {
     },
   );
 
+  // NOTE: whitelist status can only change via governance proposal, so generally no need to refresh
   return {
     ...swrResponse,
     refresh: () => swrResponse.mutate(),
