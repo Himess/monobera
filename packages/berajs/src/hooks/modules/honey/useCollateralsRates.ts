@@ -8,7 +8,7 @@ import {
   getCollateralRates,
 } from "~/actions/honey";
 import { useBeraJs } from "~/contexts";
-import { DefaultHookOptions, DefaultHookReturnType } from "~/types";
+import { DefaultHookOptions, DefaultHookReturnType, Token } from "~/types";
 
 export interface UseCollateralsRatesResponse
   extends DefaultHookReturnType<CollateralRatesMap | undefined> {
@@ -19,12 +19,12 @@ export interface UseCollateralsRatesResponse
 }
 
 export const useCollateralsRates = (
-  { collateralList }: { collateralList: Address[] },
+  { collateralList }: { collateralList?: Token[] },
   options?: DefaultHookOptions,
 ): UseCollateralsRatesResponse => {
   const publicClient = usePublicClient();
   const method = "useCollateralsRates";
-  const QUERY_KEY = [method, ...collateralList];
+  const QUERY_KEY = collateralList ? [method, ...collateralList] : null;
   const { config: beraConfig } = useBeraJs();
   const config = options?.beraConfigOverride ?? beraConfig;
 
@@ -37,6 +37,8 @@ export const useCollateralsRates = (
         throw new Error("missing contract address honeyFactoryAddress");
       if (!config.contracts?.multicallAddress)
         throw new Error("missing contract address multicallAddress");
+      if (!collateralList) throw new Error("missing collateralList");
+
       return await getCollateralRates({
         client: publicClient,
         config,

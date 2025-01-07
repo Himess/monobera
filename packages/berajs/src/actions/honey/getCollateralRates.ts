@@ -1,3 +1,4 @@
+import { Token } from "@bera/graphql/pol/api";
 import { Address, PublicClient, formatUnits } from "viem";
 
 import { honeyFactoryAbi } from "~/abi";
@@ -18,7 +19,7 @@ export interface CollateralRatesMap {
 export interface collateralRatesArgs {
   client: PublicClient;
   config: BeraConfig;
-  collateralList: Address[];
+  collateralList: Token[];
 }
 
 /**
@@ -51,7 +52,7 @@ export const getCollateralRates = async ({
           address: config.contracts.honeyFactoryAddress,
           abi: honeyFactoryAbi,
           functionName: "mintRates",
-          args: [coll],
+          args: [coll.address as Address],
         }),
       );
       promiseList.redeem.push(
@@ -59,7 +60,7 @@ export const getCollateralRates = async ({
           address: config.contracts.honeyFactoryAddress,
           abi: honeyFactoryAbi,
           functionName: "redeemRates",
-          args: [coll],
+          args: [coll.address as Address],
         }),
       );
     }
@@ -86,15 +87,15 @@ export const getCollateralRates = async ({
     let totalWeightedRedeemCollateralsFee = 0;
     for (const coll of collateralList) {
       const collIdx = collateralList.indexOf(coll);
-      collateralRates.single[coll] = {
+      collateralRates.single[coll.address as Address] = {
         mintFee: 1 - +formatUnits(mintRates[collIdx], 18),
         redeemFee: 1 - +formatUnits(redeemRates[collIdx], 18),
       };
       totalWeightedMintCollateralsFee +=
-        collateralRates.single[coll].mintFee *
+        collateralRates.single[coll.address as Address].mintFee *
         +formatUnits(collateralWeights[collIdx], 18);
       totalWeightedRedeemCollateralsFee +=
-        collateralRates.single[coll].redeemFee *
+        collateralRates.single[coll.address as Address].redeemFee *
         +formatUnits(collateralWeights[collIdx], 18);
     }
 
