@@ -183,6 +183,7 @@ query GlobalData($chain: GqlChain!) {
     totalActiveRewardVaults
     totalActiveIncentives
     totalActiveIncentivesValueUSD
+    totalDistributedBGTAmount
   }
 }
 

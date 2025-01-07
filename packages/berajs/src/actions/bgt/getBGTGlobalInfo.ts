@@ -19,6 +19,7 @@ export interface GlobalInfo {
   validatorCount: number;
   activeRewardVaultCount: number;
   whitelistedRewardVaultCount: number;
+  totalDistributedBGTAmount: string;
 }
 
 export const getBGTGlobalInfo = async (
@@ -51,5 +52,7 @@ export const getBGTGlobalInfo = async (
     whitelistedRewardVaultCount:
       data.polGetGlobalInfo?.totalWhitelistedRewardVaults ?? 0,
     top3EmittingValidators: apiRes.data.top3EmittingValidators.validators,
+    totalDistributedBGTAmount:
+      data.polGetGlobalInfo?.totalDistributedBGTAmount ?? "0",
   } satisfies GlobalInfo;
 };

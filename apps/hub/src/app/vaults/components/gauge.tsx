@@ -11,14 +11,13 @@ import { GaugeCreation } from "./gauge-creation";
 export default function Gauge() {
   const { data, isLoading: isGlobalDataLoading } = usePollGlobalData();
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-6 lg:flex-row">
+    <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[3fr_1fr] gap-6">
         <GaugeInfoCard />
         <GlobalGaugeWeightChart
           gaugeWeights={data?.globalCuttingBoard ?? []}
           isLoading={isGlobalDataLoading}
-          totalAmountStaked={data?.bgtInfo?.totalActiveBoostAmount ?? "0"}
-          globalAmountStaked={data?.bgtTotalSupply ?? "0"}
+          totalBgtDistributed={data?.totalDistributedBGTAmount ?? "0"}
         />
       </div>
       <GaugeTables />

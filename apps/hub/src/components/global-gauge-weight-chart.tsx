@@ -18,13 +18,11 @@ export const THRESHOLD = 0.04;
 export default function GlobalGaugeWeightChart({
   gaugeWeights,
   isLoading,
-  showTotal = true,
+  totalBgtDistributed,
 }: {
   gaugeWeights: ApiRewardAllocationWeightFragment[] | undefined;
-  totalAmountStaked: string | number;
-  globalAmountStaked: string;
   isLoading: boolean;
-  showTotal?: boolean;
+  totalBgtDistributed?: string;
 }) {
   const tooltipRef = useRef<string | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
@@ -135,17 +133,18 @@ export default function GlobalGaugeWeightChart({
   );
 
   return (
-    <div className="flex w-full shrink-0 flex-col gap-10 rounded-lg border border-border p-6 lg:mt-16 lg:w-[300px] lg:items-stretch">
-      <div className="text-center text-sm font-medium leading-5 text-muted-foreground">
+    <div className="w-full rounded-lg border border-border p-6 lg:items-stretch">
+      <div className="text-center mb-10 text-sm font-medium leading-5 text-muted-foreground">
         Reward Weights
       </div>
 
       {isLoading ? (
-        <Skeleton className="relative mx-auto h-[230px] w-[230px] rounded-full" />
+        <Skeleton className="relative mx-auto rounded-full" />
       ) : (
-        <div className="relative mx-auto h-[230px] w-[230px]">
+        <div className="relative mx-auto">
           <BeraChart
             data={dataP}
+            className="w-full"
             options={{
               responsive: true,
               cutout: "70%",
@@ -162,14 +161,25 @@ export default function GlobalGaugeWeightChart({
             }}
             type="doughnut"
           />
-
+          {totalBgtDistributed ? (
+            <div className="absolute inset-0 flex items-center justify-center h-full text-center pointer-events-none">
+              <div>
+                <h3 className="text-muted-foreground uppercase text-xs font-medium tracking-wide select-none">
+                  BGT Distributed
+                </h3>
+                <p className="font-semibold">
+                  <FormattedNumber value={totalBgtDistributed} compact />
+                </p>
+              </div>
+            </div>
+          ) : undefined}
           <div
             className="z-1 pointer-events-none absolute hidden -translate-y-1/2 transform transition-all duration-200 ease-in-out sm:block"
             style={{
               top: `${tooltipPosition.y}px`,
-              ...(tooltipPosition.x < 230 / 2
+              ...(tooltipPosition.x < 300 / 2
                 ? { left: tooltipPosition.x }
-                : { right: 230 - tooltipPosition.x }),
+                : { right: 300 - tooltipPosition.x }),
             }}
           >
             <ChartTooltip gauge={gauge} />
