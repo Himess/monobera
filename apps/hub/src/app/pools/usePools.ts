@@ -55,6 +55,8 @@ export const usePools = ({ keyword }: { keyword: string }) => {
           userAddress: account,
           chain: balancerApiChainName as GqlChain,
         },
+        fetchPolicy: "no-cache",
+        // NOTE: if we allow caching, we intermittantly get data with 0 acct balance, & Provided Liquidity badge will disappear.
       });
       return pools.data?.poolGetPools ?? [];
     },
