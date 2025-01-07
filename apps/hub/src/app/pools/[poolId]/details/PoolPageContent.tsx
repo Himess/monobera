@@ -173,6 +173,7 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
     data: rewardVault,
     refresh: refreshRewardVault,
     isLoading: isLoadingRewardVault,
+    error: errorLoadingRewardVault,
   } = useRewardVaultBalanceFromStakingToken({
     stakingToken: pool?.address as Address,
   });
@@ -504,10 +505,15 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
               </Card>
             </>
           ) : (
-            <PoolCreateRewardVault
-              onSuccess={() => refreshRewardVault()}
-              address={pool?.address as Address}
-            />
+            !isLoadingRewardVault &&
+            !errorLoadingRewardVault &&
+            isConnected &&
+            pool?.address && (
+              <PoolCreateRewardVault
+                onSuccess={() => refreshRewardVault()}
+                address={pool?.address as Address}
+              />
+            )
           )}
         </div>
 
