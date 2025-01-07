@@ -9,6 +9,7 @@ import { useBeraJs } from "~/contexts";
 import { useIsWhitelistedVault } from "~/hooks/useIsWhitelistedVault";
 import { useRewardVaultFromToken } from "./useRewardVaultFromToken";
 
+// NOTE: this is entirely on-chain
 export const useRewardVaultBalanceFromStakingToken = ({
   stakingToken,
   rewardVaultAddress: _rewardVaultAddress,
@@ -23,20 +24,29 @@ export const useRewardVaultBalanceFromStakingToken = ({
     data: rewardVaultAddress = _rewardVaultAddress,
     error,
     mutate: mutateRewardVaultAddress,
+    isLoading: isLoadingRewardVaultAddress,
   } = useRewardVaultFromToken({
     tokenAddress: stakingToken,
   });
 
-  const { data: whitelistedVaults, refresh: refreshWhitelistedVaults } =
-    useIsWhitelistedVault(
-      rewardVaultAddress && rewardVaultAddress !== ADDRESS_ZERO
-        ? [rewardVaultAddress]
-        : [],
-    );
+  const {
+    data: whitelistedVaults,
+    refresh: refreshWhitelistedVaults,
+    isLoading: isLoadingWhitelistedVaults,
+  } = useIsWhitelistedVault(
+    rewardVaultAddress && rewardVaultAddress !== ADDRESS_ZERO
+      ? [rewardVaultAddress]
+      : [],
+  );
 
   const swrResponse = useSWR(
     rewardVaultAddress
-      ? ["useVaultBalanceFromStakingToken", rewardVaultAddress, account]
+      ? [
+          "useVaultBalanceFromStakingToken",
+          rewardVaultAddress,
+          account,
+          whitelistedVaults,
+        ]
       : null,
 
     async () => {
@@ -76,5 +86,9 @@ export const useRewardVaultBalanceFromStakingToken = ({
       refreshWhitelistedVaults();
       swrResponse.mutate();
     },
+    isLoading:
+      swrResponse.isLoading ||
+      isLoadingRewardVaultAddress ||
+      isLoadingWhitelistedVaults,
   };
 };

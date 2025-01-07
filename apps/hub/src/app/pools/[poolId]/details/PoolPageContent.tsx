@@ -158,8 +158,6 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
       address: pool?.address,
     });
 
-  const isLoading = isPoolLoading;
-
   const tvlInUsd = pool
     ? pool?.totalLiquidity
       ? Number(pool?.totalLiquidity ?? 0)
@@ -172,15 +170,26 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
   const {
     data: rewardVault,
     refresh: refreshRewardVault,
-    isLoading: isLoadingRewardVault,
+    isLoading: isLoadingRewardVaultOnChain,
     error: errorLoadingRewardVault,
   } = useRewardVaultBalanceFromStakingToken({
     stakingToken: pool?.address as Address,
   });
 
+  if (errorLoadingRewardVault) {
+    console.error("Error loading reward vault", errorLoadingRewardVault);
+  }
+
   // NOTE: we could instead pull the v3Pool from bex API? (it has rewardVault inside unlike v3Pool)
-  const { data: gauge } = useRewardVault(rewardVault?.address as Address);
+  const { data: gauge, isLoading: isLoadingRewardVaultSubGraph } =
+    useRewardVault(rewardVault?.address as Address);
   const userSharePercentage = userPositionBreakdown?.userSharePercentage ?? 0;
+
+  const isVaultExists = rewardVault && rewardVault.address !== ADDRESS_ZERO;
+  const isLoadingRewardVault =
+    isLoadingRewardVaultOnChain ||
+    isLoadingRewardVaultSubGraph ||
+    (isPoolLoading as boolean);
 
   const didUserDeposit =
     userSharePercentage || (rewardVault?.balance && rewardVault?.balance > 0n);
@@ -218,7 +227,7 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
     [
       Selection.AllTransactions,
       "All transactions",
-      <EventTable pool={pool} isLoading={isLoading} />,
+      <EventTable pool={pool} isLoading={isPoolLoading} />,
     ],
     [
       Selection.Swaps,
@@ -226,7 +235,7 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
       <EventTable
         pool={pool}
         types={[GqlPoolEventType.Swap]}
-        isLoading={isLoading}
+        isLoading={isPoolLoading}
       />,
     ],
     [
@@ -235,7 +244,7 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
       <EventTable
         pool={pool}
         types={[GqlPoolEventType.Add, GqlPoolEventType.Remove]}
-        isLoading={isLoading}
+        isLoading={isPoolLoading}
       />,
     ],
   ];
@@ -388,9 +397,20 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
               </CardContent>
             </Card>
           )}
-          {!isLoadingRewardVault &&
-          rewardVault &&
-          rewardVault.address !== ADDRESS_ZERO ? (
+          {isLoadingRewardVault || errorLoadingRewardVault ? (
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex w-full justify-between">
+                  <h3 className="text-md font-semibold capitalize">
+                    Reward Vault
+                  </h3>
+                  <div className="flex items-center text-muted-foreground">
+                    Loading...
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : isVaultExists ? (
             <>
               {isConnected && (
                 <Card>
@@ -408,7 +428,7 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
                             disabled={userLpBalance?.balance === 0n}
                             as={Link}
                             href={getRewardsVaultUrl(
-                              rewardVault?.address ?? "0x",
+                              rewardVault.address ?? "0x",
                             )}
                           >
                             Stake
@@ -417,10 +437,10 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
                             variant="outline"
                             className="block"
                             size="md"
-                            disabled={rewardVault?.balance === 0n}
+                            disabled={rewardVault.balance === 0n}
                             as={Link}
                             href={getRewardsVaultUrl(
-                              rewardVault?.address ?? "0x",
+                              rewardVault.address ?? "0x",
                             )}
                           >
                             Unstake
@@ -447,7 +467,7 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
                           value={
                             didUserDeposit
                               ? formatUnits(
-                                  BigInt(rewardVault?.balance ?? "0"),
+                                  BigInt(rewardVault.balance ?? "0"),
                                   userLpBalance?.decimals ?? 18,
                                 )
                               : 0
@@ -458,6 +478,7 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
                   </CardContent>
                 </Card>
               )}
+              {/* NOTE: we display the Vault even if you are not connected */}
               <Card>
                 <CardContent className="p-4">
                   <div className="flex w-full justify-between">
@@ -467,17 +488,15 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
                       </h3>
                       <div className="flex w-fit items-center gap-1 text-sm">
                         <Link
-                          href={getRewardsVaultUrl(rewardVault?.address ?? "")}
+                          href={getRewardsVaultUrl(rewardVault.address ?? "")}
                           className="align-middle hover:underline"
                         >
-                          <span>
-                            {truncateHash(rewardVault?.address ?? "")}
-                          </span>{" "}
+                          <span>{truncateHash(rewardVault.address ?? "")}</span>{" "}
                           <Icons.externalLink className="inline-block h-3 w-3 text-muted-foreground" />
                         </Link>
                       </div>
                     </div>
-                    {rewardVault?.isWhitelisted ? (
+                    {rewardVault.isWhitelisted ? (
                       <div>
                         <h4 className="font-semibold">BGT APY</h4>
                         <p className="font-semibold text-success-foreground">
@@ -486,7 +505,7 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
                               compact={false}
                               compactThreshold={999_999_999}
                               percent
-                              value={Number(gauge?.dynamicData?.apy) / 100 ?? 0}
+                              value={Number(gauge.dynamicData?.apy) / 100 ?? 0}
                             />
                           ) : (
                             "–"
@@ -494,24 +513,21 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
                         </p>
                       </div>
                     ) : (
-                      isLoadingRewardVault && (
-                        <div className="flex items-center text-muted-foreground">
-                          Not whitelisted
-                        </div>
-                      )
+                      <div className="flex items-center text-muted-foreground">
+                        Not whitelisted
+                      </div>
                     )}
                   </div>
                 </CardContent>
               </Card>
             </>
           ) : (
-            !isLoadingRewardVault &&
-            !errorLoadingRewardVault &&
+            // If no vault exists and we are connected, and the pool exists, we will allow user to create a vault.
             isConnected &&
             pool?.address && (
               <PoolCreateRewardVault
                 onSuccess={() => refreshRewardVault()}
-                address={pool?.address as Address}
+                address={pool.address as Address}
               />
             )
           )}
