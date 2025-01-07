@@ -44,7 +44,6 @@ const config: CodegenConfig = {
         plugins: [
           "typescript",
           "typescript-operations",
-          "typescript-react-apollo",
           {
             "typescript-document-nodes": {
               gqlImport: "@apollo/client#gql",

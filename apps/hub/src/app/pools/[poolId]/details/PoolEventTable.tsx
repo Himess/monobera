@@ -4,10 +4,7 @@ import { blockExplorerUrl } from "@bera/config";
 import { FormattedNumber, SimpleTable, useAsyncTable } from "@bera/shared-ui";
 import { truncateHash } from "@bera/berajs";
 
-import {
-  GetPoolEventsQueryResult,
-  GqlPoolEventType,
-} from "@bera/graphql/dex/api";
+import { GetPoolEventsQuery, GqlPoolEventType } from "@bera/graphql/dex/api";
 import { SubgraphPoolFragment } from "@bera/graphql/dex/subgraph";
 
 export const EventTable = ({
@@ -28,7 +25,7 @@ export const EventTable = ({
     : data?.poolGetEvents;
 
   const table = useAsyncTable<
-    NonNullable<GetPoolEventsQueryResult["data"]>["poolGetEvents"][number]
+    NonNullable<GetPoolEventsQuery>["poolGetEvents"][number]
   >({
     data: events ?? [],
     enablePagination: true,

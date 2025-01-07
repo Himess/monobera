@@ -3,7 +3,6 @@ import { bexApiGraphqlClient } from "@bera/graphql";
 import {
   GetPoolEvents,
   GetPoolEventsQuery,
-  GetPoolEventsQueryResult,
   GetPoolEventsQueryVariables,
   GqlChain,
   GqlPoolEventType,
@@ -11,7 +10,7 @@ import {
 import useSWR from "swr";
 
 export const usePoolEvents = (poolId: string | undefined) => {
-  return useSWR<GetPoolEventsQueryResult["data"]>(
+  return useSWR<GetPoolEventsQuery>(
     poolId ? ["usePoolEvents", poolId] : null,
     async () => {
       const response = await bexApiGraphqlClient.query<GetPoolEventsQuery>({

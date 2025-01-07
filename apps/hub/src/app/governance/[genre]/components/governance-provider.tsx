@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { notFound } from "next/navigation";
-import { ApolloProvider } from "@apollo/client";
 import {
   useBeraJs,
   usePollBalance,
@@ -10,7 +9,6 @@ import {
   usePollUserDelegates,
 } from "@bera/berajs";
 import { bgtTokenAddress, governorAddress } from "@bera/config";
-import { getClient } from "@bera/graphql";
 import BigNumber from "bignumber.js";
 import { Address } from "viem";
 
@@ -67,7 +65,6 @@ export const GovernanceProvider = ({
 }) => {
   if (!isValidGenre(genre)) return notFound();
   const currentTopic = getDappByGenre(genre);
-  const client = getClient(currentTopic!.subgraph);
 
   const { account } = useBeraJs();
   const { data: tokenBalanceData, isLoading: isLoadingTokenBalance } =
@@ -80,6 +77,7 @@ export const GovernanceProvider = ({
     isOpen: false,
     onClose: () => {},
   });
+
   const [isDelegateModalOpen, setIsDelegateModalOpen] = useState<{
     isOpen: boolean;
     onClose: () => void;
@@ -166,7 +164,7 @@ export const GovernanceProvider = ({
           }));
         }}
       />
-      <ApolloProvider client={client}>{children}</ApolloProvider>
+      {children}
     </GovernanceContext.Provider>
   );
 };

@@ -10,8 +10,8 @@ export type GovernanceTopic = {
   iconBackground?: string;
   name: string;
   slug: string;
-  subgraph: string;
   forumLink: string;
+  description?: string;
 };
 
 export const NativeDapps: GovernanceTopic[] = [
@@ -21,28 +21,17 @@ export const NativeDapps: GovernanceTopic[] = [
     icon: <Icons.hubFav className="h-16 w-16" />,
     name: "BeraHub",
     slug: "berahub",
-    // subgraph: governanceSubgraphUrl,
+    description: "Swaps, Pools, Reward Vaults & Validators",
     forumLink: "https://berahub-berachain.discourse.group/",
-    subgraph:
-      "https://api.goldsky.com/api/public/project_clq1h5ct0g4a201x18tfte5iv/subgraphs/governance-subgraph/v1/gn",
   },
   {
     id: "honey",
     color: "#EC8A19",
     icon: <Icons.honeyFav className="h-16 w-16" />,
     name: "Honey",
+    description: "Minting & Redeeming HONEY.",
     forumLink: "https://honey-berachain.discourse.group/",
     slug: "honey",
-    subgraph: governanceSubgraphUrl,
-  },
-  {
-    id: "bend",
-    color: "#7464E5",
-    icon: <Icons.bendFav className="h-16 w-16" />,
-    name: "BEND",
-    slug: "bend",
-    subgraph: governanceSubgraphUrl,
-    forumLink: "https://bend-berachain.discourse.group/",
   },
   {
     id: "berps",
@@ -50,8 +39,7 @@ export const NativeDapps: GovernanceTopic[] = [
     icon: <Icons.berpsFav className="h-16 w-16" />,
     name: "BERPS",
     slug: "berps",
-    subgraph: governanceSubgraphUrl,
-    forumLink: "https://berps-berachain.discourse.group/",
+    forumLink: "#",
   },
 ] as const;
 
@@ -62,9 +50,9 @@ export const Others: GovernanceTopic[] = [
     iconBackground: "#2F2F2F",
     icon: <Icons.ecoFav className="h-16 w-16" />,
     name: "General",
+    description: "General Discussion",
     slug: "general",
     forumLink: "https://berachain.discourse.group/",
-    subgraph: governanceSubgraphUrl,
   },
 ];
 
