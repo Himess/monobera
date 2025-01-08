@@ -113,10 +113,10 @@ const _VaultDetails = ({ address }: { address: Address }) => {
             content: (
               <>
                 <MarketIcon
-                  market={rewardVault?.metadata?.productName ?? ""}
+                  market={rewardVault?.metadata?.protocolName ?? ""}
                   size={"md"}
                 />
-                {rewardVault?.metadata?.productName ?? "OTHER"}
+                {rewardVault?.metadata?.protocolName ?? "OTHER"}
               </>
             ),
             externalLink: rewardVault?.metadata?.url ?? "",

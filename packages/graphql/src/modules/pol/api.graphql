@@ -33,11 +33,10 @@ fragment ApiVault on GqlRewardVault {
 
   metadata {
     name
-    name
     logoURI
     url
-    productName
-    description: name
+    protocolName
+    description
   }
 
   activeIncentives {

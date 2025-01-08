@@ -130,10 +130,10 @@ export const Incentivize = () => {
                   <>
                     {" "}
                     <MarketIcon
-                      market={gaugeInfo?.metadata?.productName ?? ""}
+                      market={gaugeInfo?.metadata?.protocolName ?? ""}
                       size={"md"}
                     />
-                    {gaugeInfo?.metadata?.productName ?? "OTHER"}
+                    {gaugeInfo?.metadata?.protocolName ?? "OTHER"}
                   </>
                 ),
                 externalLink: gaugeInfo?.metadata?.url ?? "",

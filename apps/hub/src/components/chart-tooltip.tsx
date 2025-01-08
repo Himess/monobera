@@ -41,10 +41,10 @@ export function ChartTooltip({
           </div>
           <div className="flex items-center gap-1 whitespace-nowrap text-xs leading-4 text-muted-foreground">
             <MarketIcon
-              market={gauge.receivingVault?.metadata?.productName ?? ""}
+              market={gauge.receivingVault?.metadata?.protocolName ?? ""}
               className="h-4 w-4"
             />{" "}
-            {gauge.receivingVault?.metadata?.productName ?? "OTHER"}
+            {gauge.receivingVault?.metadata?.protocolName ?? "OTHER"}
           </div>
         </div>
       </div>

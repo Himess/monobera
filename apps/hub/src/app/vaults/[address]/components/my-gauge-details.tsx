@@ -17,6 +17,7 @@ import {
   DialogTrigger,
 } from "@bera/ui/dialog";
 import { WithdrawLP } from "./WithdrawLP";
+import Markdown from "react-markdown";
 
 export const MyGaugeDetails = ({
   rewardVault,
@@ -44,9 +45,31 @@ export const MyGaugeDetails = ({
               <Icons.tooltip height={16} width={16} />
             </div>
             <div>
-              <h3 className="leading-none">How do I get Receipt Tokens?</h3>
-              <p className="text-muted-foreground">
-                {rewardVault?.metadata?.description}
+              <h3 className="leading-none mb-1">
+                How do I get Receipt Tokens?
+              </h3>
+              <p className="text-muted-foreground leading-normal">
+                <Markdown
+                  components={{
+                    a: ({ children, href }) => (
+                      <a
+                        href={href}
+                        target="_blank"
+                        className="underline"
+                        rel="noopener noreferrer"
+                      >
+                        {children}
+                      </a>
+                    ),
+                    i: ({ children }) => <i className="italic">{children}</i>,
+                    b: ({ children }) => (
+                      <b className="font-medium">{children}</b>
+                    ),
+                  }}
+                  allowedElements={["a", "i", "b", "p"]}
+                >
+                  {rewardVault?.metadata?.description}
+                </Markdown>
               </p>
             </div>
           </div>

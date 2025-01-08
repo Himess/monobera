@@ -48,10 +48,10 @@ export const GaugeHeaderWidget = ({
           </div>
           <div className="flex items-center gap-1 text-sm font-medium leading-5">
             <MarketIcon
-              market={gauge.metadata?.productName ?? "OTHER"}
+              market={gauge.metadata?.protocolName ?? "OTHER"}
               size="md"
             />
-            {gauge.metadata?.productName ?? "OTHER"}
+            {gauge.metadata?.protocolName ?? "OTHER"}
           </div>
         </div>
       )}
