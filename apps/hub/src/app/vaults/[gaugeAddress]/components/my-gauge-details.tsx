@@ -5,11 +5,18 @@ import { Button } from "@bera/ui/button";
 import { Icons } from "@bera/ui/icons";
 import BigNumber from "bignumber.js";
 
-import { GaugueLPChange } from "./gauge-lp-change";
 import { ClaimBGTModal } from "../../components/claim-modal";
 import { useState } from "react";
 import { ApiVaultFragment } from "@bera/graphql/pol/api";
 import { Address } from "viem";
+import { DepositLP } from "./deposit-lp";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@bera/ui/dialog";
+import { WithdrawLP } from "./WithdrawLP";
 
 export const MyGaugeDetails = ({
   rewardVault,
@@ -28,13 +35,42 @@ export const MyGaugeDetails = ({
   });
 
   return (
-    <div className="flex flex-col gap-4 lg:flex-row">
-      <GaugueLPChange rewardVault={rewardVault} />
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="lg:col-span-6">
+        <DepositLP rewardVault={rewardVault} />
+        {rewardVault.metadata?.description && (
+          <div className="border border-border flex w-full gap-2 rounded-md p-4 mt-4 text-sm font-medium">
+            <div>
+              <Icons.tooltip height={16} width={16} />
+            </div>
+            <div>
+              <h3 className="leading-none">How do I get Receipt Tokens?</h3>
+              <p className="text-muted-foreground">
+                {rewardVault?.metadata?.description}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
       {isReady && data ? (
-        <div className="flex w-full flex-col gap-4 lg:max-w-[440px]">
-          <div className="flex flex-col gap-8 rounded-md border border-border p-4">
-            <div className="text-lg font-semibold leading-7">
-              My Reward Vault Deposits
+        <div className="lg:col-span-5 flex w-full flex-col gap-4">
+          <div className="flex flex-col gap-6 rounded-md border border-border p-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold leading-7">
+                My Staked Tokens
+              </h3>
+              <Dialog>
+                <DialogTrigger>
+                  <Button variant={"outline"} className="py-2 px-4">
+                    Withdraw
+                  </Button>
+                </DialogTrigger>
+
+                <DialogContent>
+                  <DialogTitle>Unstake Receipt Tokens</DialogTitle>
+                  <WithdrawLP rewardVault={rewardVault} />
+                </DialogContent>
+              </Dialog>
             </div>
             <div className="flex justify-between font-medium leading-6">
               <div>{rewardVault?.metadata?.name}</div>
@@ -52,11 +88,9 @@ export const MyGaugeDetails = ({
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-8 rounded-md border border-border p-4">
-            <div className="text-lg font-semibold leading-7">
-              Unclaimed Rewards
-            </div>
-            <div className="flex justify-between font-medium leading-6">
+          <div className="rounded-md border border-border p-4">
+            <div className="text-xl font-semibold leading-7">Rewards</div>
+            <div className="my-6 flex justify-between font-medium leading-6">
               <div className="flex items-center gap-2">
                 <Icons.bgt className="h-6 w-6" />
                 BGT
@@ -70,6 +104,8 @@ export const MyGaugeDetails = ({
                   value={BigNumber(data?.rewards ?? "0").times(price ?? 0)}
                   symbol="USD"
                   showIsSmallerThanMin
+                  prefixText="("
+                  suffixText=")"
                   className="text-sm text-muted-foreground"
                 />
               </div>
@@ -77,8 +113,9 @@ export const MyGaugeDetails = ({
             <Button
               disabled={!data.rewards || Number(data.rewards) <= 0}
               onClick={() => setIsClaimModalOpen(true)}
+              className="w-full"
             >
-              Claim Rewards
+              Claim
             </Button>
 
             <ClaimBGTModal
@@ -89,7 +126,7 @@ export const MyGaugeDetails = ({
           </div>
         </div>
       ) : (
-        <div className="lg:max-w-[440px] w-full" />
+        <div className="lg:col-span-5 w-full" />
       )}
     </div>
   );

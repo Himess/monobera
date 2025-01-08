@@ -83,7 +83,7 @@ const _GaugeDetails = ({ address }: { address: Address }) => {
   return (
     <>
       {rewardVault ? (
-        <div className="flex flex-col gap-11 mb-12">
+        <div className="grid grid-cols-1 gap-y-6 mb-12">
           <PoolHeader
             isVault
             title={
@@ -123,7 +123,7 @@ const _GaugeDetails = ({ address }: { address: Address }) => {
                 externalLink: `${blockExplorerUrl}/address/${rewardVault?.stakingToken.address}`,
               },
             ]}
-            className="border-b border-border pb-8"
+            className="border-b-[0.5px] border-border pb-6"
           />
 
           {activeIncentives
@@ -185,6 +185,7 @@ const _GaugeDetails = ({ address }: { address: Address }) => {
                 loading={isValidatorsLoading}
                 validating={isValidatorsValidating}
                 data={validators}
+                pageSize={10}
                 className="min-w-[800px] shadow"
                 onRowClick={(row) =>
                   router.push(getHubValidatorPath(row.original.pubkey))

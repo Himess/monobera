@@ -37,6 +37,7 @@ fragment ApiVault on GqlRewardVault {
     logoURI
     url
     productName
+    description: name
   }
 
   activeIncentives {

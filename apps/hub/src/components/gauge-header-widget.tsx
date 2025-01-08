@@ -1,8 +1,13 @@
 import { truncateHash, useRewardVaults, useTokens } from "@bera/berajs";
 import { ApiVaultFragment } from "@bera/graphql/pol/api";
-import { GaugeIcon, MarketIcon, TokenIconList } from "@bera/shared-ui";
+import {
+  GaugeIcon,
+  MarketIcon,
+  TokenIconList,
+  getRewardsVaultUrl,
+} from "@bera/shared-ui";
 import { cn } from "@bera/ui";
-import { isAddressEqual } from "viem";
+import Link from "next/link";
 import { Address } from "viem";
 
 export const GaugeHeaderWidget = ({
@@ -37,8 +42,9 @@ export const GaugeHeaderWidget = ({
               address={gauge.vaultAddress as Address}
               src={gauge.metadata?.logoURI}
             />
-            {gauge.metadata?.name ??
-              truncateHash(gauge.id ?? gauge.vaultAddress)}
+            <Link href={getRewardsVaultUrl(gauge.address)}>
+              {gauge.metadata?.name ?? truncateHash(gauge.id ?? gauge.address)}
+            </Link>
           </div>
           <div className="flex items-center gap-1 text-sm font-medium leading-5">
             <MarketIcon
