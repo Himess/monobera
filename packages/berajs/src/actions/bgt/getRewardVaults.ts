@@ -5,9 +5,6 @@ import {
   GetVaultsQuery,
   GetVaultsQueryVariables,
 } from "@bera/graphql/pol/api";
-import { Address } from "viem";
-
-import { BeraConfig } from "~/types";
 
 export interface GetGaugeData {
   gaugeCounts: number;
@@ -19,10 +16,11 @@ export interface GetGaugeData {
   };
 }
 
-export const getRewardVaults = async (
-  config: BeraConfig,
-  filter?: GetVaultsQueryVariables,
-): Promise<GetGaugeData> => {
+export const getRewardVaults = async ({
+  filter,
+}: {
+  filter?: GetVaultsQueryVariables;
+}): Promise<GetGaugeData> => {
   const res = await bexApiGraphqlClient.query<
     GetVaultsQuery,
     GetVaultsQueryVariables

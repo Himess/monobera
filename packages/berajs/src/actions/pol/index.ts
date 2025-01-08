@@ -16,3 +16,5 @@ export * from "./getValidatorByOperator";
 export * from "./getValidatorQueuedOperatorAddress";
 export * from "./getValidatorOperatorAddress";
 export * from "./getUserBoostsOnValidator";
+export * from "./getRewardVaultFromToken";
+export * from "./getRewardVaultStakingToken";

@@ -12,13 +12,15 @@ export const getGlobalCuttingBoard = async (
   threshold: number,
   config: BeraConfig,
 ): Promise<ApiRewardAllocationWeightFragment[]> => {
-  const { gaugeList } = await getRewardVaults(config, {
-    // TODO sort by bgt capture percentage
-    orderBy: GqlRewardVaultOrderBy.Apy,
-    orderDirection: GqlRewardVaultOrderDirection.Desc,
-    pageSize: threshold,
-    where: {
-      includeNonWhitelisted: false,
+  const { gaugeList } = await getRewardVaults({
+    filter: {
+      // TODO sort by bgt capture percentage
+      orderBy: GqlRewardVaultOrderBy.Apy,
+      orderDirection: GqlRewardVaultOrderDirection.Desc,
+      pageSize: threshold,
+      where: {
+        includeNonWhitelisted: false,
+      },
     },
   });
 

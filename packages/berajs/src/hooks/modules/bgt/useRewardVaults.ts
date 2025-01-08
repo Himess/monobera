@@ -4,17 +4,19 @@ import { getRewardVaults } from "~/actions/bgt/getRewardVaults";
 import { DefaultHookOptions, useBeraJs } from "../../..";
 import { GetVaultsQueryVariables } from "@bera/graphql/pol/api";
 
+export const useRewardVaultsQueryKey = (filter?: GetVaultsQueryVariables) => {
+  return ["useRewardVaults", filter];
+};
+
 export const useRewardVaults = (
   filter?: GetVaultsQueryVariables,
   options?: DefaultHookOptions,
 ) => {
-  const { config: beraConfig, account } = useBeraJs();
-  const config = options?.beraConfigOverride ?? beraConfig;
-  const QUERY_KEY = ["defaultGaugeList", config, account, filter];
+  const QUERY_KEY = useRewardVaultsQueryKey(filter);
   const swrResponse = useSWR(
     QUERY_KEY,
     async () => {
-      return await getRewardVaults(config, filter);
+      return await getRewardVaults({ filter });
     },
     {
       ...options?.opts,

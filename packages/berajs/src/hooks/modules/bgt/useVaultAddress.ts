@@ -2,7 +2,7 @@ import useSWR from "swr";
 import { Address } from "viem";
 import { usePublicClient } from "wagmi";
 
-import { BERA_VAULT_REWARDS_ABI } from "~/abi";
+import { getRewardVaultStakingToken } from "~/actions";
 
 export interface RewardVault {
   stakeToken: Address;
@@ -15,10 +15,9 @@ export const useVaultAddress = (vaultAddress: Address) => {
 
   return useSWR<RewardVault>(QUERY_KEY, async () => {
     const [stakeToken] = await Promise.all([
-      publicClient!.readContract({
+      getRewardVaultStakingToken({
         address: vaultAddress,
-        abi: BERA_VAULT_REWARDS_ABI,
-        functionName: "stakeToken",
+        publicClient: publicClient!,
       }),
     ]);
     return { stakeToken, address: vaultAddress };
