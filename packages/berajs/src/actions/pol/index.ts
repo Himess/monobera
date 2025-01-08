@@ -8,7 +8,6 @@ export * from "./get-validator-block-reward-stats";
 export * from "./get-validator-block-stats";
 export * from "./get-validator-token-rewards";
 export * from "./get-all-validators";
-export * from "./get-reward-vault";
 export * from "./getValidatorRewardAllocation";
 export * from "./getRewardAllocationBlockDelay";
 export * from "./getDefaultRewardAllocation";

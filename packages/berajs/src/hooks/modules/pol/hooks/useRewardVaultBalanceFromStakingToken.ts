@@ -33,11 +33,7 @@ export const useRewardVaultBalanceFromStakingToken = ({
     data: whitelistedVaults,
     refresh: refreshWhitelistedVaults,
     isLoading: isLoadingWhitelistedVaults,
-  } = useIsWhitelistedVault(
-    rewardVaultAddress && rewardVaultAddress !== ADDRESS_ZERO
-      ? [rewardVaultAddress]
-      : [],
-  );
+  } = useIsWhitelistedVault(rewardVaultAddress ? [rewardVaultAddress] : []);
 
   const swrResponse = useSWR(
     rewardVaultAddress

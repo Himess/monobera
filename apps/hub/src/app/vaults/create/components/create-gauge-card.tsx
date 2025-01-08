@@ -3,44 +3,41 @@
 import React, { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  usePollRewardVault,
+  ADDRESS_ZERO,
+  useRewardVaultFromToken,
   useStakingTokenInformation,
-  useTokenInformation,
 } from "@bera/berajs";
 import { FormattedNumber, Spinner, Tooltip } from "@bera/shared-ui";
 import { Button } from "@bera/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@bera/ui/card";
 import { Icons } from "@bera/ui/icons";
-import { Input, InputWithLabel } from "@bera/ui/input";
+import { InputWithLabel } from "@bera/ui/input";
 import { Address, isAddress } from "viem";
 import { useCreateRewardVault } from "./useCreateRewardVault";
 
 export const CreateGaugeCard: React.FC = () => {
   const [targetAddress, setTargetAddress] = useState("");
-  const { createRewardVault, ModalPortal } = useCreateRewardVault({
+
+  const {
+    data: rewardVault,
+    isLoading: isLoadingRewardVault,
+    mutate,
+  } = useRewardVaultFromToken({
     tokenAddress: targetAddress as Address,
   });
 
-  const { data: rewardVaultData, isLoading: isLoadingRewardVault } =
-    usePollRewardVault(
-      isAddress(targetAddress) ? (targetAddress as `0x${string}`) : undefined,
-    );
+  const { createRewardVault, ModalPortal } = useCreateRewardVault({
+    tokenAddress: targetAddress as Address,
+    onSuccess: () => mutate(),
+  });
 
   const { data: tokenInformation, error } = useStakingTokenInformation({
     address: targetAddress,
   });
 
-  const rewardVault = useMemo(
-    () =>
-      rewardVaultData?.vaults.length === 0
-        ? undefined
-        : rewardVaultData?.vaults?.[0],
-    [rewardVaultData],
-  );
-
-  console.log({ tokenInformation, error });
-
   const router = useRouter();
+
+  const doesExist = !!rewardVault && rewardVault !== ADDRESS_ZERO;
 
   return (
     <div>
@@ -131,13 +128,11 @@ export const CreateGaugeCard: React.FC = () => {
                 {tokenInformation || isAddress(targetAddress) ? (
                   <>
                     <span
-                      className={
-                        rewardVault ? "text-red-500" : "text-green-500"
-                      }
+                      className={doesExist ? "text-red-500" : "text-green-500"}
                     >
-                      {rewardVault ? "Already exists" : "Available"}
+                      {doesExist ? "Already exists" : "Available"}
                     </span>
-                    {rewardVault ? (
+                    {doesExist ? (
                       <Icons.xCircle className="ml-1 h-4 w-4 text-red-500" />
                     ) : (
                       <Icons.checkCircle className="ml-1 h-4 w-4 text-green-500" />
@@ -154,7 +149,7 @@ export const CreateGaugeCard: React.FC = () => {
             onClick={() => createRewardVault()}
             disabled={
               isLoadingRewardVault ||
-              !!rewardVault ||
+              !!doesExist ||
               !isAddress(targetAddress) ||
               !tokenInformation
             }

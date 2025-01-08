@@ -1,6 +1,6 @@
 import { rewardVaultFactoryAddress } from "@bera/config";
 import useSWRImmutable from "swr/immutable";
-import { Address } from "viem";
+import { Address, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
 
 import { rewardVaultFactoryAbi } from "~/abi";
@@ -9,11 +9,13 @@ import { ADDRESS_ZERO } from "~/config";
 export const useRewardVaultFromToken = ({
   tokenAddress,
 }: {
-  tokenAddress: Address;
+  tokenAddress: Address | undefined;
 }) => {
   const client = usePublicClient();
   return useSWRImmutable(
-    client && tokenAddress ? ["useRewardVaultFromToken", tokenAddress] : null,
+    client && tokenAddress && isAddress(tokenAddress)
+      ? ["useRewardVaultFromToken", tokenAddress]
+      : null,
     async () => {
       if (!tokenAddress) {
         throw new Error("useRewardVaultFromToken needs a valid token address");
@@ -26,7 +28,7 @@ export const useRewardVaultFromToken = ({
         args: [tokenAddress],
       });
 
-      return res as Address;
+      return res === ADDRESS_ZERO ? undefined : res;
     },
   );
 };
