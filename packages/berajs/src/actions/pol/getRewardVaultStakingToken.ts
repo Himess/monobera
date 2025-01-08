@@ -2,7 +2,7 @@ import { rewardVaultFactoryAddress } from "@bera/config";
 
 import { Address, PublicClient, createPublicClient } from "viem";
 import { UsePublicClientReturnType } from "wagmi";
-import { BERA_VAULT_REWARDS_ABI } from "~/abi";
+import { rewardVaultAbi } from "~/abi";
 
 export const getRewardVaultStakingToken = async ({
   address,
@@ -13,7 +13,7 @@ export const getRewardVaultStakingToken = async ({
 }) => {
   const vaultAddress = await publicClient.readContract({
     address: address,
-    abi: BERA_VAULT_REWARDS_ABI,
+    abi: rewardVaultAbi,
     functionName: "stakeToken",
   });
 

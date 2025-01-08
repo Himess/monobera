@@ -2,7 +2,7 @@ import { lendRewardsAddress, peripheryDebtToken } from "@bera/config";
 import useSWR from "swr";
 import { usePublicClient } from "wagmi";
 
-import { BERA_VAULT_REWARDS_ABI, lendRewardHelperAbi } from "~/abi";
+import { rewardVaultAbi, lendRewardHelperAbi } from "~/abi";
 import { useBeraJs } from "~/contexts";
 import POLLING from "~/enum/polling";
 import { DefaultHookOptions } from "~/types";
@@ -22,7 +22,7 @@ export const usePollLendUserBGTRewards = (options?: DefaultHookOptions) => {
         try {
           const { result } = await publicClient.simulateContract({
             address: lendRewardsAddress,
-            abi: BERA_VAULT_REWARDS_ABI,
+            abi: rewardVaultAbi,
             functionName: "getReward",
             account: account,
             args: [account, account], // TODO: A second param is needed here for recipient. Added current account twice for now

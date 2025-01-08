@@ -6,7 +6,7 @@ import {
   formatUnits,
 } from "viem";
 
-import { BERA_VAULT_REWARDS_ABI } from "~/abi";
+import { rewardVaultAbi } from "~/abi";
 
 export interface RewardVaultIncentive {
   token: Address;
@@ -22,7 +22,7 @@ export const getRewardVaultIncentives = async (
 ) => {
   const whitelistedTokens = await publicClient.readContract({
     address: gaugeAddress,
-    abi: BERA_VAULT_REWARDS_ABI,
+    abi: rewardVaultAbi,
     functionName: "getWhitelistedTokens",
   });
 
@@ -30,7 +30,7 @@ export const getRewardVaultIncentives = async (
     whitelistedTokens.map((incentive) =>
       publicClient.readContract({
         address: gaugeAddress,
-        abi: BERA_VAULT_REWARDS_ABI,
+        abi: rewardVaultAbi,
         functionName: "incentives",
         args: [incentive],
       }),

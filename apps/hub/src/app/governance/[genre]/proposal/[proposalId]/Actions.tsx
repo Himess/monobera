@@ -1,4 +1,4 @@
-import { BERA_CHEF_ABI, BERA_VAULT_REWARDS_ABI } from "@bera/berajs";
+import { BERA_CHEF_ABI, rewardVaultAbi } from "@bera/berajs";
 import { Card } from "@bera/ui/card";
 import { serialize } from "wagmi";
 import { useGetVerifiedAbi } from "@bera/berajs";
@@ -99,7 +99,7 @@ export const Actions = ({
 
         const abi: Abi = [
           ...BERA_CHEF_ABI,
-          ...BERA_VAULT_REWARDS_ABI,
+          ...rewardVaultAbi,
           ...erc20Abi,
           ...(data && !error && !isLoading ? JSON.parse(data) : []),
         ];

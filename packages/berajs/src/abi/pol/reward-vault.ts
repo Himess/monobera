@@ -1,4 +1,4 @@
-export const BERA_VAULT_REWARDS_ABI = [
+export const rewardVaultAbi = [
   { type: "constructor", inputs: [], stateMutability: "nonpayable" },
   {
     type: "function",

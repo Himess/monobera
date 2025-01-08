@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  BERA_VAULT_REWARDS_ABI,
+  rewardVaultAbi,
   Token,
   TransactionActionType,
   usePollVaultsInfo,
@@ -141,7 +141,7 @@ export const WithdrawLP = ({
           onClick={() =>
             write({
               address: rewardVault.vaultAddress as Address,
-              abi: BERA_VAULT_REWARDS_ABI,
+              abi: rewardVaultAbi,
               functionName: "withdraw",
               params: [parseUnits(withdrawAmount, lpToken!.decimals)],
             })
