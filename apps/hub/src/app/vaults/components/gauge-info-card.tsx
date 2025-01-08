@@ -84,7 +84,7 @@ export default function GaugeInfoCard() {
               />
               <Badge variant="success">
                 <FormattedNumber
-                  value={bgtInflation?.annualizedBGTInflation ?? 0}
+                  value={(bgtInflation?.annualizedBGTInflation ?? 0) / 100}
                   percent
                 />
               </Badge>
