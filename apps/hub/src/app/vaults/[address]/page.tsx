@@ -31,14 +31,14 @@ export const revalidate = 30;
 export default async function PoolPage({
   params,
 }: {
-  params: { gaugeAddress: Address };
+  params: { address: Address };
 }) {
   if (isIPFS) {
     return null;
   }
 
-  if (!isAddress(params.gaugeAddress)) {
-    console.error("Invalid gauge address", params.gaugeAddress);
+  if (!isAddress(params.address)) {
+    console.error("Invalid gauge address", params.address);
     notFound();
   }
 
@@ -48,11 +48,11 @@ export default async function PoolPage({
     transport: http(),
   });
 
-  const vaultPromise = getRewardVault(params.gaugeAddress);
+  const vaultPromise = getRewardVault(params.address);
 
   try {
     await getRewardVaultStakingToken({
-      address: params.gaugeAddress,
+      address: params.address,
       // @ts-ignore viem types
       publicClient: publicClient as PublicClient,
     });
@@ -68,19 +68,17 @@ export default async function PoolPage({
   } catch (error) {
     console.warn(
       "Vault not found during SSR, but staking token was found",
-      params.gaugeAddress,
+      params.address,
     );
   }
 
-  return (
-    <VaultDetails address={params.gaugeAddress} rewardVault={rewardVault} />
-  );
+  return <VaultDetails address={params.address} rewardVault={rewardVault} />;
 }
 
 export function generateStaticParams() {
   return [
     {
-      gaugeAddress: "0x",
+      address: "0x",
     },
   ];
 }

@@ -17,11 +17,11 @@ export interface RewardVaultIncentive {
 }
 
 export const getRewardVaultIncentives = async (
-  gaugeAddress: Address,
+  address: Address,
   publicClient: PublicClient,
 ) => {
   const whitelistedTokens = await publicClient.readContract({
-    address: gaugeAddress,
+    address: address,
     abi: rewardVaultAbi,
     functionName: "getWhitelistedTokens",
   });
@@ -29,7 +29,7 @@ export const getRewardVaultIncentives = async (
   const incentivesInfoPromise = Promise.all(
     whitelistedTokens.map((incentive) =>
       publicClient.readContract({
-        address: gaugeAddress,
+        address: address,
         abi: rewardVaultAbi,
         functionName: "incentives",
         args: [incentive],
