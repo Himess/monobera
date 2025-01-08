@@ -48,7 +48,7 @@ export const MyGaugeDetails = ({
               <h3 className="leading-none mb-1">
                 How do I get Receipt Tokens?
               </h3>
-              <p className="text-muted-foreground leading-normal">
+              <div className="text-muted-foreground leading-normal">
                 <Markdown
                   components={{
                     a: ({ children, href }) => (
@@ -70,7 +70,7 @@ export const MyGaugeDetails = ({
                 >
                   {rewardVault?.metadata?.description}
                 </Markdown>
-              </p>
+              </div>
             </div>
           </div>
         )}
