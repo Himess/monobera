@@ -9,12 +9,14 @@ import {
   useMultipleTokenInformation,
   useBeraJs,
   Token,
+  useRewardVaultQueryKey,
+  SWRFallback,
 } from "@bera/berajs";
 import { lendRewardsAddress, blockExplorerUrl } from "@bera/config";
 import { DataTable, GaugeIcon, MarketIcon, PoolHeader } from "@bera/shared-ui";
 import { getHubValidatorPath } from "@bera/shared-ui";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@bera/ui/tabs";
-import { SWRConfig } from "swr";
+import { unstable_serialize } from "swr";
 import { Address } from "viem";
 
 import { gauge_incentives_columns } from "~/columns/gauge-incentives-columns";
@@ -25,28 +27,35 @@ import { MyGaugeDetails } from "./my-gauge-details";
 import { Card, CardContent } from "@bera/ui/card";
 import { Button } from "@bera/ui/button";
 import Link from "next/link";
+import { ApiVaultFragment } from "@bera/graphql/pol/api";
 
 export const VaultDetails = ({
   address,
+  rewardVault,
 }: {
   address: Address;
+  rewardVault?: ApiVaultFragment;
 }) => {
   return (
-    <SWRConfig value={{}}>
-      <_GaugeDetails address={address} />
-    </SWRConfig>
+    <SWRFallback
+      fallback={{
+        [unstable_serialize(useRewardVaultQueryKey(address))]: rewardVault,
+      }}
+    >
+      <_VaultDetails address={address} />
+    </SWRFallback>
   );
 };
 
-const _GaugeDetails = ({ address }: { address: Address }) => {
+const _VaultDetails = ({ address }: { address: Address }) => {
+  const router = useRouter();
+  const { account } = useBeraJs();
+
   const {
     data: rewardVault,
     isLoading: isRewardVaultLoading,
     isValidating: rewardVaultError,
   } = useRewardVault(address);
-
-  const router = useRouter();
-  const { account } = useBeraJs();
 
   const {
     data: validators = [],
@@ -80,123 +89,121 @@ const _GaugeDetails = ({ address }: { address: Address }) => {
     return notFound();
   }
 
+  if (!rewardVault) {
+    return <Loading />;
+  }
+
   return (
-    <>
-      {rewardVault ? (
-        <div className="grid grid-cols-1 gap-y-6 mb-12">
-          <PoolHeader
-            isVault
-            title={
+    <div className="grid grid-cols-1 gap-y-6 mb-12">
+      <PoolHeader
+        isVault
+        title={
+          <>
+            <GaugeIcon
+              address={rewardVault?.vaultAddress as Address}
+              size="xl"
+              src={rewardVault?.metadata?.logoURI}
+            />
+            {rewardVault?.metadata?.name ?? truncateHash(address)}
+          </>
+        }
+        subtitles={[
+          {
+            title: "Platform",
+            content: (
               <>
-                <GaugeIcon
-                  address={rewardVault?.vaultAddress as Address}
-                  size="xl"
-                  src={rewardVault?.metadata?.logoURI}
+                <MarketIcon
+                  market={rewardVault?.metadata?.productName ?? ""}
+                  size={"md"}
                 />
-                {rewardVault?.metadata?.name ?? truncateHash(address)}
+                {rewardVault?.metadata?.productName ?? "OTHER"}
               </>
-            }
-            subtitles={[
-              {
-                title: "Platform",
-                content: (
-                  <>
-                    <MarketIcon
-                      market={rewardVault?.metadata?.productName ?? ""}
-                      size={"md"}
-                    />
-                    {rewardVault?.metadata?.productName ?? "OTHER"}
-                  </>
-                ),
-                externalLink: rewardVault?.metadata?.url ?? "",
-              },
-              {
-                title: "Reward Vault",
-                content: <>{truncateHash(rewardVault?.vaultAddress ?? "")}</>,
-                externalLink: `${blockExplorerUrl}/address/${rewardVault?.vaultAddress}`,
-              },
-              {
-                title: "Staking Contract",
-                content: (
-                  <>{truncateHash(rewardVault?.stakingToken.address ?? "")}</>
-                ),
-                externalLink: `${blockExplorerUrl}/address/${rewardVault?.stakingToken.address}`,
-              },
-            ]}
-            className="border-b-[0.5px] border-border pb-6"
-          />
+            ),
+            externalLink: rewardVault?.metadata?.url ?? "",
+          },
+          {
+            title: "Reward Vault",
+            content: <>{truncateHash(rewardVault?.vaultAddress ?? "")}</>,
+            externalLink: `${blockExplorerUrl}/address/${rewardVault?.vaultAddress}`,
+          },
+          {
+            title: "Staking Contract",
+            content: (
+              <>{truncateHash(rewardVault?.stakingToken.address ?? "")}</>
+            ),
+            externalLink: `${blockExplorerUrl}/address/${rewardVault?.stakingToken.address}`,
+          },
+        ]}
+        className="border-b-[0.5px] border-border pb-6"
+      />
 
-          {activeIncentives
-            ?.filter((inc) => account && inc.manager === account)
-            .map((inc, idx) => (
-              <Card key={idx}>
-                <CardContent className="md:flex w-full items-center justify-between p-4 pt-4">
-                  <div className="flex flex-col items-start pr-4">
-                    <div className="text-muted-foregorund font-medium">
-                      Add {inc.token.name ? `${inc.token.name} ` : ""}incentives
-                      to this rewards vault
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      You are currently logged in with a token manager wallet
-                      enabling you to add incentives.
-                    </div>
-                  </div>
-                  <Button
-                    as={Link}
-                    className=" max-md:mt-4 max-md:w-full whitespace-nowrap"
-                    href={`/incentivize?gauge=${address}&token=${inc.token.address}`}
-                  >
-                    Add {inc.token.name ?? "incentives"}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+      {activeIncentives
+        ?.filter((inc) => account && inc.manager === account)
+        .map((inc, idx) => (
+          <Card key={idx}>
+            <CardContent className="md:flex w-full items-center justify-between p-4 pt-4">
+              <div className="flex flex-col items-start pr-4">
+                <div className="text-muted-foregorund font-medium">
+                  Add {inc.token.name ? `${inc.token.name} ` : ""}incentives to
+                  this rewards vault
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  You are currently logged in with a token manager wallet
+                  enabling you to add incentives.
+                </div>
+              </div>
+              <Button
+                as={Link}
+                className=" max-md:mt-4 max-md:w-full whitespace-nowrap"
+                href={`/incentivize?gauge=${address}&token=${inc.token.address}`}
+              >
+                Add {inc.token.name ?? "incentives"}
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
 
-          {address.toLowerCase() !== lendRewardsAddress.toLowerCase() ? (
-            <MyGaugeDetails rewardVault={rewardVault} />
-          ) : (
-            <BendRewardsBanner />
-          )}
-
-          <Tabs defaultValue="incentives" className="flex flex-col gap-4">
-            <div className="flex flex-col justify-between gap-4 md:flex-row">
-              <TabsList className="w-full md:w-fit">
-                <TabsTrigger value="incentives" className="w-full md:w-fit">
-                  Incentives
-                </TabsTrigger>
-                <TabsTrigger value="validators" className="w-full md:w-fit">
-                  Validators
-                </TabsTrigger>
-              </TabsList>
-            </div>
-
-            <TabsContent value="incentives">
-              <DataTable
-                loading={isRewardVaultLoading}
-                validating={rewardVaultError}
-                columns={gauge_incentives_columns}
-                data={activeIncentives ?? []}
-                className="max-h-[300px] min-w-[1000px] shadow"
-              />
-            </TabsContent>
-            <TabsContent value="validators">
-              <DataTable
-                columns={getGaugeValidatorColumns(rewardVault)}
-                loading={isValidatorsLoading}
-                validating={isValidatorsValidating}
-                data={validators}
-                pageSize={10}
-                className="min-w-[800px] shadow"
-                onRowClick={(row) =>
-                  router.push(getHubValidatorPath(row.original.pubkey))
-                }
-              />
-            </TabsContent>
-          </Tabs>
-        </div>
+      {address.toLowerCase() !== lendRewardsAddress.toLowerCase() ? (
+        <MyGaugeDetails rewardVault={rewardVault} />
       ) : (
-        <Loading />
+        <BendRewardsBanner />
       )}
-    </>
+
+      <Tabs defaultValue="incentives" className="flex flex-col gap-4">
+        <div className="flex flex-col justify-between gap-4 md:flex-row">
+          <TabsList className="w-full md:w-fit">
+            <TabsTrigger value="incentives" className="w-full md:w-fit">
+              Incentives
+            </TabsTrigger>
+            <TabsTrigger value="validators" className="w-full md:w-fit">
+              Validators
+            </TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="incentives">
+          <DataTable
+            loading={isRewardVaultLoading}
+            validating={rewardVaultError}
+            columns={gauge_incentives_columns}
+            data={activeIncentives ?? []}
+            className="max-h-[300px] min-w-[1000px] shadow"
+          />
+        </TabsContent>
+        <TabsContent value="validators">
+          <DataTable
+            columns={getGaugeValidatorColumns(rewardVault)}
+            loading={isValidatorsLoading}
+            validating={isValidatorsValidating}
+            data={validators}
+            pageSize={10}
+            className="min-w-[800px] shadow"
+            onRowClick={(row) =>
+              router.push(getHubValidatorPath(row.original.pubkey))
+            }
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };

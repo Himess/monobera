@@ -2,10 +2,21 @@ import React from "react";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isIPFS } from "@bera/config";
-import { Address, createPublicClient, http, isAddress } from "viem";
+import {
+  Address,
+  PublicClient,
+  createPublicClient,
+  http,
+  isAddress,
+} from "viem";
 import { VaultDetails } from "./components/VaultDetails";
 import { defaultBeraNetworkConfig } from "@bera/wagmi/config";
-import { BERA_VAULT_REWARDS_ABI } from "@bera/berajs/abi";
+
+import {
+  getRewardVault,
+  getRewardVaultStakingToken,
+} from "@bera/berajs/actions";
+import { ApiVaultFragment } from "@bera/graphql/pol/api";
 
 export function generateMetadata(): Metadata {
   return {
@@ -13,7 +24,9 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export const revalidate = 10;
+export const dynamicParams = true;
+
+export const revalidate = 30;
 
 export default async function PoolPage({
   params,
@@ -35,21 +48,33 @@ export default async function PoolPage({
     transport: http(),
   });
 
-  const stakeToken = await publicClient.readContract({
-    address: params.gaugeAddress,
-    abi: BERA_VAULT_REWARDS_ABI,
-    functionName: "stakeToken",
-  });
+  const vaultPromise = getRewardVault(params.gaugeAddress);
 
-  if (!stakeToken) {
-    console.error(
-      "Stake token address not found, so vault is invalid",
-      stakeToken,
-    );
-    notFound();
+  try {
+    await getRewardVaultStakingToken({
+      address: params.gaugeAddress,
+      // @ts-ignore viem types
+      publicClient: publicClient as PublicClient,
+    });
+  } catch (error) {
+    console.error("Stake token address not found, so vault is invalid", error);
+    return notFound();
   }
 
-  return <VaultDetails address={params.gaugeAddress} />;
+  let rewardVault: ApiVaultFragment | undefined;
+
+  try {
+    rewardVault = await vaultPromise;
+  } catch (error) {
+    console.warn(
+      "Vault not found during SSR, but staking token was found",
+      params.gaugeAddress,
+    );
+  }
+
+  return (
+    <VaultDetails address={params.gaugeAddress} rewardVault={rewardVault} />
+  );
 }
 
 export function generateStaticParams() {
