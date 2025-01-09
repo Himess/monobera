@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { notFound, useSearchParams } from "next/navigation";
 import {
-  BERA_VAULT_REWARDS_ABI,
+  rewardVaultAbi,
   TransactionActionType,
   truncateHash,
   usePollAllowance,
@@ -130,10 +130,10 @@ export const Incentivize = () => {
                   <>
                     {" "}
                     <MarketIcon
-                      market={gaugeInfo?.metadata?.productName ?? ""}
+                      market={gaugeInfo?.metadata?.protocolName ?? ""}
                       size={"md"}
                     />
-                    {gaugeInfo?.metadata?.productName ?? "OTHER"}
+                    {gaugeInfo?.metadata?.protocolName ?? "OTHER"}
                   </>
                 ),
                 externalLink: gaugeInfo?.metadata?.url ?? "",
@@ -292,7 +292,7 @@ export const Incentivize = () => {
             onClick={() =>
               write({
                 address: gaugeInfo?.vaultAddress as Address,
-                abi: BERA_VAULT_REWARDS_ABI,
+                abi: rewardVaultAbi,
                 functionName: "addIncentive",
                 params: [
                   // We should make sure token is not undefined

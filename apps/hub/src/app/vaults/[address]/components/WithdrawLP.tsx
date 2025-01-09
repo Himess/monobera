@@ -1,10 +1,10 @@
 import { useState } from "react";
 import {
-  BERA_VAULT_REWARDS_ABI,
+  rewardVaultAbi,
   Token,
   TransactionActionType,
   usePollVaultsInfo,
-  usePollWalletBalances,
+  useTokenInformation,
 } from "@bera/berajs";
 import {
   ActionButton,
@@ -19,12 +19,14 @@ import { Address, parseUnits } from "viem";
 import { ApiVaultFragment } from "@bera/graphql/pol/api";
 
 export const WithdrawLP = ({
-  lpToken,
   rewardVault,
 }: {
-  lpToken: Token;
   rewardVault: ApiVaultFragment;
 }) => {
+  const { data: lpToken } = useTokenInformation({
+    address: rewardVault.stakingToken.address,
+  });
+
   const [withdrawAmount, setWithdrawAmount] = useState<`${number}`>("0");
   const [withdrawPercent, setWithdrawPercent] = useState<number>(0);
 
@@ -44,7 +46,7 @@ export const WithdrawLP = ({
       try {
         track("unstake", {
           quantity: withdrawAmount,
-          token: lpToken.symbol,
+          token: lpToken!.symbol,
           vault: rewardVault.vaultAddress,
         });
       } catch (e) {
@@ -60,35 +62,32 @@ export const WithdrawLP = ({
   });
 
   return (
-    <div className="flex flex-col gap-4 rounded-md border border-border p-4">
-      <div>
-        <div className="text-lg font-semibold leading-7">
-          Unstake Receipt Tokens
-        </div>
-        <div className="mt-1 text-sm leading-5">
-          Unstaking your receipt tokens will also claim your outstanding BGT
-          rewards
-        </div>
-        <div className="mt-4 rounded-md border border-border bg-muted">
-          <TokenInput
-            selected={lpToken}
-            amount={withdrawAmount}
-            balance={data?.balance ?? "0"}
-            hidePrice
-            showExceeding={true}
-            selectable={false}
-            setAmount={(amount: string) => {
-              setWithdrawAmount(amount as `${number}`);
-              if (!data?.balance || BigNumber(data?.balance ?? "0").eq(0))
-                return;
-              setWithdrawPercent(
-                BigNumber(amount).div(data?.balance).times(100).toNumber(),
-              );
-            }}
-          />
-        </div>
+    <div className="rounded-md border border-border p-4">
+      <div className="mt-2 mb-4">
+        <TokenInput
+          className="!p-0"
+          selected={lpToken}
+          amount={withdrawAmount}
+          balance={data?.balance ?? "0"}
+          hidePrice
+          showExceeding={true}
+          selectable={false}
+          setAmount={(amount: string) => {
+            setWithdrawAmount(amount as `${number}`);
+            if (!data?.balance || BigNumber(data?.balance ?? "0").eq(0)) return;
+
+            if (!amount) {
+              setWithdrawPercent(0);
+              return;
+            }
+
+            setWithdrawPercent(
+              BigNumber(amount).div(data?.balance).times(100).toNumber(),
+            );
+          }}
+        />
       </div>
-      <div className="w-full rounded-lg border p-4">
+      <div className="rounded-lg border p-4 my-4">
         <div className="flex w-full flex-row items-center justify-between gap-1">
           <p className="text-sm font-semibold sm:text-lg">
             {withdrawPercent.toFixed(2)}%
@@ -100,7 +99,7 @@ export const WithdrawLP = ({
                   key={percent.toString()}
                   variant={"secondary"}
                   size={"sm"}
-                  className="w-full text-foreground"
+                  className="w-full text-foreground max-md:odd:hidden"
                   onClick={() => {
                     setWithdrawPercent(percent);
                     setWithdrawAmount(
@@ -135,17 +134,16 @@ export const WithdrawLP = ({
         />
       </div>
       {/* <Info /> */}
-      <ActionButton>
+      <ActionButton className="w-full">
         <Button
           className="w-full"
-          disabled={!validAmount}
+          disabled={!validAmount || !lpToken}
           onClick={() =>
             write({
               address: rewardVault.vaultAddress as Address,
-              abi: BERA_VAULT_REWARDS_ABI,
+              abi: rewardVaultAbi,
               functionName: "withdraw",
-              params: [parseUnits(withdrawAmount, lpToken.decimals)],
-              gasLimit: 200000n,
+              params: [parseUnits(withdrawAmount, lpToken!.decimals)],
             })
           }
         >

@@ -12,7 +12,7 @@ import useSWR from "swr";
 import { Address, formatUnits } from "viem";
 import { usePublicClient } from "wagmi";
 
-import { BERA_VAULT_REWARDS_ABI } from "~/abi";
+import { rewardVaultAbi } from "~/abi";
 import { useBeraJs } from "~/contexts";
 import POLLING from "~/enum/polling";
 import { DefaultHookOptions, DefaultHookReturnType } from "~/types/global";
@@ -73,14 +73,14 @@ export const useUserVaults = (
 
       const calls: Call[] = deposits.map((deposit) => ({
         address: deposit.vaultAddress as Address,
-        abi: BERA_VAULT_REWARDS_ABI,
+        abi: rewardVaultAbi,
         functionName: "earned",
         args: [account],
       }));
 
       const balanceCalls: Call[] = deposits.map((deposit) => ({
         address: deposit.vaultAddress as Address,
-        abi: BERA_VAULT_REWARDS_ABI,
+        abi: rewardVaultAbi,
         functionName: "balanceOf",
         args: [account],
       }));

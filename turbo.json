@@ -28,9 +28,7 @@
       "env": [".env.bartio"]
     },
     "check-types": {
-      "dependsOn": ["^build"],
-      "cache": false,
-      "outputs": ["storybook-static/**"]
+      "dependsOn": ["^build"]
     }
   },
   "globalEnv": ["CI", "NODE_ENV", "SKIP_ENV_VALIDATION", "VERCEL", "VERCEL_ENV"]

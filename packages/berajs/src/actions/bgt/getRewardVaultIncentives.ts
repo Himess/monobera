@@ -6,7 +6,7 @@ import {
   formatUnits,
 } from "viem";
 
-import { BERA_VAULT_REWARDS_ABI } from "~/abi";
+import { rewardVaultAbi } from "~/abi";
 
 export interface RewardVaultIncentive {
   token: Address;
@@ -17,20 +17,20 @@ export interface RewardVaultIncentive {
 }
 
 export const getRewardVaultIncentives = async (
-  gaugeAddress: Address,
+  address: Address,
   publicClient: PublicClient,
 ) => {
   const whitelistedTokens = await publicClient.readContract({
-    address: gaugeAddress,
-    abi: BERA_VAULT_REWARDS_ABI,
+    address: address,
+    abi: rewardVaultAbi,
     functionName: "getWhitelistedTokens",
   });
 
   const incentivesInfoPromise = Promise.all(
     whitelistedTokens.map((incentive) =>
       publicClient.readContract({
-        address: gaugeAddress,
-        abi: BERA_VAULT_REWARDS_ABI,
+        address: address,
+        abi: rewardVaultAbi,
         functionName: "incentives",
         args: [incentive],
       }),

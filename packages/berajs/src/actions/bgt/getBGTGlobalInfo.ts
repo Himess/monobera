@@ -20,9 +20,7 @@ export interface GlobalInfo {
   annualizedBGTInflation: string;
 }
 
-export const getBGTGlobalInfo = async (
-  config: BeraConfig,
-): Promise<GlobalInfo | undefined> => {
+export const getBGTGlobalInfo = async (): Promise<GlobalInfo> => {
   const apiRes = await bexApiGraphqlClient.query<
     GlobalDataQuery,
     GlobalDataQueryVariables

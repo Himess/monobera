@@ -1,6 +1,6 @@
 import { Address, PublicClient } from "viem";
 
-import { BERA_VAULT_REWARDS_ABI } from "~/abi";
+import { rewardVaultAbi } from "~/abi";
 
 export interface GetUserVaultsInfo {
   account: string | undefined;
@@ -19,7 +19,7 @@ export const getUserVaultsReward = async ({
 
   return await publicClient.readContract({
     address: vaultAddress,
-    abi: BERA_VAULT_REWARDS_ABI,
+    abi: rewardVaultAbi,
     functionName: "earned",
     args: [account as `0x${string}`],
   });

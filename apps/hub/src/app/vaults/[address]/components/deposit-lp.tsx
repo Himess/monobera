@@ -1,12 +1,13 @@
 import { useState } from "react";
 import {
-  BERA_VAULT_REWARDS_ABI,
-  type Token,
+  rewardVaultAbi,
   TransactionActionType,
-  usePollWalletBalances,
   usePollAllowance,
   usePollVaultsInfo,
+  useTokenInformation,
+  usePollBalance,
 } from "@bera/berajs";
+
 import {
   ActionButton,
   ApproveButton,
@@ -20,18 +21,18 @@ import { Address, parseUnits } from "viem";
 import { ApiVaultFragment } from "@bera/graphql/pol/api";
 
 export const DepositLP = ({
-  lpToken,
   rewardVault,
 }: {
-  lpToken: Token;
   rewardVault: ApiVaultFragment;
 }) => {
-  const { useSelectedWalletBalance, refresh: refreshWalletBalances } =
-    usePollWalletBalances({
-      externalTokenList: [lpToken],
-    });
+  const { data: lpToken } = useTokenInformation({
+    address: rewardVault.stakingToken.address,
+  });
 
-  const balance = useSelectedWalletBalance(lpToken.address);
+  const { data: balance, refresh: refreshWalletBalances } = usePollBalance({
+    address: lpToken?.address,
+  });
+
   const [depositAmount, setDepositAmount] = useState("");
   const validAmount =
     BigNumber(depositAmount).gt(0) &&
@@ -42,6 +43,7 @@ export const DepositLP = ({
   });
 
   const { captureException, track } = useAnalytics();
+
   const { write, ModalPortal } = useTxn({
     message: "Stake LP Tokens", // AKA 'stake'
     actionType: TransactionActionType.ADD_LIQUIDITY,
@@ -49,7 +51,7 @@ export const DepositLP = ({
       try {
         track("stake", {
           quantity: depositAmount,
-          token: lpToken.symbol,
+          token: lpToken?.symbol,
           vault: rewardVault.vaultAddress,
         });
         setDepositAmount("");
@@ -72,19 +74,27 @@ export const DepositLP = ({
 
   const [exceeding, setExceeding] = useState(false);
 
+  const needsApproval =
+    lpToken &&
+    ((allowance !== undefined && allowance?.formattedAllowance === "0") ||
+      (allowance?.allowance ?? 0n) <
+        parseUnits(depositAmount, lpToken.decimals)) &&
+    depositAmount !== "" &&
+    depositAmount !== "0" &&
+    !exceeding;
+
   return (
-    <div className="flex flex-col gap-4 rounded-md border border-border p-4">
+    <div className="rounded-md border border-border p-4">
       <div>
-        <div className="text-lg font-semibold leading-7">Stake Tokens</div>
-        <div className="mt-1 text-sm leading-5">
-          Stake your tokens to start earning BGT rewards
-        </div>
-        <div className="mt-4 rounded-md border border-border bg-muted">
+        <div className="text-xl font-semibold leading-none">Stake</div>
+
+        <div className="my-6">
           <TokenInput
             selected={lpToken}
             amount={depositAmount}
             balance={balance?.formattedBalance}
             hidePrice
+            className="!p-0"
             showExceeding={true}
             selectable={false}
             setAmount={(amount: string) =>
@@ -94,30 +104,25 @@ export const DepositLP = ({
           />
         </div>
       </div>
-      {/* <Info /> */}
 
-      <ActionButton className="mt-4">
-        {((allowance !== undefined && allowance?.formattedAllowance === "0") ||
-          (allowance?.allowance ?? 0n) <
-            parseUnits(depositAmount, lpToken.decimals)) &&
-        depositAmount !== "" &&
-        depositAmount !== "0" &&
-        !exceeding ? (
+      <ActionButton>
+        {needsApproval ? (
           <ApproveButton
             token={lpToken}
+            disabled={!lpToken}
             spender={rewardVault.vaultAddress as Address}
-            amount={parseUnits(depositAmount, lpToken.decimals)}
+            amount={parseUnits(depositAmount, lpToken!.decimals)}
           />
         ) : (
           <Button
             className="w-full"
-            disabled={!validAmount || exceeding}
+            disabled={!validAmount || exceeding || !lpToken}
             onClick={() =>
               write({
                 address: rewardVault.vaultAddress as Address,
-                abi: BERA_VAULT_REWARDS_ABI,
+                abi: rewardVaultAbi,
                 functionName: "stake",
-                params: [parseUnits(depositAmount, lpToken.decimals)],
+                params: [parseUnits(depositAmount, lpToken!.decimals)],
               })
             }
           >

@@ -2,10 +2,10 @@ import { Skeleton } from "@bera/ui/skeleton";
 
 export default function Loading() {
   return (
-    <div className="flex flex-col gap-8">
+    <div className="grid grid-cols-1 gap-y-6 mb-12">
       <HeaderLoading />
       <hr />
-      <div className="flex gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <ActionLoading />
         <UserLoading />
       </div>
@@ -26,8 +26,7 @@ export const HeaderLoading = () => (
 );
 
 export const ActionLoading = () => (
-  <div className="flex w-full flex-col gap-4">
-    <Skeleton className="h-10 w-full rounded-sm" />
+  <div className="grid grid-cols-1 lg:col-span-6 gap-4">
     <div className="flex w-full flex-col gap-4 rounded-sm border border-border p-4">
       <Skeleton className="h-6 w-40 rounded-sm" />
       <Skeleton className="h-6 w-80 rounded-sm" />
@@ -38,7 +37,7 @@ export const ActionLoading = () => (
 );
 
 export const UserLoading = () => (
-  <div className="flex w-[400px] flex-col gap-4">
+  <div className="grid grid-cols-1 lg:col-span-5 gap-4">
     <div className="flex flex-col gap-8 rounded-sm border border-border p-4">
       <Skeleton className="h-6 w-40 rounded-sm" />
       <div className="flex w-full justify-between">

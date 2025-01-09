@@ -4,17 +4,17 @@ import { FC, Suspense } from "react";
 import { notFound, useSearchParams } from "next/navigation";
 import { isAddress } from "viem";
 
-import { VaultDetails } from "../[gaugeAddress]/components/VaultDetails";
-import Loading from "../[gaugeAddress]/loading";
+import { VaultDetails } from "../[address]/components/VaultDetails";
+import Loading from "../[address]/loading";
 
 const Gauge: FC = () => {
   const searchParams = useSearchParams();
-  const gaugeAddress = searchParams.get("address");
+  const address = searchParams.get("address");
 
-  if (!gaugeAddress || !isAddress(gaugeAddress)) {
+  if (!address || !isAddress(address)) {
     return notFound();
   }
-  return <VaultDetails address={gaugeAddress} />;
+  return <VaultDetails address={address} />;
 };
 
 export default function GaugeStaticPage() {

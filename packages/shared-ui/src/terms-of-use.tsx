@@ -184,7 +184,7 @@ export const TermOfUseModal = () => {
               <AlertTitle>
                 {" "}
                 <Icons.info className="inline-block h-4 w-4" /> You Must Agree
-                to User Our Services
+                to Use Our Services
               </AlertTitle>
               <AlertDescription className="text-xs">
                 Looks like you selected “I Disagree”, unfortunately you

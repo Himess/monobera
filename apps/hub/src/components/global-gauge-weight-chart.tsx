@@ -139,9 +139,9 @@ export default function GlobalGaugeWeightChart({
       </div>
 
       {isLoading ? (
-        <Skeleton className="relative mx-auto rounded-full" />
+        <Skeleton className="relative mx-auto rounded-full aspect-square" />
       ) : (
-        <div className="relative mx-auto">
+        <div className="relative mx-auto aspect-square">
           <BeraChart
             data={dataP}
             className="w-full"

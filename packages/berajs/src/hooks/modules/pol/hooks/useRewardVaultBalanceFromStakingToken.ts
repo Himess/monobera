@@ -3,7 +3,7 @@ import useSWR from "swr";
 import { Address } from "viem";
 import { usePublicClient } from "wagmi";
 
-import { BERA_CHEF_ABI, BERA_VAULT_REWARDS_ABI } from "~/abi";
+import { BERA_CHEF_ABI, rewardVaultAbi } from "~/abi";
 import { ADDRESS_ZERO } from "~/config";
 import { useBeraJs } from "~/contexts";
 import { useIsWhitelistedVault } from "~/hooks/useIsWhitelistedVault";
@@ -33,11 +33,7 @@ export const useRewardVaultBalanceFromStakingToken = ({
     data: whitelistedVaults,
     refresh: refreshWhitelistedVaults,
     isLoading: isLoadingWhitelistedVaults,
-  } = useIsWhitelistedVault(
-    rewardVaultAddress && rewardVaultAddress !== ADDRESS_ZERO
-      ? [rewardVaultAddress]
-      : [],
-  );
+  } = useIsWhitelistedVault(rewardVaultAddress ? [rewardVaultAddress] : []);
 
   const swrResponse = useSWR(
     rewardVaultAddress
@@ -65,7 +61,7 @@ export const useRewardVaultBalanceFromStakingToken = ({
       const balance = account
         ? await client?.readContract({
             address: rewardVaultAddress!,
-            abi: BERA_VAULT_REWARDS_ABI,
+            abi: rewardVaultAbi,
             functionName: "balanceOf",
             args: [account],
           })

@@ -1,5 +1,5 @@
 import React from "react";
-import { BERA_VAULT_REWARDS_ABI, useBeraJs } from "@bera/berajs";
+import { rewardVaultAbi, useBeraJs } from "@bera/berajs";
 import { Address, encodeFunctionData } from "viem";
 
 export const useClaimAllBgtCalldata = (vaultAddresses: Address[]) => {
@@ -7,7 +7,7 @@ export const useClaimAllBgtCalldata = (vaultAddresses: Address[]) => {
   return React.useMemo(() => {
     const calls: any[] = vaultAddresses.map((vaultAddress) => {
       const data = encodeFunctionData({
-        abi: BERA_VAULT_REWARDS_ABI,
+        abi: rewardVaultAbi,
         functionName: "getReward",
         args: [account!, account!], // TODO: A second param is needed here for recipient. Added current account twice for now
       });

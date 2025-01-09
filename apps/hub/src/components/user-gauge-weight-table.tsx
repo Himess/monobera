@@ -42,7 +42,7 @@ export default function UserGaugeWeightTable({
       .filter((vaultInfo: UserVault) => {
         if (keywords === "") return true;
         if (vaultInfo.vault.metadata?.name?.includes(keywords)) return true;
-        if (vaultInfo.vault.metadata?.productName?.includes(keywords))
+        if (vaultInfo.vault.metadata?.protocolName?.includes(keywords))
           return true;
         if (vaultInfo.vault.vaultAddress.includes(keywords)) return true;
         return false;

@@ -3,7 +3,7 @@ export { useRewardVaults } from "./useRewardVaults";
 export { useBgtApy } from "./useBgtApy";
 export { usePollUserQueuedBoost } from "./usePollUserQueuedBoost";
 export { usePollVaultsInfo } from "./usePollVaultsInfo";
-export { usePollGlobalData } from "./usePollGlobalData";
+export * from "./usePollGlobalData";
 export { useBgtUnstakedBalance } from "./useBgtUnstakedBalance";
 export { useUserVaults, type UserVault } from "./useUserVaults";
 export { useSelectedValidator } from "./useSelectedValidator";

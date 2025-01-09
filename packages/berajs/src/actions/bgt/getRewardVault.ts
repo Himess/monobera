@@ -8,8 +8,14 @@ import {
   GqlChain,
 } from "@bera/graphql/pol/api";
 
-export const getApiRewardVault = async (
-  gaugeAddress: string,
+/**
+ *
+ * @param address - The address of the vault
+ * @throws {Error} If the vault is not found
+ * @returns
+ */
+export const getRewardVault = async (
+  address: string,
 ): Promise<ApiVaultFragment> => {
   const { data } = await bexApiGraphqlClient.query<
     GetRewardVaultQuery,
@@ -17,7 +23,7 @@ export const getApiRewardVault = async (
   >({
     query: GetRewardVault,
     variables: {
-      vaultId: gaugeAddress,
+      vaultId: address,
       chain: balancerApiChainName as GqlChain,
     },
   });

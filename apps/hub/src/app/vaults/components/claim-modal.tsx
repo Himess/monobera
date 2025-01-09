@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {
-  BERA_VAULT_REWARDS_ABI,
+  rewardVaultAbi,
   TransactionActionType,
   truncateHash,
   useBeraJs,
@@ -166,7 +166,7 @@ export const ClaimBGTModal = ({
                   checkAddress(recipient) &&
                   write({
                     address: rewardVault,
-                    abi: BERA_VAULT_REWARDS_ABI,
+                    abi: rewardVaultAbi,
                     functionName: "getReward",
                     params: [account!, recipient], // TODO: A second param is needed here for recipient. Added current account twice for now
                   })
