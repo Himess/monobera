@@ -99,7 +99,7 @@ export const WithdrawLP = ({
                   key={percent.toString()}
                   variant={"secondary"}
                   size={"sm"}
-                  className="w-full text-foreground"
+                  className="w-full text-foreground max-md:odd:hidden"
                   onClick={() => {
                     setWithdrawPercent(percent);
                     setWithdrawAmount(
@@ -134,7 +134,7 @@ export const WithdrawLP = ({
         />
       </div>
       {/* <Info /> */}
-      <ActionButton>
+      <ActionButton className="w-full">
         <Button
           className="w-full"
           disabled={!validAmount || !lpToken}

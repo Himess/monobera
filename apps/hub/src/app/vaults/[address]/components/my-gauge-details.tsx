@@ -76,8 +76,8 @@ export const MyGaugeDetails = ({
         )}
       </div>
       {isReady && data ? (
-        <div className="lg:col-span-5 flex w-full flex-col gap-4">
-          <div className="flex flex-col gap-6 rounded-md border border-border p-4">
+        <div className="lg:col-span-5">
+          <div className="grid grid-cols-1 gap-6 rounded-md border border-border p-4 mb-4">
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-semibold leading-7">
                 My Staked Tokens
@@ -85,7 +85,7 @@ export const MyGaugeDetails = ({
               <Dialog>
                 <DialogTrigger>
                   <Button variant={"outline"} className="py-2 px-4">
-                    Withdraw
+                    Unstake
                   </Button>
                 </DialogTrigger>
 
