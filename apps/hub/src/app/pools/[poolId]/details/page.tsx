@@ -5,14 +5,13 @@ import { balancerVaultAddress, isIPFS } from "@bera/config";
 import { readContract } from "@wagmi/core";
 
 import PoolPageContent, { PoolPageWrapper } from "./PoolPageContent";
-import { bexSubgraphClient } from "@bera/graphql";
+import { bexSubgraphClient, getSSRClient } from "@bera/graphql";
 import {
   GetSubgraphPool,
   GetSubgraphPoolQuery,
 } from "@bera/graphql/dex/subgraph";
-import { wagmiConfig } from "@bera/wagmi/config";
-import { vaultV2Abi } from "@berachain-foundation/berancer-sdk";
-import { Address, erc20Abi } from "viem";
+import { getServerSidePublicClient } from "~/utils/serverSidePublicClient";
+import { getOnChainPool } from "@bera/berajs/actions";
 
 export async function generateMetadata({
   params,
@@ -20,19 +19,22 @@ export async function generateMetadata({
   params: { poolId: string };
 }): Promise<Metadata> {
   if (isIPFS || !params.poolId) return { title: "Pool" };
+  try {
+    const pool = await getOnChainPool({
+      poolId: params.poolId,
+      // @ts-ignore viem types
+      publicClient: getServerSidePublicClient(),
+    });
 
-  const poolName = await readContract(wagmiConfig, {
-    address: params.poolId.slice(0, 42) as Address,
-    abi: erc20Abi,
-    functionName: "name",
-  });
-
-  return {
-    title: poolName,
-  };
+    return {
+      title: pool?.name,
+    };
+  } catch (e) {
+    return notFound();
+  }
 }
 
-export const revalidate = 120;
+export const revalidate = 60;
 
 // THIS IS NOT COMPATIBLE WITH IPFS. CHECK THIS CAUSES BUGS
 // export const dynamic = "force-dynamic";
@@ -54,11 +56,10 @@ export default async function PoolPage({
       },
     });
 
-    const pool = await readContract(wagmiConfig, {
-      address: balancerVaultAddress,
-      abi: vaultV2Abi,
-      functionName: "getPool",
-      args: [params.poolId as Address],
+    const pool = await getOnChainPool({
+      poolId: params.poolId,
+      // @ts-ignore viem types
+      publicClient: getServerSidePublicClient(),
     });
 
     if (!pool) {

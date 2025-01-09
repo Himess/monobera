@@ -1,24 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   useMultipleTokenInformation,
   useSubgraphTokenInformations,
 } from "@bera/berajs";
-import {
-  balancerVaultAddress,
-  bexComposableStablePoolFactoryReaderAddress,
-  bexWeightedPoolFactoryAddress,
-} from "@bera/config";
-import { GqlPoolType } from "@bera/graphql/dex/api";
 import { SubgraphPoolFragment } from "@bera/graphql/dex/subgraph";
-import {
-  composabableStablePoolV5Abi_V2,
-  vaultV2Abi,
-  weightedPoolFactoryAbi_V3,
-  weightedPoolV4Abi_V2,
-} from "@berachain-foundation/berancer-sdk";
 import useSWRImmutable from "swr/immutable";
 import { Address, erc20Abi, formatEther, formatUnits, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
+import { getOnChainPool } from "@bera/berajs/actions";
 
 export function useOnChainPoolData(poolId: string) {
   const address = poolId.slice(0, 42) as Address;
@@ -32,115 +21,16 @@ export function useOnChainPoolData(poolId: string) {
     data: poolData,
     error,
     isLoading,
-    isValidating,
   } = useSWRImmutable(
-    isValid ? ["useOnChainPoolData", "tokenAddresses", poolId] : null,
+    isValid && !!poolId && publicClient
+      ? ["useOnChainPoolData", "tokenAddresses", poolId]
+      : null,
     async () => {
-      if (!publicClient) return undefined;
-
-      const [
-        name,
-        poolTokens,
-        totalSupply,
-        swapFee,
-        _version,
-        decimals,
-        isWeighted,
-        isComposableStable,
-      ] = await Promise.all([
-        publicClient.readContract({
-          address,
-          abi: erc20Abi,
-          functionName: "name",
-        }),
-        publicClient.readContract({
-          address: balancerVaultAddress,
-          abi: vaultV2Abi,
-          functionName: "getPoolTokens",
-          args: [poolId as `0x${string}`],
-        }),
-        publicClient.readContract({
-          address,
-          abi: composabableStablePoolV5Abi_V2,
-          functionName: "totalSupply",
-        }),
-        publicClient.readContract({
-          address,
-          abi: weightedPoolV4Abi_V2,
-          functionName: "getSwapFeePercentage",
-        }),
-        publicClient.readContract({
-          address,
-          abi: weightedPoolV4Abi_V2,
-          functionName: "version",
-        }),
-        publicClient.readContract({
-          address,
-          abi: weightedPoolV4Abi_V2,
-          functionName: "decimals",
-        }),
-        publicClient.readContract({
-          address: bexComposableStablePoolFactoryReaderAddress,
-          abi: weightedPoolFactoryAbi_V3,
-          functionName: "isPoolFromFactory",
-          args: [address],
-        }),
-        publicClient.readContract({
-          address: bexWeightedPoolFactoryAddress,
-          abi: weightedPoolFactoryAbi_V3,
-          functionName: "isPoolFromFactory",
-          args: [address],
-        }),
-      ]);
-
-      const version = JSON.parse(_version);
-
-      let virtualSupply, weights;
-
-      if (isComposableStable) {
-        // This returns the actual supply excluding preminted BPTs
-        virtualSupply = await publicClient.readContract({
-          address,
-          abi: [
-            {
-              type: "function",
-              name: "getActualSupply",
-              stateMutability: "view",
-              inputs: [],
-              outputs: [
-                {
-                  type: "uint256",
-                },
-              ],
-            },
-          ],
-          functionName: "getActualSupply",
-        });
-      } else if (version.name === "WeightedPool") {
-        weights = await publicClient.readContract({
-          address,
-          abi: weightedPoolV4Abi_V2,
-          functionName: "getNormalizedWeights",
-        });
-      }
-
-      if (!isComposableStable && !isWeighted) {
-        throw new Error(`Pool ${address} is not a valid BEX pool`);
-      }
-
-      return {
-        name,
-        poolTokens,
-        totalSupply: virtualSupply ?? totalSupply,
-        swapFee,
-        decimals,
-        weights,
-        version,
-        factory: isComposableStable
-          ? bexComposableStablePoolFactoryReaderAddress
-          : bexWeightedPoolFactoryAddress,
-        type: isComposableStable ? GqlPoolType.Stable : GqlPoolType.Weighted,
-      };
+      return getOnChainPool({
+        poolId,
+        // @ts-expect-error viem types
+        publicClient,
+      });
     },
   );
 
