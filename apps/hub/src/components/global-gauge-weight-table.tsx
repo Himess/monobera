@@ -16,17 +16,12 @@ import type {
 } from "@tanstack/react-table";
 
 import { AllRewardVaultColumns } from "~/columns/global-gauge-weight-columns";
+
 import {
-  GqlRewardVaultOrderBy,
-  GqlRewardVaultOrderDirection,
-} from "@bera/graphql/pol/api";
+  REWARD_VAULTS_PAGE_SIZE,
+  getRewardVaultsFilter,
+} from "./getRewardVaultsFilter";
 
-const GAUGE_PAGE_SIZE = 10;
-
-const map: Record<string, GqlRewardVaultOrderBy> = {
-  allTimeReceivedBGTAmount: GqlRewardVaultOrderBy.AllTimeBgtReceived,
-  dynamicData_bgtCapturePercentage: GqlRewardVaultOrderBy.BgtCapturePercentage,
-};
 export default function GlobalGaugeWeightTable({
   myGauge = false,
   keywords = "",
@@ -48,19 +43,12 @@ export default function GlobalGaugeWeightTable({
   }, [markets]);
 
   const { data, isLoading, isValidating } = useRewardVaults(
-    {
-      orderBy: map[sorting[0]?.id],
-      orderDirection:
-        sorting[0] !== undefined
-          ? sorting[0]?.desc
-            ? GqlRewardVaultOrderDirection.Desc
-            : GqlRewardVaultOrderDirection.Asc
-          : undefined,
-      skip: GAUGE_PAGE_SIZE * page,
-      // filterByProduct: markets,
-      pageSize: GAUGE_PAGE_SIZE,
-      search: isTyping ? "" : keywords,
-    },
+    getRewardVaultsFilter(
+      sorting,
+      page,
+      REWARD_VAULTS_PAGE_SIZE,
+      isTyping ? "" : keywords,
+    ),
     { opts: { keepPreviousData: true } },
   );
 
@@ -97,7 +85,7 @@ export default function GlobalGaugeWeightTable({
           typeof updater === "function"
             ? updater({
                 pageIndex: prev ?? 0,
-                pageSize: GAUGE_PAGE_SIZE,
+                pageSize: REWARD_VAULTS_PAGE_SIZE,
               })
             : updater;
         return newPaginationState.pageIndex ?? 0;
@@ -120,14 +108,14 @@ export default function GlobalGaugeWeightTable({
       state: {
         pagination: {
           pageIndex: page,
-          pageSize: GAUGE_PAGE_SIZE,
+          pageSize: REWARD_VAULTS_PAGE_SIZE,
         },
         sorting,
       },
       manualSorting: true,
       manualPagination: true,
       autoResetPageIndex: false,
-      pageCount: Math.ceil(gaugeCounts / GAUGE_PAGE_SIZE),
+      pageCount: Math.ceil(gaugeCounts / REWARD_VAULTS_PAGE_SIZE),
       onPaginationChange: handlePaginationChange,
       onSortingChange: handleSortingChange,
     },

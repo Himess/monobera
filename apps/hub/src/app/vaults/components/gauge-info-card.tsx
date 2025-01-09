@@ -18,8 +18,7 @@ import { Badge } from "@bera/ui/badge";
 export default function GaugeInfoCard() {
   const { data: globalData, isLoading } = usePollGlobalData();
 
-  const { data: bgtInflation, isLoading: isBgtInflationLoading } =
-    useBgtInflation();
+  const { data: bgtInflation } = useBgtInflation();
 
   const blockTime = useBlockTime();
 
@@ -30,7 +29,7 @@ export default function GaugeInfoCard() {
           <div className="text-sm font-medium leading-5 text-muted-foreground">
             Active Reward Vaults
           </div>
-          {!isLoading ? (
+          {globalData ? (
             <span className="text-2xl font-semibold leading-8">
               {globalData?.activeRewardVaultCount}
             </span>
@@ -42,7 +41,7 @@ export default function GaugeInfoCard() {
           <div className="text-sm font-medium leading-5 text-muted-foreground">
             Active Incentives
           </div>
-          {!isLoading && globalData ? (
+          {globalData ? (
             <FormattedNumber
               value={globalData.totalActiveIncentivesValueUSD}
               symbol="USD"
@@ -56,7 +55,7 @@ export default function GaugeInfoCard() {
           <div className="text-sm font-medium leading-5 text-muted-foreground">
             Total Circulating BGT
           </div>
-          {isLoading ? (
+          {!globalData ? (
             <Skeleton className="h-8 w-full" />
           ) : (
             <div className="flex items-center gap-1">
@@ -72,7 +71,7 @@ export default function GaugeInfoCard() {
           <div className="text-sm font-medium leading-5 text-muted-foreground">
             BGT Distribution (Yearly)
           </div>
-          {isBgtInflationLoading ? (
+          {!bgtInflation ? (
             <Skeleton className="h-8 w-12" />
           ) : (
             <div className="sm:flex gap-2">
@@ -84,7 +83,7 @@ export default function GaugeInfoCard() {
               />
               <Badge variant="success">
                 <FormattedNumber
-                  value={(bgtInflation?.annualizedBGTInflation ?? 0) / 100}
+                  value={bgtInflation?.annualizedBGTInflation ?? 0}
                   percent
                 />
               </Badge>
@@ -98,7 +97,7 @@ export default function GaugeInfoCard() {
           <div className="text-sm font-medium leading-5 text-muted-foreground">
             # Of Active Validators
           </div>
-          {isLoading || !globalData ? (
+          {!globalData ? (
             <Skeleton className="h-8 w-16" />
           ) : (
             <div className="text-2xl font-semibold">
@@ -111,7 +110,7 @@ export default function GaugeInfoCard() {
           <div className="text-xs font-medium uppercase leading-5 tracking-wider text-muted-foreground ">
             Top 3 Validators
           </div>
-          {!isLoading && globalData ? (
+          {globalData ? (
             globalData.top3EmittingValidators?.map((validator, index) => {
               const estimatedBgtPerYear = getValidatorEstimatedBgtPerYear(
                 validator,

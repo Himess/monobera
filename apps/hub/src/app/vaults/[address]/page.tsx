@@ -2,21 +2,15 @@ import React from "react";
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isIPFS } from "@bera/config";
-import {
-  Address,
-  PublicClient,
-  createPublicClient,
-  http,
-  isAddress,
-} from "viem";
+import { Address, PublicClient, isAddress } from "viem";
 import { VaultDetails } from "./components/VaultDetails";
-import { defaultBeraNetworkConfig } from "@bera/wagmi/config";
 
 import {
   getRewardVault,
   getRewardVaultStakingToken,
 } from "@bera/berajs/actions";
 import { ApiVaultFragment } from "@bera/graphql/pol/api";
+import { getServerSidePublicClient } from "~/utils/serverSidePublicClient";
 
 export function generateMetadata(): Metadata {
   return {
@@ -42,12 +36,7 @@ export default async function PoolPage({
     notFound();
   }
 
-  const publicClient = createPublicClient({
-    // @ts-ignore viem types
-    chain: defaultBeraNetworkConfig.chain,
-    transport: http(),
-  });
-
+  const publicClient = await getServerSidePublicClient();
   const vaultPromise = getRewardVault(params.address);
 
   try {
