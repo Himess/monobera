@@ -39,7 +39,7 @@ export const getValidatorGaugeColumns = (validator: ApiValidatorFragment) => {
           />
         ),
         cell: ({ row }) => {
-          const weight = row.original?.percentageNumerator / 1e5 ?? 0;
+          const weight = row.original?.percentageNumerator / 1e4 ?? 0;
 
           const perProposal =
             weight * Number(validator.dynamicData?.rewardRate ?? 0);

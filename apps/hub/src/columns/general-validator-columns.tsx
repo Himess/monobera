@@ -81,10 +81,9 @@ const APY_COLUMN: ColumnDef<ApiValidatorFragment> = {
   cell: ({ row }) => (
     <div className="flex h-full items-center">
       <FormattedNumber
-        value={
-          Number(row.original.dynamicData?.lastDayDistributedBGTAmount ?? 0) /
-          100
-        }
+        value={Number(
+          row.original.dynamicData?.lastDayDistributedBGTAmount ?? 0,
+        )}
         symbol="BGT"
       />
     </div>
@@ -269,7 +268,7 @@ export const getGaugeValidatorColumns = (rewardVault: ApiVaultFragment) => {
           );
         }
 
-        const weight = cuttingBoard?.percentageNumerator / 1e5 ?? 0;
+        const weight = cuttingBoard?.percentageNumerator / 1e4 ?? 0;
         const perProposal =
           weight * parseFloat(row.original.dynamicData?.rewardRate ?? "0");
 
