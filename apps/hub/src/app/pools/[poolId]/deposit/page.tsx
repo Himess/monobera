@@ -13,6 +13,7 @@ import {
 import { PoolPageWrapper } from "../details/PoolPageContent";
 import { wagmiConfig } from "@bera/wagmi/config";
 import { vaultV2Abi } from "@berachain-foundation/berancer-sdk";
+import { getOnChainPool } from "@bera/berajs/actions";
 
 export function generateMetadata(): Metadata {
   return {
@@ -36,11 +37,10 @@ export default async function PoolPage({
       },
     });
 
-    const pool = await readContract(wagmiConfig, {
-      address: balancerVaultAddress,
-      abi: vaultV2Abi,
-      functionName: "getPool",
-      args: [params.poolId as Address],
+    const pool = await getOnChainPool({
+      poolId: params.poolId,
+      // @ts-ignore viem types
+      publicClient: getServerSidePublicClient(),
     });
 
     if (!pool) {

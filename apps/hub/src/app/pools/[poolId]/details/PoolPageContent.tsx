@@ -36,6 +36,7 @@ import { getPoolAddLiquidityUrl, getPoolWithdrawUrl } from "../../fetchPools";
 import { PoolChart } from "./PoolChart";
 import { PoolCreateRewardVault } from "./PoolCreateRewardVault";
 import { EventTable } from "./PoolEventTable";
+import { notFound } from "next/navigation";
 
 enum Selection {
   AllTransactions = "allTransactions",
@@ -177,13 +178,10 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
     stakingToken: pool?.address as Address,
   });
 
-  if (errorLoadingRewardVault) {
-    console.error("Error loading reward vault", errorLoadingRewardVault);
-  }
-
   // NOTE: we could instead pull the v3Pool from bex API? (it has rewardVault inside unlike v3Pool)
   const { data: gauge, isLoading: isLoadingRewardVaultSubGraph } =
     useRewardVault(rewardVault?.address as Address);
+
   const userSharePercentage = userPositionBreakdown?.userSharePercentage ?? 0;
 
   const isVaultExists = rewardVault && rewardVault.address !== ADDRESS_ZERO;
@@ -258,6 +256,10 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
       Number(gauge?.dynamicData?.apy ?? 0) / 100
     );
   }, [v3Pool, gauge]);
+
+  if (!isPoolLoading && !pool) {
+    return notFound();
+  }
 
   return (
     <div className="flex flex-col gap-8">

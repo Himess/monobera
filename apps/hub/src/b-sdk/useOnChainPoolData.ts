@@ -1,19 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   useMultipleTokenInformation,
   useSubgraphTokenInformations,
 } from "@bera/berajs";
-import { balancerVaultAddress } from "@bera/config";
-import { GqlPoolType } from "@bera/graphql/dex/api";
 import { SubgraphPoolFragment } from "@bera/graphql/dex/subgraph";
-import {
-  composabableStablePoolV5Abi_V2,
-  vaultV2Abi,
-  weightedPoolV4Abi_V2,
-} from "@berachain-foundation/berancer-sdk";
 import useSWRImmutable from "swr/immutable";
 import { Address, erc20Abi, formatEther, formatUnits, isAddress } from "viem";
 import { usePublicClient } from "wagmi";
+import { getOnChainPool } from "@bera/berajs/actions";
 
 export function useOnChainPoolData(poolId: string) {
   const address = poolId.slice(0, 42) as Address;
@@ -23,96 +17,32 @@ export function useOnChainPoolData(poolId: string) {
 
   const isValid = isAddressValid && !!publicClient;
 
-  const { data: poolData } = useSWRImmutable(
-    isValid ? ["useOnChainPoolData", "tokenAddresses", poolId] : null,
+  const {
+    data: poolData,
+    error,
+    isLoading,
+  } = useSWRImmutable(
+    isValid && !!poolId && publicClient
+      ? ["useOnChainPoolData", "tokenAddresses", poolId]
+      : null,
     async () => {
-      if (!publicClient) return undefined;
-
-      const [name, poolTokens, totalSupply, swapFee, _version, decimals] =
-        await Promise.all([
-          publicClient.readContract({
-            address,
-            abi: erc20Abi,
-            functionName: "name",
-          }),
-          publicClient.readContract({
-            address: balancerVaultAddress,
-            abi: vaultV2Abi,
-            functionName: "getPoolTokens",
-            args: [poolId as `0x${string}`],
-          }),
-          publicClient.readContract({
-            address,
-            abi: composabableStablePoolV5Abi_V2,
-            functionName: "totalSupply",
-          }),
-          publicClient.readContract({
-            address,
-            abi: weightedPoolV4Abi_V2,
-            functionName: "getSwapFeePercentage",
-          }),
-          publicClient.readContract({
-            address,
-            abi: weightedPoolV4Abi_V2,
-            functionName: "version",
-          }),
-          publicClient.readContract({
-            address,
-            abi: weightedPoolV4Abi_V2,
-            functionName: "decimals",
-          }),
-        ]);
-
-      const version = JSON.parse(_version);
-
-      let virtualSupply, weights;
-
-      if (version.name === "ComposableStablePool") {
-        // This returns the actual supply excluding preminted BPTs
-        virtualSupply = await publicClient.readContract({
-          address,
-          abi: [
-            {
-              type: "function",
-              name: "getActualSupply",
-              stateMutability: "view",
-              inputs: [],
-              outputs: [
-                {
-                  type: "uint256",
-                },
-              ],
-            },
-          ],
-          functionName: "getActualSupply",
-        });
-      } else if (version.name === "WeightedPool") {
-        weights = await publicClient.readContract({
-          address,
-          abi: weightedPoolV4Abi_V2,
-          functionName: "getNormalizedWeights",
-        });
-      }
-
-      return {
-        name,
-        poolTokens,
-        totalSupply: virtualSupply ?? totalSupply,
-        swapFee,
-        decimals,
-        weights,
-        version,
-      };
+      return getOnChainPool({
+        poolId,
+        // @ts-expect-error viem types
+        publicClient,
+      });
     },
   );
 
-  const { data: tokenInformation, error } = useMultipleTokenInformation({
-    addresses: poolData?.poolTokens[0] ?? [],
-  });
+  const { data: tokenInformation, isLoading: isTokenInformationLoading } =
+    useMultipleTokenInformation({
+      addresses: poolData?.poolTokens[0] ?? [],
+    });
 
-  const { data: tokenPrices } = useSubgraphTokenInformations({
-    tokenAddresses: poolData?.poolTokens[0] as Address[] | undefined,
-  });
+  const { data: tokenPrices, isLoading: isTokenPricesLoading } =
+    useSubgraphTokenInformations({
+      tokenAddresses: poolData?.poolTokens[0] as Address[] | undefined,
+    });
 
   const pool = useMemo(() => {
     if (!poolData || !tokenInformation) {
@@ -122,10 +52,8 @@ export function useOnChainPoolData(poolId: string) {
     const pool: SubgraphPoolFragment = {
       address: address.toLowerCase(),
       id: poolId.toLowerCase(),
-      type:
-        poolData.version.name === "ComposableStablePool"
-          ? GqlPoolType.Stable
-          : GqlPoolType.Weighted,
+      type: poolData.type,
+      factory: poolData.factory,
       totalShares: formatUnits(poolData.totalSupply, poolData.decimals),
       totalLiquidity: undefined,
       swapFee: formatEther(poolData.swapFee),
@@ -161,5 +89,7 @@ export function useOnChainPoolData(poolId: string) {
 
   return {
     data: pool,
+    error,
+    isLoading: isLoading || isTokenInformationLoading || isTokenPricesLoading,
   };
 }

@@ -8,7 +8,8 @@ export const usePool = ({ poolId }: { poolId: string }) => {
     id: poolId,
   });
 
-  const { data: onChainPool } = useOnChainPoolData(poolId);
+  const { data: onChainPool, isLoading: isOnChainPoolLoading } =
+    useOnChainPoolData(poolId);
 
   const [subgraphPool, v3Pool] = data ?? [];
 
@@ -29,6 +30,6 @@ export const usePool = ({ poolId }: { poolId: string }) => {
   // TODO: we really need to strongly type these return values here
   return {
     data: [pool, v3Pool] as const,
-    isLoading: isPoolLoading,
+    isLoading: isPoolLoading || isOnChainPoolLoading,
   };
 };

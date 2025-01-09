@@ -13,6 +13,7 @@ import { wagmiConfig } from "@bera/wagmi/config";
 import { vaultV2Abi } from "@berachain-foundation/berancer-sdk";
 import { Address } from "viem";
 import { readContract } from "@wagmi/core";
+import { getOnChainPool } from "@bera/berajs/actions";
 
 export { generateStaticParams } from "../details/page";
 
@@ -41,11 +42,10 @@ export default async function Withdraw({
       },
     });
 
-    const pool = await readContract(wagmiConfig, {
-      address: balancerVaultAddress,
-      abi: vaultV2Abi,
-      functionName: "getPool",
-      args: [params.poolId as Address],
+    const pool = await getOnChainPool({
+      poolId: params.poolId,
+      // @ts-ignore viem types
+      publicClient: getServerSidePublicClient(),
     });
 
     if (!pool) {

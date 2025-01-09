@@ -49,6 +49,7 @@ import { usePoolUserPosition } from "~/b-sdk/usePoolUserPosition";
 import { getPoolUrl } from "../../fetchPools";
 import { WithdrawLiquidityDetails } from "./WithdrawLiquidityDetails";
 import { useRemoveLiquidity } from "./useWithdrawLiquidity";
+import { notFound } from "next/navigation";
 
 interface ITokenSummary {
   title: string;
@@ -215,6 +216,10 @@ export default function WithdrawLiquidityContent({
       description: "Select a single token to withdraw into",
     },
   ];
+
+  if (!isPoolLoading && !pool) {
+    return notFound();
+  }
 
   return (
     <div className="mt-16 flex w-full flex-col items-center justify-center gap-4">

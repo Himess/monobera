@@ -20,8 +20,7 @@ export const blockExplorerName = process.env
   .NEXT_PUBLIC_BLOCK_EXPLORER_NAME as string;
 
 // Subgraphs
-export const balancerApiUrl = process.env
-  .NEXT_PUBLIC_BALANCER_API_URL as Address;
+export const balancerApiUrl = process.env.NEXT_PUBLIC_BEX_API_URL as Address;
 export const honeySubgraphUrl = process.env
   .NEXT_PUBLIC_HONEY_SUBGRAPH_URL as string;
 export const lendSubgraphUrl = process.env
@@ -187,21 +186,25 @@ export const governanceAccelerateProposal = process.env
 
 // Balancer
 export const balancerVaultAddress = process.env
-  .NEXT_PUBLIC_BALANCER_VAULT_ADDRESS as Address;
+  .NEXT_PUBLIC_BEX_VAULT_ADDRESS as Address;
 export const balancerHelperAddress = process.env
-  .NEXT_PUBLIC_BALANCER_HELPERS as Address;
+  .NEXT_PUBLIC_BEX_HELPERS as Address;
 export const balancerQueriesAddress = process.env
-  .NEXT_PUBLIC_BALANCER_QUERIES as Address;
+  .NEXT_PUBLIC_BEX_QUERIES as Address;
 export const balancerRelayerAddress = process.env
-  .NEXT_PUBLIC_BALANCER_RELAYER as Address;
+  .NEXT_PUBLIC_BEX_RELAYER as Address;
 export const balancerSubgraphUrl = process.env
-  .NEXT_PUBLIC_BALANCER_SUBGRAPH as Address;
+  .NEXT_PUBLIC_BEX_SUBGRAPH as Address;
 export const balancerPoolCreationHelper = process.env
-  .NEXT_PUBLIC_BALANCER_POOL_CREATION_HELPER as Address;
+  .NEXT_PUBLIC_BEX_POOL_CREATION_HELPER as Address;
 export const balancerDelegatedOwnershipAddress = process.env
-  .NEXT_PUBLIC_BALANCER_DELEGATED_OWNERSHIP_ADDRESS as Address;
+  .NEXT_PUBLIC_BEX_DELEGATED_OWNERSHIP_ADDRESS as Address;
 export const balancerApiChainName = process.env
-  .NEXT_PUBLIC_BALANCER_API_CHAIN_NAME as string;
+  .NEXT_PUBLIC_BEX_API_CHAIN_NAME as string;
+export const bexWeightedPoolFactoryAddress = process.env
+  .NEXT_PUBLIC_BEX_WEIGHTED_FACTORY_ADDRESS as Address;
+export const bexComposableStablePoolFactoryReaderAddress = process.env
+  .NEXT_PUBLIC_BEX_COMPOSABLE_STABLE_FACTORY_ADDRESS as Address;
 
 // Sentry && Mixpanel && PostHog
 export const developmentAnalytics = process.env

@@ -9,3 +9,4 @@ export * from "./getWalletBalances";
 export * from "./getTokens";
 export * from "./searchUserPools";
 export * from "./getPoolHistoricalData";
+export * from "./getOnChainPool";
