@@ -1,11 +1,10 @@
 // import { Token } from "@bera/berajs";
-import { nativeTokenAddress } from "@bera/config";
+import { cloudinaryUrl, nativeTokenAddress } from "@bera/config";
 
 export const beraToken: any = {
   address: nativeTokenAddress,
   decimals: 18,
   name: "Bera",
   symbol: "BERA",
-  logoURI:
-    "https://artio-static-asset-public.s3.ap-southeast-1.amazonaws.com/assets/bera.png",
+  logoURI: `${cloudinaryUrl}/src/assets/bera.png`,
 };

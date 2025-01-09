@@ -1,6 +1,6 @@
 import React from "react";
 import { usePollWalletBalances, type BalanceToken } from "@bera/berajs";
-import { aHoneyTokenAddress } from "@bera/config";
+import { aHoneyTokenAddress, cloudinaryUrl } from "@bera/config";
 import { FormattedNumber, TokenIcon, Tooltip } from "@bera/shared-ui";
 import { Badge } from "@bera/ui/badge";
 import { Card } from "@bera/ui/card";
@@ -13,8 +13,7 @@ export default function UserDeposits() {
     address: "0x8Ce5C1c42CD58B7aE61512790e514a82d84375Ed" as `0x${string}`,
     decimals: 18,
     symbol: "WETH",
-    logoURI:
-      "https://artio-static-asset-public.s3.ap-southeast-1.amazonaws.com/assets/eth.png",
+    logoURI: `${cloudinaryUrl}/src/assets/eth.png`,
     name: "wrapped ether atoken (deprecated)",
   };
 

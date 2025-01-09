@@ -1,4 +1,8 @@
-import { beraTokenAddress, nativeTokenAddress } from "@bera/config";
+import {
+  beraTokenAddress,
+  cloudinaryUrl,
+  nativeTokenAddress,
+} from "@bera/config";
 
 // FIXME: this import is not possible in beraJS, we could move this into hub but we need it here too...
 // import { wBeraToken } from "@bera/wagmi";
@@ -8,8 +12,7 @@ export const wBeraToken: any = {
   decimals: 18,
   name: "WBera",
   symbol: "WBERA",
-  logoURI:
-    "https://artio-static-asset-public.s3.ap-southeast-1.amazonaws.com/assets/wbera.png",
+  logoURI: `${cloudinaryUrl}/src/assets/wbera.png`,
 };
 
 type BaseToken = {
