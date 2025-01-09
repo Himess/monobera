@@ -341,9 +341,10 @@ export const getGaugeValidatorColumns = (rewardVault: ApiVaultFragment) => {
         const estimatedYearlyBgt = useValidatorEstimatedBgtPerYear(
           row.original,
         );
-        const weight = cuttingBoard?.percentageNumerator / 10000;
+        const weight = cuttingBoard?.percentageNumerator / 1e4;
 
         const estimatedAmountDirected = weight * estimatedYearlyBgt;
+
         return (
           <div className="flex flex-col gap-1">
             <FormattedNumber
