@@ -23,7 +23,6 @@ export const useAllValidators = (
     async () => {
       return await getAllValidators({
         variables,
-        config,
       });
     },
     {

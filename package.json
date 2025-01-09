@@ -14,6 +14,7 @@
   },
   "packageManager": "pnpm@9.1.4",
   "scripts": {
+    "test": "jest",
     "build": "turbo build",
     "clean": "turbo clean && git clean -xdf node_modules",
     "pullenv": "vercel env pull --environment=production",
@@ -51,9 +52,12 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
+    "@types/jest": "^27.5.2",
+    "jest": "^27.5.1",
     "jscpd": "^3.5.10",
     "knip": "^5.7.0",
     "next": "^14.2.11",
+    "ts-jest": "^27.1.5",
     "yargs": "^17.7.2"
   },
   "resolutions": {

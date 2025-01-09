@@ -27,7 +27,6 @@ export const getUserActiveValidators = async ({
 
   const [validatorInfoList, onChainBoosts] = await Promise.all([
     getAllValidators({
-      config,
       variables: {
         where: {
           idIn: userBoosts.data.userValidatorInformations.map(
