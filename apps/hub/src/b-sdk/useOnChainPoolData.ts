@@ -3,12 +3,17 @@ import {
   useMultipleTokenInformation,
   useSubgraphTokenInformations,
 } from "@bera/berajs";
-import { balancerVaultAddress } from "@bera/config";
+import {
+  balancerVaultAddress,
+  bexComposableStablePoolFactoryReaderAddress,
+  bexWeightedPoolFactoryAddress,
+} from "@bera/config";
 import { GqlPoolType } from "@bera/graphql/dex/api";
 import { SubgraphPoolFragment } from "@bera/graphql/dex/subgraph";
 import {
   composabableStablePoolV5Abi_V2,
   vaultV2Abi,
+  weightedPoolFactoryAbi_V3,
   weightedPoolV4Abi_V2,
 } from "@berachain-foundation/berancer-sdk";
 import useSWRImmutable from "swr/immutable";
@@ -23,51 +28,76 @@ export function useOnChainPoolData(poolId: string) {
 
   const isValid = isAddressValid && !!publicClient;
 
-  const { data: poolData } = useSWRImmutable(
+  const {
+    data: poolData,
+    error,
+    isLoading,
+    isValidating,
+  } = useSWRImmutable(
     isValid ? ["useOnChainPoolData", "tokenAddresses", poolId] : null,
     async () => {
       if (!publicClient) return undefined;
 
-      const [name, poolTokens, totalSupply, swapFee, _version, decimals] =
-        await Promise.all([
-          publicClient.readContract({
-            address,
-            abi: erc20Abi,
-            functionName: "name",
-          }),
-          publicClient.readContract({
-            address: balancerVaultAddress,
-            abi: vaultV2Abi,
-            functionName: "getPoolTokens",
-            args: [poolId as `0x${string}`],
-          }),
-          publicClient.readContract({
-            address,
-            abi: composabableStablePoolV5Abi_V2,
-            functionName: "totalSupply",
-          }),
-          publicClient.readContract({
-            address,
-            abi: weightedPoolV4Abi_V2,
-            functionName: "getSwapFeePercentage",
-          }),
-          publicClient.readContract({
-            address,
-            abi: weightedPoolV4Abi_V2,
-            functionName: "version",
-          }),
-          publicClient.readContract({
-            address,
-            abi: weightedPoolV4Abi_V2,
-            functionName: "decimals",
-          }),
-        ]);
+      const [
+        name,
+        poolTokens,
+        totalSupply,
+        swapFee,
+        _version,
+        decimals,
+        isWeighted,
+        isComposableStable,
+      ] = await Promise.all([
+        publicClient.readContract({
+          address,
+          abi: erc20Abi,
+          functionName: "name",
+        }),
+        publicClient.readContract({
+          address: balancerVaultAddress,
+          abi: vaultV2Abi,
+          functionName: "getPoolTokens",
+          args: [poolId as `0x${string}`],
+        }),
+        publicClient.readContract({
+          address,
+          abi: composabableStablePoolV5Abi_V2,
+          functionName: "totalSupply",
+        }),
+        publicClient.readContract({
+          address,
+          abi: weightedPoolV4Abi_V2,
+          functionName: "getSwapFeePercentage",
+        }),
+        publicClient.readContract({
+          address,
+          abi: weightedPoolV4Abi_V2,
+          functionName: "version",
+        }),
+        publicClient.readContract({
+          address,
+          abi: weightedPoolV4Abi_V2,
+          functionName: "decimals",
+        }),
+        publicClient.readContract({
+          address: bexComposableStablePoolFactoryReaderAddress,
+          abi: weightedPoolFactoryAbi_V3,
+          functionName: "isPoolFromFactory",
+          args: [address],
+        }),
+        publicClient.readContract({
+          address: bexWeightedPoolFactoryAddress,
+          abi: weightedPoolFactoryAbi_V3,
+          functionName: "isPoolFromFactory",
+          args: [address],
+        }),
+      ]);
 
       const version = JSON.parse(_version);
 
       let virtualSupply, weights;
 
-      if (version.name === "ComposableStablePool") {
+      if (isComposableStable) {
         // This returns the actual supply excluding preminted BPTs
         virtualSupply = await publicClient.readContract({
           address,
@@ -94,6 +124,10 @@ export function useOnChainPoolData(poolId: string) {
         });
       }
 
+      if (!isComposableStable && !isWeighted) {
+        throw new Error(`Pool ${address} is not a valid BEX pool`);
+      }
+
       return {
         name,
         poolTokens,
@@ -102,17 +136,23 @@ export function useOnChainPoolData(poolId: string) {
         decimals,
         weights,
         version,
+        factory: isComposableStable
+          ? bexComposableStablePoolFactoryReaderAddress
+          : bexWeightedPoolFactoryAddress,
+        type: isComposableStable ? GqlPoolType.Stable : GqlPoolType.Weighted,
       };
     },
   );
 
-  const { data: tokenInformation, error } = useMultipleTokenInformation({
-    addresses: poolData?.poolTokens[0] ?? [],
-  });
+  const { data: tokenInformation, isLoading: isTokenInformationLoading } =
+    useMultipleTokenInformation({
+      addresses: poolData?.poolTokens[0] ?? [],
+    });
 
-  const { data: tokenPrices } = useSubgraphTokenInformations({
-    tokenAddresses: poolData?.poolTokens[0] as Address[] | undefined,
-  });
+  const { data: tokenPrices, isLoading: isTokenPricesLoading } =
+    useSubgraphTokenInformations({
+      tokenAddresses: poolData?.poolTokens[0] as Address[] | undefined,
+    });
 
   const pool = useMemo(() => {
     if (!poolData || !tokenInformation) {
@@ -122,10 +162,8 @@ export function useOnChainPoolData(poolId: string) {
     const pool: SubgraphPoolFragment = {
       address: address.toLowerCase(),
       id: poolId.toLowerCase(),
-      type:
-        poolData.version.name === "ComposableStablePool"
-          ? GqlPoolType.Stable
-          : GqlPoolType.Weighted,
+      type: poolData.type,
+      factory: poolData.factory,
       totalShares: formatUnits(poolData.totalSupply, poolData.decimals),
       totalLiquidity: undefined,
       swapFee: formatEther(poolData.swapFee),
@@ -161,5 +199,7 @@ export function useOnChainPoolData(poolId: string) {
 
   return {
     data: pool,
+    error,
+    isLoading: isLoading || isTokenInformationLoading || isTokenPricesLoading,
   };
 }

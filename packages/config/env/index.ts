@@ -201,6 +201,10 @@ export const balancerDelegatedOwnershipAddress = process.env
   .NEXT_PUBLIC_BEX_DELEGATED_OWNERSHIP_ADDRESS as Address;
 export const balancerApiChainName = process.env
   .NEXT_PUBLIC_BEX_API_CHAIN_NAME as string;
+export const bexWeightedPoolFactoryAddress = process.env
+  .NEXT_PUBLIC_BEX_WEIGHTED_FACTORY_ADDRESS as Address;
+export const bexComposableStablePoolFactoryReaderAddress = process.env
+  .NEXT_PUBLIC_BEX_COMPOSABLE_STABLE_FACTORY_ADDRESS as Address;
 
 // Sentry && Mixpanel && PostHog
 export const developmentAnalytics = process.env

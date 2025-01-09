@@ -187,6 +187,10 @@ export default function AddLiquidityContent({ poolId }: IAddLiquidityContent) {
     );
   }, 0);
 
+  if (!isLoading && !pool) {
+    return notFound();
+  }
+
   return (
     <div className="mt-16 flex w-full flex-col items-center justify-center gap-4">
       {ModalPortal}
