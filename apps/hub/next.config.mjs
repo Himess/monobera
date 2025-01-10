@@ -35,7 +35,7 @@ const config = {
         protocol: "https",
         hostname: "res.cloudinary.com",
         port: "",
-        pathname: "/duv0g402y/image/upload/**",
+        pathname: "/duv0g402y/**",
       },
       {
         protocol: "https",
