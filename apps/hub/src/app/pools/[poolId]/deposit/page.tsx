@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
-import { balancerVaultAddress, hubName } from "@bera/config";
+import { balancerVaultAddress, hubName, isIPFS } from "@bera/config";
 import { Address } from "viem";
 
 import { readContract } from "@wagmi/core";
@@ -29,6 +29,9 @@ export default async function PoolPage({
 }: {
   params: { poolId: string };
 }) {
+  if (isIPFS) {
+    return notFound();
+  }
   try {
     const subgraphPromise = bexSubgraphClient.query<GetSubgraphPoolQuery>({
       query: GetSubgraphPool,
