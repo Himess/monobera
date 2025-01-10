@@ -1,7 +1,7 @@
 import { type Metadata } from "next";
 import { notFound } from "next/navigation";
-import { balancerVaultAddress, hubName, isIPFS } from "@bera/config";
-
+import { hubName, isIPFS } from "@bera/config";
+import Sentry from "@sentry/nextjs";
 import WithdrawPageContent from "../../[poolId]/withdraw/WithdrawPageContent";
 import { PoolPageWrapper } from "../details/PoolPageContent";
 import { bexSubgraphClient } from "@bera/graphql";
@@ -9,11 +9,8 @@ import {
   GetSubgraphPool,
   GetSubgraphPoolQuery,
 } from "@bera/graphql/dex/subgraph";
-import { wagmiConfig } from "@bera/wagmi/config";
-import { vaultV2Abi } from "@berachain-foundation/berancer-sdk";
-import { Address } from "viem";
-import { readContract } from "@wagmi/core";
 import { getOnChainPool } from "@bera/berajs/actions";
+import { getServerSidePublicClient } from "~/utils/serverSidePublicClient";
 
 export { generateStaticParams } from "../details/page";
 
@@ -67,6 +64,7 @@ export default async function Withdraw({
     );
   } catch (e) {
     console.log(`Error fetching pools: ${e}`);
+    Sentry.captureException(e);
     notFound();
   }
 }

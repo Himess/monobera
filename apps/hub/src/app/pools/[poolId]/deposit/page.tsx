@@ -11,10 +11,9 @@ import {
   GetSubgraphPoolQuery,
 } from "@bera/graphql/dex/subgraph";
 import { PoolPageWrapper } from "../details/PoolPageContent";
-import { wagmiConfig } from "@bera/wagmi/config";
-import { vaultV2Abi } from "@berachain-foundation/berancer-sdk";
 import { getOnChainPool } from "@bera/berajs/actions";
-
+import { getServerSidePublicClient } from "~/utils/serverSidePublicClient";
+import Sentry from "@sentry/nextjs";
 export function generateMetadata(): Metadata {
   return {
     title: "Add Liquidity",
@@ -62,6 +61,7 @@ export default async function PoolPage({
     );
   } catch (e) {
     console.log(`Error fetching pools: ${e}`);
+    Sentry.captureException(e);
     notFound();
   }
 }

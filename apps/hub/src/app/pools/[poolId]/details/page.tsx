@@ -12,6 +12,7 @@ import {
 } from "@bera/graphql/dex/subgraph";
 import { getServerSidePublicClient } from "~/utils/serverSidePublicClient";
 import { getOnChainPool } from "@bera/berajs/actions";
+import Sentry from "@sentry/nextjs";
 
 export async function generateMetadata({
   params,
@@ -80,6 +81,7 @@ export default async function PoolPage({
       </PoolPageWrapper>
     );
   } catch (e) {
+    Sentry.captureException(e);
     console.error(`Error fetching pools: ${e}`);
     notFound();
   }
