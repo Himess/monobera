@@ -35,11 +35,6 @@ export const useValidator = ({ pubkey }: { pubkey: Address }) => {
                 indexerValidator?.dynamicData?.usersActiveBoostCount ?? 0,
               usersQueuedBoostCount:
                 indexerValidator?.dynamicData?.usersQueuedBoostCount ?? 0,
-              apy: indexerValidator?.dynamicData?.apy ?? "",
-              bgtCapturePercentage:
-                onChainValidator?.dynamicData?.bgtCapturePercentage ??
-                indexerValidator?.dynamicData?.bgtCapturePercentage ??
-                "",
               allTimeDistributedBGTAmount:
                 indexerValidator?.dynamicData?.allTimeDistributedBGTAmount ??
                 "0",

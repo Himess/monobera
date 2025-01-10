@@ -85,8 +85,6 @@ fragment ApiValidator on GqlValidator {
     usersActiveBoostCount
     queuedBoostAmount
     usersQueuedBoostCount
-    apy
-    bgtCapturePercentage
     allTimeDistributedBGTAmount
     rewardRate
     stakedBeraAmount
