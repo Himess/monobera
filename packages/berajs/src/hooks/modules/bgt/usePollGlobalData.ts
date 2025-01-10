@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { usePublicClient } from "wagmi";
 import { DefaultHookOptions, DefaultHookReturnType, useBeraJs } from "../../..";
-import { GlobalData, getGlobalData } from "~/actions/bgt/getGlobalData";
+import { GlobalData, getGlobalData } from "~/actions/pol/getGlobalData";
 
 export const usePollGlobalDataQueryKey = () => "usePollGlobalData";
 export const usePollGlobalData = (

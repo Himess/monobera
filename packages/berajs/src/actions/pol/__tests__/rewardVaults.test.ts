@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getRewardVaults } from "~/actions/bgt";
+import { getRewardVaults } from "~/actions/pol";
 
 describe("rewardVaults", async () => {
   const result = await getRewardVaults({});

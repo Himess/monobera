@@ -1,6 +1,6 @@
 import useSWR from "swr";
 
-import { getRewardVaults } from "~/actions/bgt/getRewardVaults";
+import { getRewardVaults } from "~/actions/pol/getRewardVaults";
 import { DefaultHookOptions, useBeraJs } from "../../..";
 import { GetVaultsQueryVariables } from "@bera/graphql/pol/api";
 

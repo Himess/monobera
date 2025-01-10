@@ -7,6 +7,9 @@ import { getValidatorBgtStaked } from "~/actions/pol";
 import { useBeraJs } from "~/contexts";
 import { DefaultHookOptions, DefaultHookReturnType } from "~/types";
 
+/**
+ * @deprecated this data is already in the validator data
+ */
 export const usePollValidatorBgtStaked = (
   address: Address,
   daysRange: number,

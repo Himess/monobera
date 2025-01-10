@@ -2,7 +2,7 @@ import useSWR from "swr";
 import { Address } from "viem";
 import { usePublicClient } from "wagmi";
 
-import { getRewardVaultIncentives } from "~/actions/bgt/getRewardVaultIncentives";
+import { getRewardVaultIncentives } from "~/actions/pol/getRewardVaultIncentives";
 
 export const useRewardVaultIncentives = ({
   address,
