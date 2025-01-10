@@ -172,7 +172,7 @@ export const usePoolTable = ({
               className={
                 "flex items-center justify-start text-sm text-info-foreground"
               }
-              title={`pool APR: ${(poolApr * 100).toFixed(2)}%, vault APY: ${(
+              title={`Pool APR: ${(poolApr * 100).toFixed(2)}%, BGT APY: ${(
                 vaultApy * 100
               ).toFixed(2)}%`} // TODO (#BFE-463): tooltip for this
             >
@@ -190,9 +190,9 @@ export const usePoolTable = ({
         },
         sortingFn: (rowA, rowB) => {
           return (
-            Number(rowA.original.rewardVault?.dynamicData?.apy ?? 0) / 100 +
+            Number(rowA.original.rewardVault?.dynamicData?.apy ?? 0) +
             Number(rowA.original.dynamicData?.aprItems?.at(0)?.apr ?? 0) -
-            (Number(rowB.original.rewardVault?.dynamicData?.apy ?? 0) / 100 +
+            (Number(rowB.original.rewardVault?.dynamicData?.apy ?? 0) +
               Number(rowB.original.dynamicData?.aprItems?.at(0)?.apr ?? 0))
           );
         },

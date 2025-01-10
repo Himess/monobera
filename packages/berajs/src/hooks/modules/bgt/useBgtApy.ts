@@ -14,6 +14,9 @@ export type UseBgtApyArgs = {
   tvlInHoney: number | undefined;
 };
 
+/**
+ * @deprecated
+ */
 export const useBgtApy = (
   args: UseBgtApyArgs,
   options?: DefaultHookOptions,

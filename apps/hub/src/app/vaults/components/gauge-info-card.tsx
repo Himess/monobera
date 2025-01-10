@@ -43,7 +43,7 @@ export default function GaugeInfoCard() {
           </div>
           {globalData ? (
             <FormattedNumber
-              value={globalData.totalActiveIncentivesValueUSD}
+              value={globalData.totalActiveIncentivesValueUSD ?? 0}
               symbol="USD"
               className="items-center text-2xl font-bold leading-5"
             />
