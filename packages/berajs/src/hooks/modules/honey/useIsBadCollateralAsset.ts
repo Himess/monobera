@@ -16,7 +16,7 @@ export const useIsBadCollateralAsset = (
 ): UseIsBadCollateralResponse => {
   const publicClient = usePublicClient();
   const method = "useIsBadCollateral";
-  const QUERY_KEY = [method, collateral];
+  const QUERY_KEY = collateral ? [method, collateral] : undefined;
   const { config: beraConfig } = useBeraJs();
   const config = options?.beraConfigOverride ?? beraConfig;
 
