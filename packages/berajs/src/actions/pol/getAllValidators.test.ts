@@ -13,6 +13,6 @@ describe("getAllValidators", () => {
 describe("getAllValidators", () => {
   it("should return all validators", async () => {
     const validators = await getAllValidators();
-    expect(validators?.validators?.validators).toBeGreaterThan(0);
+    expect(validators?.validators?.validators.length).toBeGreaterThan(0);
   });
 });
