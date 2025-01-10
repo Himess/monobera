@@ -1,6 +1,6 @@
 import { BeraConfig } from "~/types";
 import { getUserBoosts } from "./getUserBoosts";
-import { getAllValidators } from "./get-all-validators";
+import { getAllValidators } from "./getAllValidators";
 import { ApiValidatorFragment } from "@bera/graphql/pol/api";
 import {
   UserBoostsOnValidator,
@@ -27,7 +27,6 @@ export const getUserActiveValidators = async ({
 
   const [validatorInfoList, onChainBoosts] = await Promise.all([
     getAllValidators({
-      config,
       variables: {
         where: {
           idIn: userBoosts.data.userValidatorInformations.map(

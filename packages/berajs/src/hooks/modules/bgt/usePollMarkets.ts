@@ -1,7 +1,7 @@
 import { mutate } from "swr";
 import useSWRImmutable from "swr/immutable";
 
-import { GetMarkets, getMarkets } from "~/actions/bgt/getMarket";
+import { GetMarkets, getMarkets } from "~/actions/pol/getMarket";
 import { useBeraJs } from "~/contexts";
 import { DefaultHookOptions, DefaultHookReturnType, Market } from "~/types";
 

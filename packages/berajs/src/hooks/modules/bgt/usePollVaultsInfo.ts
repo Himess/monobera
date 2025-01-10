@@ -2,9 +2,9 @@ import useSWR from "swr";
 import { Address, formatEther } from "viem";
 import { usePublicClient } from "wagmi";
 
-import { getUserVaultsBalance } from "~/actions/bgt/getUserVaultsBalance";
-import { getUserVaultsReward } from "~/actions/bgt/getUserVaultsReward";
-import { getVaultsSupply } from "~/actions/bgt/getVaultsSupply";
+import { getUserVaultsBalance } from "~/actions/pol/getUserVaultsBalance";
+import { getUserVaultsReward } from "~/actions/pol/getUserVaultsReward";
+import { getVaultsSupply } from "~/actions/pol/getVaultsSupply";
 import { useBeraJs } from "~/contexts";
 import POLLING from "~/enum/polling";
 import { DefaultHookOptions, DefaultHookReturnType } from "~/types/global";

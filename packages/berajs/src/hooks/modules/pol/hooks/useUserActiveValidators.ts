@@ -4,7 +4,7 @@ import { usePublicClient } from "wagmi";
 import {
   ValidatorWithUserBoost,
   getUserActiveValidators,
-} from "~/actions/pol/get-user-active-validators";
+} from "~/actions/pol/getUserActiveValidators";
 import { useBeraJs } from "~/contexts";
 import POLLING from "~/enum/polling";
 import { DefaultHookOptions, DefaultHookReturnType } from "~/types/global";

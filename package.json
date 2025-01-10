@@ -14,6 +14,7 @@
   },
   "packageManager": "pnpm@9.1.4",
   "scripts": {
+    "test": "vitest",
     "build": "turbo build",
     "clean": "turbo clean && git clean -xdf node_modules",
     "pullenv": "vercel env pull --environment=production",
@@ -54,6 +55,8 @@
     "jscpd": "^3.5.10",
     "knip": "^5.7.0",
     "next": "^14.2.11",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^1.2.0",
     "yargs": "^17.7.2"
   },
   "resolutions": {

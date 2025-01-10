@@ -28,10 +28,11 @@ export default async function Withdraw({
 }: {
   params: { poolId: string };
 }) {
+  if (isIPFS) {
+    return null;
+  }
+
   try {
-    if (isIPFS) {
-      return null;
-    }
     const subgraphPromise = bexSubgraphClient.query<GetSubgraphPoolQuery>({
       query: GetSubgraphPool,
       variables: {

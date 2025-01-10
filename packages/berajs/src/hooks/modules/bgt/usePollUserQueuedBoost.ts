@@ -5,7 +5,7 @@ import { usePublicClient } from "wagmi";
 import {
   BoostedQueueInfo,
   getUserBoostedQueue,
-} from "~/actions/bgt/getUserQueueInfo";
+} from "~/actions/pol/getUserQueueInfo";
 import { useBeraJs } from "~/contexts";
 import { DefaultHookOptions, DefaultHookReturnType } from "~/types";
 import { useAllValidators } from "../pol";

@@ -20,7 +20,7 @@ export const getRewardVaults = async ({
   filter,
 }: {
   filter?: GetVaultsQueryVariables;
-}): Promise<GetGaugeData> => {
+} = {}): Promise<GetGaugeData> => {
   const res = await bexApiGraphqlClient.query<
     GetVaultsQuery,
     GetVaultsQueryVariables
