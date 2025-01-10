@@ -16,7 +16,10 @@ interface getHoneyCollateralsArgs {
 export const getHoneyCollaterals = async ({
   client,
   config,
-}: getHoneyCollateralsArgs): Promise<Address[]> => {
+}: getHoneyCollateralsArgs): Promise<{
+  collaterals: Address[];
+  referenceCollateral: Address;
+}> => {
   if (!config.contracts?.honeyFactoryAddress)
     throw new Error("missing contract address honeyFactoryAddress");
 
@@ -25,6 +28,12 @@ export const getHoneyCollaterals = async ({
     address: config.contracts!.honeyFactoryAddress,
     abi: honeyFactoryAbi,
     functionName: "numRegisteredAssets",
+  });
+
+  const referenceCollateral = await client.readContract({
+    address: config.contracts.honeyFactoryAddress,
+    abi: honeyFactoryAbi,
+    functionName: "referenceCollateral",
   });
 
   // Create an array of promises to fetch each registered asset's address
@@ -40,5 +49,6 @@ export const getHoneyCollaterals = async ({
     );
   }
 
-  return await Promise.all(promiseList);
+  const collaterals = await Promise.all(promiseList);
+  return { collaterals, referenceCollateral };
 };

@@ -5,3 +5,5 @@ export * from "./getHoneyPreview";
 export * from "./isBadCollateralAsset";
 export * from "./getCollateralWeights";
 export * from "./getHoneyCollaterals";
+export * from "./getGlobalCapLimit";
+export * from "./getRelativeCapLimit";

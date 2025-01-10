@@ -18,7 +18,7 @@ import { Icons } from "@bera/ui/icons";
 import { Skeleton } from "@bera/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@bera/ui/tabs";
 import BigNumber from "bignumber.js";
-import { Address, formatUnits, parseUnits } from "viem";
+import { Address, formatEther, formatUnits, parseUnits } from "viem";
 
 import { usePsm } from "~/hooks/usePsm";
 
@@ -46,6 +46,8 @@ export function SwapCard() {
     isBadCollateral,
     isBasketModeEnabled,
     collateralWeights,
+    isCappedGlobally,
+    isCappedRelatively,
     setSelectedFrom,
     setSelectedTo,
     write,
@@ -287,6 +289,21 @@ export function SwapCard() {
                 )}
               </div>
             </ul>
+            {(isCappedGlobally || isCappedRelatively) && (
+              <Alert variant="default" className="flex gap-2">
+                <Icons.info className="text-default-foreground h-4 w-4 flex-shrink-0" />
+                <div>
+                  <AlertTitle className="text-destructive-foreground">
+                    {isCappedGlobally ? "Selected" : "Reference"} token is
+                    approaching capacity
+                  </AlertTitle>
+                  <AlertDescription className="text-sm text-muted-foreground">
+                    {isMint ? "Minting" : "Reward"} amount is limited.
+                    Transaction might fail.
+                  </AlertDescription>
+                </div>
+              </Alert>
+            )}
             {isBadCollateral && !isBasketModeEnabled ? (
               <Alert variant="default" className="flex gap-2">
                 <Icons.info className="text-default-foreground h-4 w-4 flex-shrink-0" />
