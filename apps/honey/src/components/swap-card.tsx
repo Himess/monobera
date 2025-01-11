@@ -82,19 +82,19 @@ export function SwapCard() {
     <div className="w-full">
       <Card className="relative z-10 m-auto block w-full max-w-[500px] bg-background shadow-2xl">
         {ModalPortal}
-        <CardHeader className="pb-3">
+        <CardHeader className="p-3 pt-6 md:p-6">
           <CardTitle>
             <span>{isMint ? "Mint" : "Redeem"}</span>
             {isFeeLoading || fee === -1 ? (
-              <Skeleton className="absolute right-6 top-5 h-6 w-40" />
+              <Skeleton className="absolute right-3 top-5 h-6 w-40 md:right-6" />
             ) : (
-              <div className="absolute right-6 top-5 text-base font-medium text-muted-foreground">
+              <div className="absolute right-3 top-5 text-base font-medium text-muted-foreground md:right-6">
                 Static fee of <FormattedNumber value={fee ?? 0} percent />
               </div>
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-3 md:p-6">
           <Tabs defaultValue={tabValue} value={tabValue} className="mb-3">
             <TabsList className="w-full">
               <TabsTrigger
@@ -132,6 +132,7 @@ export function SwapCard() {
                   amount={userFriendlyAmount(
                     fromAmount[selectedFrom?.[0]?.address!],
                   )}
+                  className="text-xs"
                   balance={fromBalance?.[0]}
                   selected={selectedFrom?.[0]}
                   selectable={selectedFrom?.[0]?.address !== honey?.address}
@@ -339,7 +340,7 @@ export function SwapCard() {
                 token={needsApproval[0]}
                 spender={honeyFactoryAddress}
                 amount={parseUnits(
-                  needsApproval[0].amount.toString() ?? "0",
+                  (Number(needsApproval[0].amount) + 1).toString() ?? "0",
                   needsApproval[0].decimals ?? 18,
                 )}
                 onApproval={() => refreshAllowances()}
