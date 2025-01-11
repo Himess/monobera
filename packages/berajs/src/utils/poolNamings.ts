@@ -3,11 +3,20 @@ import { formatUnits } from "viem";
 
 import { Token } from "~/types";
 
+// Utility function to sort tokens by their address without modifying the original array
+const sortTokensByAddress = (tokens: Token[]): Token[] => {
+  return [...tokens].sort((a, b) =>
+    a.address.toLowerCase().localeCompare(b.address.toLowerCase()),
+  );
+};
+
 export const generatePoolName = (tokens: Token[]): string => {
   if (tokens.length === 0) {
     return "";
   }
-  return tokens.map((token) => token.symbol).join(" | ");
+  return sortTokensByAddress(tokens)
+    .map((token) => token.symbol)
+    .join(" | ");
 };
 
 export const generatePoolSymbol = (
@@ -20,7 +29,7 @@ export const generatePoolSymbol = (
     if (weights.length === 0) {
       return "";
     }
-    return `${tokens
+    return `${sortTokensByAddress(tokens)
       .map((token, index) => {
         const weight = weights[index];
         const weightPercentage = parseFloat(formatUnits(weight, 18)) * 100;
@@ -28,5 +37,7 @@ export const generatePoolSymbol = (
       })
       .join("-")}-${poolTypeString}`;
   }
-  return `${tokens.map((token) => token.symbol).join("-")}-${poolTypeString}`;
+  return `${sortTokensByAddress(tokens)
+    .map((token) => token.symbol)
+    .join("-")}-${poolTypeString}`;
 };
