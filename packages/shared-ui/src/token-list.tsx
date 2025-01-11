@@ -48,14 +48,14 @@ function TokenRow({
         </div>
       </div>
       <div className="whitespace-nowrap text-sm font-medium">
-        {isLoading || !tokenPrice ? (
+        {!tokenPrice && isLoading ? (
           <Skeleton className="h-8 w-16" />
-        ) : (
+        ) : tokenPrice ? (
           <FormattedNumber
             value={Number(tokenPrice ?? "0") * Number(asset.formattedBalance)}
             symbol="USD"
           />
-        )}
+        ) : null}
       </div>
     </div>
   );
