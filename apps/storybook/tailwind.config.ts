@@ -8,6 +8,11 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/styles/*.{css,js,ts,jsx,tsx,mdx}",
+
+    "../../packages/shared-ui/src/**/*.{js,jsx,mjs,ts,tsx}",
+    "../../packages/shared-ui/src/*.{js,jsx,mjs,ts,tsx}",
+    "../../packages/ui/src/**/*.{js,jsx,mjs,ts,tsx}",
+    "../../packages/ui/src/*.{js,jsx,mjs,ts,tsx}",
     ...baseConfig.content,
   ],
   darkMode: ["class", '[data-mode="dark"]'],
