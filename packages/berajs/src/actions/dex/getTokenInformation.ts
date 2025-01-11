@@ -5,7 +5,10 @@ import { BeraConfig, Token } from "~/types";
 
 export interface GetTokenInformation {
   address: Address;
-  config: BeraConfig;
+  /**
+   * @deprecated no longer used
+   */
+  config?: BeraConfig;
   publicClient: any;
 }
 
@@ -13,14 +16,10 @@ export type GetTokenInformationResponse = Token | undefined;
 
 export const getTokenInformation = async ({
   address,
-  config,
+
   publicClient,
 }: GetTokenInformation): Promise<GetTokenInformationResponse> => {
   try {
-    if (!config.contracts?.multicallAddress) {
-      throw new Error("Multicall address not found in config");
-    }
-
     if (!publicClient) {
       throw new Error("Public client not found");
     }
