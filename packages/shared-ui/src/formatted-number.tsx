@@ -147,9 +147,9 @@ export function FormattedNumber({
     >
       {prefixText && <span className="mr-0.5">{prefixText}</span>}
       {isSmallerThanMin && showIsSmallerThanMin && (
-        <span>{number < 0 ? ">-" : "<"} </span>
+        <span>{number < 0 ? ">" : "<"} </span>
       )}
-      {/* {isNegative && "-"} */}
+      {isNegative && "-"}
       {symbol?.toLowerCase() === "usd" && !percent && <span>$</span>}
       {isBiggerThanMax ? (
         number > maxValue ? (

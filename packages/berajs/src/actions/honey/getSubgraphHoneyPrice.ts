@@ -21,9 +21,8 @@ interface FetchHoneyPriceArgs {
 /**
  * fetch the current honey price of a given token
  */
-export const getTokenHoneyPrice = async ({
+export const getSubgraphHoneyPrice = async ({
   tokenAddress,
-  config,
 }: FetchHoneyPriceArgs): Promise<string | undefined> => {
   try {
     if (!tokenAddress) {
@@ -31,10 +30,6 @@ export const getTokenHoneyPrice = async ({
     }
     if (tokenAddress.toLowerCase() === honeyTokenAddress.toLowerCase()) {
       return "1";
-    }
-
-    if (!config.subgraphs?.polSubgraph) {
-      throw new Error("pol subgraph uri is not found in config");
     }
 
     const result = await bexSubgraphClient.query<GetTokenInformationQuery>({
@@ -48,9 +43,16 @@ export const getTokenHoneyPrice = async ({
             : handleNativeBera(tokenAddress as Address).toLowerCase(),
       },
     });
-    return result.data.tokenPrices?.[0]?.price ?? "0";
+
+    const price = result.data.tokenPrices?.[0]?.price;
+
+    if (!price) {
+      console.warn("no price found for", tokenAddress);
+    }
+
+    return price;
   } catch (e: any) {
     console.log(e);
-    return "0";
+    throw e;
   }
 };

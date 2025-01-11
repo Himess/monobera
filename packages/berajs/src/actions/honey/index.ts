@@ -1,4 +1,4 @@
-export * from "./getHoneyPrice";
+export * from "./getSubgraphHoneyPrice";
 export * from "./getHoneyPrices";
 export * from "./getCollateralRates";
 export * from "./getHoneyPreview";
