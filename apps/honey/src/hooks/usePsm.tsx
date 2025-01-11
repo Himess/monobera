@@ -221,6 +221,7 @@ export const usePsm = (): PsmHookReturn => {
       ? TransactionActionType.MINT_HONEY
       : TransactionActionType.REDEEM_HONEY,
     onSuccess: () => {
+      refreshAllowances();
       track(`${isMint ? "mint" : "redeem"}_honey`, {
         amountCollaterals: isMint ? fromAmount : toAmount,
         amountHoney: isMint
