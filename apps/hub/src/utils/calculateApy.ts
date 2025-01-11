@@ -20,7 +20,7 @@ export const calcEffectiveVaultApy = (vault: GqlRewardVault) => {
     return 0;
   }
   // vault APYs are stored as percentages unlike pool APRs
-  return vaultApy / 100;
+  return vaultApy;
 };
 
 export const calcPoolEffectiveApy = (

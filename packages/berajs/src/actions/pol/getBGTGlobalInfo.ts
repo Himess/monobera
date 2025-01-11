@@ -10,7 +10,7 @@ import {
 import type { BeraConfig } from "~/types";
 
 export interface GlobalInfo {
-  totalActiveIncentivesValueUSD: string;
+  totalActiveIncentivesValueUSD?: string | undefined;
   top3EmittingValidators: ApiValidatorFragment[];
   validatorCount: number;
   activeRewardVaultCount: number;
@@ -34,8 +34,7 @@ export const getBGTGlobalInfo = async (): Promise<GlobalInfo> => {
   const data = apiRes.data;
 
   return {
-    totalActiveIncentivesValueUSD:
-      data.polGetGlobalInfo?.totalActiveIncentivesValueUSD ?? "0",
+    ...data.polGetGlobalInfo,
     validatorCount: data.polGetGlobalInfo?.totalValidatorsCount ?? 0,
     activeRewardVaultCount: data.polGetGlobalInfo?.totalActiveRewardVaults ?? 0,
     whitelistedRewardVaultCount:

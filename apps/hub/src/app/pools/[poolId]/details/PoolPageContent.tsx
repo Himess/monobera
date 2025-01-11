@@ -253,7 +253,7 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
   const effectiveApy = useMemo(() => {
     return (
       Number(v3Pool?.aprItems.at(0)?.apr ?? 0) +
-      Number(gauge?.dynamicData?.apy ?? 0) / 100
+      Number(gauge?.dynamicData?.apy ?? 0)
     );
   }, [v3Pool, gauge]);
 
@@ -508,7 +508,11 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
                               compact={false}
                               compactThreshold={999_999_999}
                               percent
-                              value={Number(gauge.dynamicData?.apy) / 100 ?? 0}
+                              value={
+                                Number(gauge.dynamicData?.apy) >= 0
+                                  ? Number(gauge.dynamicData?.apy)
+                                  : 0
+                              }
                             />
                           ) : (
                             "–"

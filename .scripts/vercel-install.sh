@@ -21,16 +21,17 @@ fi
 # if secrets folder exists, copy the static folder to the apps
 if [ -d "secrets/static" ]; then
     mkdir -p apps/hub/public/internal-env
-    cp -r secrets/static/* apps/hub/public/internal-env
+    # links the secrets/static folder to the apps/hub/public/internal-env folder
+    ln -L -F -f secrets/static/* apps/hub/public/internal-env
 
     mkdir -p apps/honey/public/internal-env
-    cp -r secrets/static/* apps/honey/public/internal-env
+    ln -L -F -f secrets/static/* apps/honey/public/internal-env
 
     mkdir -p apps/lend/public/internal-env
-    cp -r secrets/static/* apps/lend/public/internal-env
+    ln -L -F -f secrets/static/* apps/lend/public/internal-env
 
     mkdir -p apps/perp/public/internal-env
-    cp -r secrets/static/* apps/perp/public/internal-env
+    ln -L -F -f secrets/static/* apps/perp/public/internal-env
 fi
 
 

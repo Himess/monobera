@@ -1,6 +1,5 @@
 import useSWR, { mutate } from "swr";
 
-import { getTokenHoneyPrice } from "~/actions/honey";
 import { getSubgraphTokenInformation } from "~/actions/shared/getSubgraphTokenInformation";
 import POLLING from "~/enum/polling";
 import { DefaultHookOptions, DefaultHookReturnType } from "~/types/global";

@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@sentry/react": "^7.109.0",
+    "@storybook/react": "^8.4.7",
     "@tanstack/react-table": "^8.15.3",
     "bignumber.js": "^9.1.2",
     "class-variance-authority": "^0.6.0",

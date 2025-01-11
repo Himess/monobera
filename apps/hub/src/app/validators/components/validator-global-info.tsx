@@ -51,6 +51,20 @@ export const ValidatorsGlobalInfo = () => {
       ),
     },
     {
+      amount: <span className="text-muted-foreground italic">soon</span>, // <FormattedNumber value={0} compact={false} visibleDecimals={0} />,
+      text: "Total Bera Staked",
+      img: (
+        <div className="absolute bottom-0 right-0">
+          {/* <Image
+            src={`${cloudinaryUrl}/station/active-gauges`}
+            alt="Active Reward Vaults"
+            width={100}
+            height={100}
+          /> */}
+        </div>
+      ),
+    },
+    {
       amount: (
         <FormattedNumber
           value={data?.totalActiveIncentivesValueUSD ?? 0}
@@ -63,26 +77,6 @@ export const ValidatorsGlobalInfo = () => {
           <Image
             src={`${cloudinaryUrl}/station/incentives`}
             alt="Validator Incentives"
-            width={100}
-            height={100}
-          />
-        </div>
-      ),
-    },
-    {
-      amount: (
-        <FormattedNumber
-          value={data?.activeRewardVaultCount ?? 0}
-          compact={false}
-          visibleDecimals={0}
-        />
-      ),
-      text: "Active Reward Vaults",
-      img: (
-        <div className="absolute bottom-0 right-0">
-          <Image
-            src={`${cloudinaryUrl}/station/active-gauges`}
-            alt="Active Reward Vaults"
             width={100}
             height={100}
           />

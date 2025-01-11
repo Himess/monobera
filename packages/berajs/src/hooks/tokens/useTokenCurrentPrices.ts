@@ -10,7 +10,7 @@ import { DefaultHookReturnType } from "~/types/global";
 export const useTokenCurrentPrices = (): DefaultHookReturnType<
   TokenCurrentPriceMap | undefined
 > => {
-  const QUERY_KEY = ["token-current-prices"];
+  const QUERY_KEY = ["useTokenCurrentPrices"];
 
   const swrResponse = useSWR<TokenCurrentPriceMap | undefined>(
     QUERY_KEY,
