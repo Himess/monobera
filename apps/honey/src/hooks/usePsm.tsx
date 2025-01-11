@@ -12,6 +12,8 @@ import {
   TokenWithAmount,
   TransactionActionType,
   useBeraJs,
+  useCappedGlobally,
+  useCappedRelatively,
   useCollateralWeights,
   useCollateralsRates,
   useHoneyCollaterals,
@@ -52,6 +54,8 @@ interface PsmHookReturn {
   isBadCollateral: boolean | undefined;
   isBasketModeEnabled: boolean | undefined;
   collateralWeights: Record<Address, bigint> | undefined;
+  isCappedGlobally: boolean | undefined;
+  isCappedRelatively: boolean | undefined;
   setSelectedFrom: Dispatch<SetStateAction<Token[]>>;
   setSelectedTo: Dispatch<SetStateAction<Token[]>>;
   setFromAmount: Dispatch<SetStateAction<Record<Address, string | undefined>>>;
@@ -92,14 +96,12 @@ export const usePsm = (): PsmHookReturn => {
 
   // Get token data and filter for collateral tokens
   const { data: tokenData } = useTokens();
-  const { data: collateralList } = useHoneyCollaterals(tokenData);
+  const { data } = useHoneyCollaterals(tokenData);
+  const { collateralList, referenceCollateral: defaultCollateral } = data ?? {};
   // Find the default collateral token and get the HONEY token
   const honey = tokenData?.tokenDictionary
     ? tokenData?.tokenDictionary[getAddress(honeyTokenAddress)]
     : undefined;
-  const defaultCollateral = collateralList?.find((token: any) =>
-    token.tags.includes("defaultCollateral"),
-  );
 
   // Determine if operation is mint (true) or redeem (false)
   // Mint: input is collateral, output is HONEY
@@ -406,6 +408,25 @@ export const usePsm = (): PsmHookReturn => {
     BigNumber(fromAmount[token.address] ?? "0").gt(fromBalance?.[idx] ?? "0"),
   );
 
+  // ===== CAP LIMITS =====
+  // Check if the input amount exceeds the cap limit
+  const { data: isCappedGlobally } = useCappedGlobally(
+    collaterals[0]?.address,
+    isMint
+      ? fromAmount[collaterals[0]?.address]
+      : toAmount[collaterals[0]?.address],
+    isMint,
+    isBasketModeEnabled,
+  );
+  const { data: isCappedRelatively } = useCappedRelatively(
+    collaterals[0]?.address,
+    isMint
+      ? fromAmount[collaterals[0]?.address]
+      : toAmount[collaterals[0]?.address],
+    isMint,
+    isBasketModeEnabled,
+  );
+
   const isLoading =
     isUseTxnLoading || isHoneyPreviewLoading || !collateralList?.length;
   return {
@@ -431,6 +452,8 @@ export const usePsm = (): PsmHookReturn => {
     isBadCollateral,
     isBasketModeEnabled,
     collateralWeights,
+    isCappedGlobally,
+    isCappedRelatively,
     onSwitch,
     setSelectedTo,
     setFromAmount,

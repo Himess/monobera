@@ -2,41 +2,50 @@ import useSWR from "swr";
 import { Address } from "viem";
 import { usePublicClient } from "wagmi";
 
-import { isBadCollateralAsset, isBadCollateralResponse } from "~/actions/honey";
+import { getGlobalCapLimit } from "~/actions/honey/getGlobalCapLimit";
 import { useBeraJs } from "~/contexts";
 import POLLING from "~/enum/polling";
 import { DefaultHookOptions, DefaultHookReturnType } from "~/types";
 
-export interface UseIsBadCollateralResponse
-  extends DefaultHookReturnType<isBadCollateralResponse | undefined> {}
+export interface UseCappedGloballyResponse
+  extends DefaultHookReturnType<boolean | undefined> {}
 
-export const useIsBadCollateralAsset = (
-  { collateral }: { collateral: Address | undefined },
+export const useCappedGlobally = (
+  asset: Address | undefined,
+  amount: string | undefined,
+  isMint: boolean,
+  isBasketModeEnabled: boolean | undefined,
   options?: DefaultHookOptions,
-): UseIsBadCollateralResponse => {
+): UseCappedGloballyResponse => {
   const publicClient = usePublicClient();
-  const method = "useIsBadCollateral";
-  const QUERY_KEY = collateral ? [method, collateral] : undefined;
+  const method = "getGlobalCapLimit";
+  const QUERY_KEY = amount && asset ? [method, amount, asset] : undefined;
   const { config: beraConfig } = useBeraJs();
   const config = options?.beraConfigOverride ?? beraConfig;
 
   const swrResponse = useSWR(
     QUERY_KEY,
     async () => {
+      if (isBasketModeEnabled) {
+        return false;
+      }
       if (!publicClient) throw new Error("publicClient is not defined");
       if (!config) throw new Error("missing beraConfig");
+      if (!amount) throw new Error("missing amount");
+      if (!asset) throw new Error("missing asset");
       if (!config.contracts?.honeyFactoryAddress)
         throw new Error("missing contract address honeyFactoryAddress");
-      if (!collateral) throw new Error("missing collateral");
-      return await isBadCollateralAsset({
+
+      return await getGlobalCapLimit({
         client: publicClient,
         config,
-        collateral,
+        asset,
+        amount: isMint ? amount : `-${amount}`,
       });
     },
     {
       ...options?.opts,
-      refreshInterval: options?.opts?.refreshInterval ?? POLLING.NORMAL,
+      refreshInterval: 0,
     },
   );
 

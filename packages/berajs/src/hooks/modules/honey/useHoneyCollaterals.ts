@@ -1,4 +1,5 @@
 import useSWRImmutable from "swr/immutable";
+import { Address } from "viem";
 import { usePublicClient } from "wagmi";
 
 import { getHoneyCollaterals } from "~/actions/honey";
@@ -7,7 +8,13 @@ import { GetTokens } from "~/hooks/useTokens";
 import { DefaultHookOptions, DefaultHookReturnType, Token } from "~/types";
 
 export interface UseHoneyCollateralsResponse
-  extends DefaultHookReturnType<Token[] | undefined> {}
+  extends DefaultHookReturnType<
+    | {
+        collateralList: Token[];
+        referenceCollateral: Token;
+      }
+    | undefined
+  > {}
 
 export const useHoneyCollaterals = (
   tokenData: GetTokens | undefined,
@@ -32,12 +39,14 @@ export const useHoneyCollaterals = (
       if (!config.contracts?.honeyFactoryAddress)
         throw new Error("missing contract address honeyFactoryAddress");
 
-      const collateralList = await getHoneyCollaterals({
+      const {
+        collaterals: collateralList,
+        referenceCollateral: referenceCollateralAddress,
+      } = await getHoneyCollaterals({
         client: publicClient,
         config,
       });
 
-      // const tokenList = await getTokens();
       const honeyTokens = tokenData.tokenList?.filter((token: Token) =>
         collateralList.includes(token.address),
       );
@@ -49,7 +58,13 @@ export const useHoneyCollaterals = (
         );
       });
 
-      return sortedHoneyTokens;
+      const referenceCollateral =
+        tokenData?.tokenDictionary?.[referenceCollateralAddress]!;
+
+      return {
+        collateralList: sortedHoneyTokens,
+        referenceCollateral,
+      };
     },
     {
       ...options?.opts,

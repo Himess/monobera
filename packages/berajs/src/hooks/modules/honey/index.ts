@@ -4,3 +4,5 @@ export * from "./useIsBadCollateralAsset";
 export * from "./useIsBasketModeEnabled";
 export * from "./useCollateralWeights";
 export * from "./useHoneyCollaterals";
+export * from "./useCappedGlobally";
+export * from "./useCappedRelatively";
