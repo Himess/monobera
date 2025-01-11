@@ -250,12 +250,11 @@ export default function PoolPageContent({ poolId }: { poolId: string }) {
   ];
 
   // FIXME we should share a function but the way we fetch doesnt align here with PoolsTable
-  const effectiveApy = useMemo(() => {
-    return (
-      Number(v3Pool?.aprItems.at(0)?.apr ?? 0) +
-      Number(gauge?.dynamicData?.apy ?? 0)
-    );
-  }, [v3Pool, gauge]);
+  const effectiveApy =
+    Number(v3Pool?.aprItems.at(0)?.apr ?? 0) +
+    (gauge?.dynamicData?.apy && Number(gauge?.dynamicData?.apy ?? 0) > 0
+      ? Number(gauge?.dynamicData?.apy)
+      : 0);
 
   if (!isPoolLoading && !pool) {
     return notFound();
