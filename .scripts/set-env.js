@@ -1,6 +1,7 @@
 const { program } = require("commander");
 const fs = require("fs");
 const path = require("path");
+const glob = require("glob");
 
 program.argument("<env>");
 
@@ -40,7 +41,7 @@ if (process.env.VERCEL && process.env.SENTRY_PROJECT) {
   );
 }
 
-fs.globSync(path.resolve(process.cwd(), "apps/*/next.config.mjs")).forEach(
+glob.sync(path.resolve(process.cwd(), "apps/*/next.config.mjs")).forEach(
   (file) => {
     const envFile = path.resolve(process.cwd(), path.dirname(file), ".env");
 
